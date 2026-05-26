@@ -20,13 +20,17 @@ type newAlgorithmOption struct {
 	Option
 }
 
-func (*newAlgorithmOption) newSignatureAlgorithmOption() {}
+func (*newAlgorithmOption) newSignatureAlgorithmOption() { _ = "STUB: not implemented"; return }
 
-func (*newAlgorithmOption) newKeyEncryptionAlgorithmOption() {}
+func (*newAlgorithmOption) newKeyEncryptionAlgorithmOption() { _ = "STUB: not implemented"; return }
 
-func (*newAlgorithmOption) newSignatureKeyEncryptionAlgorithmOption() {}
+func (*newAlgorithmOption) newSignatureKeyEncryptionAlgorithmOption() {
+	_ = "STUB: not implemented"
 
-// NewKeyEncryptionAlgorithmOption represents an option that can be passed to the NewKeyEncryptionAlgorithm
+	// NewKeyEncryptionAlgorithmOption represents an option that can be passed to the NewKeyEncryptionAlgorithm
+	return
+}
+
 type NewKeyEncryptionAlgorithmOption interface {
 	Option
 	newKeyEncryptionAlgorithmOption()
@@ -36,9 +40,13 @@ type newKeyEncryptionAlgorithmOption struct {
 	Option
 }
 
-func (*newKeyEncryptionAlgorithmOption) newKeyEncryptionAlgorithmOption() {}
+func (*newKeyEncryptionAlgorithmOption) newKeyEncryptionAlgorithmOption() {
+	_ = "STUB: not implemented"
 
-// NewSignatureAlgorithmOption represents an option that can be passed to the NewSignatureAlgorithm
+	// NewSignatureAlgorithmOption represents an option that can be passed to the NewSignatureAlgorithm
+	return
+}
+
 type NewSignatureAlgorithmOption interface {
 	Option
 	newSignatureAlgorithmOption()
@@ -48,10 +56,14 @@ type newSignatureAlgorithmOption struct {
 	Option
 }
 
-func (*newSignatureAlgorithmOption) newSignatureAlgorithmOption() {}
+func (*newSignatureAlgorithmOption) newSignatureAlgorithmOption() {
+	_ = "STUB: not implemented"
 
-// NewSignatureKeyEncryptionAlgorithmOption represents an option that can be passed to both
-// NewSignatureAlgorithm and NewKeyEncryptionAlgorithm
+	// NewSignatureKeyEncryptionAlgorithmOption represents an option that can be passed to both
+	// NewSignatureAlgorithm and NewKeyEncryptionAlgorithm
+	return
+}
+
 type NewSignatureKeyEncryptionAlgorithmOption interface {
 	Option
 	newSignatureAlgorithmOption()
@@ -62,30 +74,34 @@ type newSignatureKeyEncryptionAlgorithmOption struct {
 	Option
 }
 
-func (*newSignatureKeyEncryptionAlgorithmOption) newSignatureAlgorithmOption() {}
+func (*newSignatureKeyEncryptionAlgorithmOption) newSignatureAlgorithmOption() {
+	_ = "STUB: not implemented"
+	return
+}
 
-func (*newSignatureKeyEncryptionAlgorithmOption) newKeyEncryptionAlgorithmOption() {}
+func (*newSignatureKeyEncryptionAlgorithmOption) newKeyEncryptionAlgorithmOption() {
+	_ = "STUB: not implemented"
+	return
+}
 
 type identDeprecated struct{}
 type identIsSymmetric struct{}
 
-func (identDeprecated) String() string {
-	return "WithDeprecated"
-}
+func (identDeprecated) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identIsSymmetric) String() string {
-	return "WithIsSymmetric"
-}
+func (identIsSymmetric) String() string { _ = "STUB: not implemented"; return "" }
 
 // WithDeprecated specifies that the algorithm is deprecated. In order to
 // un-deprecate an algorithm, you will have to create a new algorithm
 // with the same values but with the Deprecated option set to false, and
 // then call RegisterXXXXAlgorithm with the new algorithm.
 func WithDeprecated(v bool) NewAlgorithmOption {
-	return &newAlgorithmOption{option.New(identDeprecated{}, v)}
+	_ = "STUB: not implemented"
+	return *new(NewAlgorithmOption)
 }
 
 // IsSymmetric specifies that the algorithm is symmetric
 func WithIsSymmetric(v bool) NewSignatureKeyEncryptionAlgorithmOption {
-	return &newSignatureKeyEncryptionAlgorithmOption{option.New(identIsSymmetric{}, v)}
+	_ = "STUB: not implemented"
+	return *new(NewSignatureKeyEncryptionAlgorithmOption)
 }

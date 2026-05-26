@@ -14,7 +14,7 @@ type globalOption struct {
 	Option
 }
 
-func (*globalOption) globalOption() {}
+func (*globalOption) globalOption() { _ = "STUB: not implemented"; return }
 
 type identUseNumber struct{}
 
@@ -32,9 +32,7 @@ type identUseNumber struct{}
 // non-deterministically. There is no per-call override.
 //
 // Default is false.
-func WithUseNumber(v bool) GlobalOption {
-	return &globalOption{option.New(identUseNumber{}, v)}
-}
+func WithUseNumber(v bool) GlobalOption { _ = "STUB: not implemented"; return *new(GlobalOption) }
 
 type identBase64Encoder struct{}
 
@@ -50,7 +48,8 @@ type identBase64Encoder struct{}
 // override at this layer; per-operation overrides exist on the
 // jws/jwt packages (see jws.WithBase64Encoder / jwt.WithBase64Encoder).
 func WithBase64Encoder(v Base64Encoder) GlobalOption {
-	return &globalOption{option.New(identBase64Encoder{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 type identBase64Decoder struct{}
@@ -67,5 +66,6 @@ type identBase64Decoder struct{}
 // backends for concurrently-decoded inputs. There is no per-call
 // override.
 func WithBase64Decoder(v Base64Decoder) GlobalOption {
-	return &globalOption{option.New(identBase64Decoder{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }

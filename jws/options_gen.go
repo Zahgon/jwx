@@ -21,9 +21,13 @@ type compactOption struct {
 	Option
 }
 
-func (*compactOption) compactOption() {}
+func (*compactOption) compactOption() {
+	_ = "STUB: not implemented"
 
-// GlobalOption can be passed to `jws.Settings()` to set global options for the JWS package.
+	// GlobalOption can be passed to `jws.Settings()` to set global options for the JWS package.
+	return
+}
+
 type GlobalOption interface {
 	Option
 	globalOption()
@@ -33,10 +37,14 @@ type globalOption struct {
 	Option
 }
 
-func (*globalOption) globalOption() {}
+func (*globalOption) globalOption() {
+	_ = "STUB: not implemented"
 
-// GlobalParseOption describes an Option that can be passed to `jws.Settings()`
-// and `jws.Parse()`.
+	// GlobalParseOption describes an Option that can be passed to `jws.Settings()`
+	// and `jws.Parse()`.
+	return
+}
+
 type GlobalParseOption interface {
 	Option
 	globalOption()
@@ -47,11 +55,15 @@ type globalParseOption struct {
 	Option
 }
 
-func (*globalParseOption) globalOption() {}
+func (*globalParseOption) globalOption() { _ = "STUB: not implemented"; return }
 
-func (*globalParseOption) parseOption() {}
+func (*globalParseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// ParseOption is a type of `Option` that can be passed to `jws.Parse`
+	// ParseOption is a type of `Option` that can be passed to `jws.Parse`
+	return
+}
+
 type ParseOption interface {
 	Option
 	parseOption()
@@ -61,9 +73,13 @@ type parseOption struct {
 	Option
 }
 
-func (*parseOption) parseOption() {}
+func (*parseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// SignOption describes options that can be passed to `jws.Sign`
+	// SignOption describes options that can be passed to `jws.Sign`
+	return
+}
+
 type SignOption interface {
 	Option
 	signOption()
@@ -73,10 +89,14 @@ type signOption struct {
 	Option
 }
 
-func (*signOption) signOption() {}
+func (*signOption) signOption() {
+	_ = "STUB: not implemented"
 
-// SignVerifyCompactOption describes options that can be passed to either `jws.Verify`,
-// `jws.Sign`, or `jws.Compact`
+	// SignVerifyCompactOption describes options that can be passed to either `jws.Verify`,
+	// `jws.Sign`, or `jws.Compact`
+	return
+}
+
 type SignVerifyCompactOption interface {
 	Option
 	signOption()
@@ -89,15 +109,19 @@ type signVerifyCompactOption struct {
 	Option
 }
 
-func (*signVerifyCompactOption) signOption() {}
+func (*signVerifyCompactOption) signOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyCompactOption) verifyOption() {}
+func (*signVerifyCompactOption) verifyOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyCompactOption) compactOption() {}
+func (*signVerifyCompactOption) compactOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyCompactOption) parseOption() {}
+func (*signVerifyCompactOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// SignVerifyOption describes options that can be passed to either `jws.Verify` or `jws.Sign`
+	// SignVerifyOption describes options that can be passed to either `jws.Verify` or `jws.Sign`
+	return
+}
+
 type SignVerifyOption interface {
 	Option
 	signOption()
@@ -109,11 +133,11 @@ type signVerifyOption struct {
 	Option
 }
 
-func (*signVerifyOption) signOption() {}
+func (*signVerifyOption) signOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyOption) verifyOption() {}
+func (*signVerifyOption) verifyOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyOption) parseOption() {}
+func (*signVerifyOption) parseOption() { _ = "STUB: not implemented"; return }
 
 type SignVerifyParseOption interface {
 	Option
@@ -126,13 +150,17 @@ type signVerifyParseOption struct {
 	Option
 }
 
-func (*signVerifyParseOption) signOption() {}
+func (*signVerifyParseOption) signOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyParseOption) verifyOption() {}
+func (*signVerifyParseOption) verifyOption() { _ = "STUB: not implemented"; return }
 
-func (*signVerifyParseOption) parseOption() {}
+func (*signVerifyParseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// VerifyOption describes options that can be passed to `jws.Verify`
+	// VerifyOption describes options that can be passed to `jws.Verify`
+	return
+}
+
 type VerifyOption interface {
 	Option
 	verifyOption()
@@ -143,11 +171,15 @@ type verifyOption struct {
 	Option
 }
 
-func (*verifyOption) verifyOption() {}
+func (*verifyOption) verifyOption() { _ = "STUB: not implemented"; return }
 
-func (*verifyOption) parseOption() {}
+func (*verifyOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// JSONSuboption describes suboptions that can be passed to the `jws.WithJSON()` option.
+	// JSONSuboption describes suboptions that can be passed to the `jws.WithJSON()` option.
+	return
+}
+
 type WithJSONSuboption interface {
 	Option
 	withJSONSuboption()
@@ -157,9 +189,13 @@ type withJSONSuboption struct {
 	Option
 }
 
-func (*withJSONSuboption) withJSONSuboption() {}
+func (*withJSONSuboption) withJSONSuboption() {
+	_ = "STUB: not implemented"
 
-// WithKeySetSuboption is a suboption passed to the `jws.WithKeySet()` option
+	// WithKeySetSuboption is a suboption passed to the `jws.WithKeySet()` option
+	return
+}
+
 type WithKeySetSuboption interface {
 	Option
 	withKeySetSuboption()
@@ -169,10 +205,14 @@ type withKeySetSuboption struct {
 	Option
 }
 
-func (*withKeySetSuboption) withKeySetSuboption() {}
+func (*withKeySetSuboption) withKeySetSuboption() {
+	_ = "STUB: not implemented"
 
-// WithKeySuboption describes option types that can be passed to the `jws.WithKey()`
-// option.
+	// WithKeySuboption describes option types that can be passed to the `jws.WithKey()`
+	// option.
+	return
+}
+
 type WithKeySuboption interface {
 	Option
 	withKeySuboption()
@@ -182,7 +222,7 @@ type withKeySuboption struct {
 	Option
 }
 
-func (*withKeySuboption) withKeySuboption() {}
+func (*withKeySuboption) withKeySuboption() { _ = "STUB: not implemented"; return }
 
 type identBase64Encoder struct{}
 type identContext struct{}
@@ -205,91 +245,52 @@ type identSerialization struct{}
 type identUseDefault struct{}
 type identValidateKey struct{}
 
-func (identBase64Encoder) String() string {
-	return "WithBase64Encoder"
-}
+func (identBase64Encoder) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identContext) String() string {
-	return "WithContext"
-}
+func (identContext) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identCritValidation) String() string {
-	return "WithCritValidation"
-}
+func (identCritValidation) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identDetached) String() string {
-	return "WithDetached"
-}
+func (identDetached) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identDetachedPayload) String() string {
-	return "WithDetachedPayload"
-}
+func (identDetachedPayload) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identDetachedPayloadReader) String() string {
-	return "WithDetachedPayloadReader"
-}
+func (identDetachedPayloadReader) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identInferAlgorithmFromKey) String() string {
-	return "WithInferAlgorithmFromKey"
-}
+func (identInferAlgorithmFromKey) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identKey) String() string {
-	return "WithKey"
-}
+func (identKey) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identKeyProvider) String() string {
-	return "WithKeyProvider"
-}
+func (identKeyProvider) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identKeyUsed) String() string {
-	return "WithKeyUsed"
-}
+func (identKeyUsed) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identMaxSignatures) String() string {
-	return "WithMaxSignatures"
-}
+func (identMaxSignatures) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identMessage) String() string {
-	return "WithMessage"
-}
+func (identMessage) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identMultipleKeysPerKeyID) String() string {
-	return "WithMultipleKeysPerKeyID"
-}
+func (identMultipleKeysPerKeyID) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identPretty) String() string {
-	return "WithPretty"
-}
+func (identPretty) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identProtectedHeaders) String() string {
-	return "WithProtectedHeaders"
-}
+func (identProtectedHeaders) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identPublicHeaders) String() string {
-	return "WithPublicHeaders"
-}
+func (identPublicHeaders) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identRequireKid) String() string {
-	return "WithRequireKid"
-}
+func (identRequireKid) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identSerialization) String() string {
-	return "WithSerialization"
-}
+func (identSerialization) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identUseDefault) String() string {
-	return "WithUseDefault"
-}
+func (identUseDefault) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identValidateKey) String() string {
-	return "WithValidateKey"
-}
+func (identValidateKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // WithBase64Encoder specifies the base64 encoder to be used while signing or
 // verifying the JWS message. By default, the raw URL base64 encoding (no padding)
 // is used.
 func WithBase64Encoder(v Base64Encoder) SignVerifyCompactOption {
-	return &signVerifyCompactOption{option.New(identBase64Encoder{}, v)}
+	_ = "STUB: not implemented"
+	return *new(SignVerifyCompactOption)
 }
 
 // WithContext attaches a context.Context to the verify call. The
@@ -308,7 +309,8 @@ func WithBase64Encoder(v Base64Encoder) SignVerifyCompactOption {
 // cancellation observation between key candidates is handled by
 // Verify's loop checks above.
 func WithContext(v context.Context) VerifyOption {
-	return &verifyOption{option.New(identContext{}, v)}
+	_ = "STUB: not implemented"
+	return *new(VerifyOption)
 }
 
 // WithCritValidation controls RFC 7515 Section 4.1.11 validation of the
@@ -337,16 +339,12 @@ func WithContext(v context.Context) VerifyOption {
 // the protection the producer was trying to obtain by marking that
 // extension critical. See the documentation on jws.WithCritExtension
 // for details.
-func WithCritValidation(v bool) VerifyOption {
-	return &verifyOption{option.New(identCritValidation{}, v)}
-}
+func WithCritValidation(v bool) VerifyOption { _ = "STUB: not implemented"; return *new(VerifyOption) }
 
 // WithDetached specifies that the `jws.Message` should be serialized in
 // JWS compact serialization with detached payload. The resulting octet
 // sequence will not contain the payload section.
-func WithDetached(v bool) CompactOption {
-	return &compactOption{option.New(identDetached{}, v)}
-}
+func WithDetached(v bool) CompactOption { _ = "STUB: not implemented"; return *new(CompactOption) }
 
 // WithDetachedPayload can be used to both sign or verify a JWS message with a
 // detached payload.
@@ -366,7 +364,8 @@ func WithDetached(v bool) CompactOption {
 //
 // If you have to verify using this option, you should know exactly how and why this works.
 func WithDetachedPayload(v []byte) SignVerifyOption {
-	return &signVerifyOption{option.New(identDetachedPayload{}, v)}
+	_ = "STUB: not implemented"
+	return *new(SignVerifyOption)
 }
 
 // WithDetachedPayloadReader is the streaming variant of
@@ -465,7 +464,8 @@ func WithDetachedPayload(v []byte) SignVerifyOption {
 // jws_verify_detached_reader examples in the
 // github.com/jwx-go/examples companion repository.
 func WithDetachedPayloadReader(v io.Reader) SignVerifyOption {
-	return &signVerifyOption{option.New(identDetachedPayloadReader{}, v)}
+	_ = "STUB: not implemented"
+	return *new(SignVerifyOption)
 }
 
 // WithInferAlgorithmFromKey specifies whether the JWS signing algorithm name
@@ -499,11 +499,13 @@ func WithDetachedPayloadReader(v io.Reader) SignVerifyOption {
 // untrusted input should pair this option with `WithMaxSignatures` and
 // keep their JWKS bounded.
 func WithInferAlgorithmFromKey(v bool) WithKeySetSuboption {
-	return &withKeySetSuboption{option.New(identInferAlgorithmFromKey{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySetSuboption)
 }
 
 func WithKeyProvider(v KeyProvider) VerifyOption {
-	return &verifyOption{option.New(identKeyProvider{}, v)}
+	_ = "STUB: not implemented"
+	return *new(VerifyOption)
 }
 
 // WithKeyUsed allows you to specify the `jws.Verify()` function to
@@ -514,9 +516,7 @@ func WithKeyProvider(v KeyProvider) VerifyOption {
 //
 // `v` must be a pointer to an `any` variable. After a successful
 // verification, the key used will be assigned to the variable.
-func WithKeyUsed(v *any) VerifyOption {
-	return &verifyOption{option.New(identKeyUsed{}, v)}
-}
+func WithKeyUsed(v *any) VerifyOption { _ = "STUB: not implemented"; return *new(VerifyOption) }
 
 // WithMaxSignatures specifies the maximum number of signatures allowed
 // in a JWS message using JSON serialization. If a JWS message contains
@@ -527,14 +527,13 @@ func WithKeyUsed(v *any) VerifyOption {
 // globally, or to `jws.Parse()` / `jws.ParseFS()` for a per-call
 // override.
 func WithMaxSignatures(v int) GlobalParseOption {
-	return &globalParseOption{option.New(identMaxSignatures{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalParseOption)
 }
 
 // WithMessage can be passed to Verify() to obtain the jws.Message upon
 // a successful verification.
-func WithMessage(v *Message) VerifyOption {
-	return &verifyOption{option.New(identMessage{}, v)}
-}
+func WithMessage(v *Message) VerifyOption { _ = "STUB: not implemented"; return *new(VerifyOption) }
 
 // WithMultipleKeysPerKeyID specifies if we should expect multiple keys
 // to match against a key ID. By default it is assumed that key IDs are
@@ -542,13 +541,15 @@ func WithMessage(v *Message) VerifyOption {
 // key that has the matching ID. When this option is set to true,
 // multiple keys that match the same key ID in the set can be tried.
 func WithMultipleKeysPerKeyID(v bool) WithKeySetSuboption {
-	return &withKeySetSuboption{option.New(identMultipleKeysPerKeyID{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySetSuboption)
 }
 
 // WithPretty specifies whether the JSON output should be formatted and
 // indented
 func WithPretty(v bool) WithJSONSuboption {
-	return &withJSONSuboption{option.New(identPretty{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithJSONSuboption)
 }
 
 // WithProtectedHeaders is used with `jws.WithKey()` option when used with `jws.Sign()`
@@ -568,7 +569,8 @@ func WithPretty(v bool) WithJSONSuboption {
 // suboption. The two serve different roles and have different types; the Go
 // compiler will reject any accidental swap.
 func WithProtectedHeaders(v Headers) WithKeySuboption {
-	return &withKeySuboption{option.New(identProtectedHeaders{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySuboption)
 }
 
 // WithPublicHeaders is used with `jws.WithKey()` option when used with `jws.Sign()`
@@ -579,14 +581,16 @@ func WithProtectedHeaders(v Headers) WithKeySuboption {
 // `jws.Sign()` will result in an error if `jws.WithPublicHeaders()` is used
 // and the serialization format is compact serialization.
 func WithPublicHeaders(v Headers) WithKeySuboption {
-	return &withKeySuboption{option.New(identPublicHeaders{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySuboption)
 }
 
 // WithRequiredKid specifies whether the keys in the jwk.Set should
 // only be matched if the target JWS message's Key ID and the Key ID
 // in the given key matches.
 func WithRequireKid(v bool) WithKeySetSuboption {
-	return &withKeySetSuboption{option.New(identRequireKid{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySetSuboption)
 }
 
 // WithCompact specifies that the result of `jws.Sign()` is serialized in
@@ -595,13 +599,15 @@ func WithRequireKid(v bool) WithKeySetSuboption {
 // By default `jws.Sign()` will opt to use compact format, so you usually
 // do not need to specify this option other than to be explicit about it
 func WithCompact() SignVerifyParseOption {
-	return &signVerifyParseOption{option.New(identSerialization{}, fmtCompact)}
+	_ = "STUB: not implemented"
+	return *new(SignVerifyParseOption)
 }
 
 // WithUseDefault specifies that if and only if a jwk.Key contains
 // exactly one jwk.Key, that key should be used.
 func WithUseDefault(v bool) WithKeySetSuboption {
-	return &withKeySetSuboption{option.New(identUseDefault{}, v)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySetSuboption)
 }
 
 // WithValidateKey specifies whether the key used for signing or verification
@@ -622,5 +628,6 @@ func WithUseDefault(v bool) WithKeySetSuboption {
 //
 // By default, the key is not validated.
 func WithValidateKey(v bool) SignVerifyOption {
-	return &signVerifyOption{option.New(identValidateKey{}, v)}
+	_ = "STUB: not implemented"
+	return *new(SignVerifyOption)
 }

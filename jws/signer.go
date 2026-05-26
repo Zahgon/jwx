@@ -22,7 +22,8 @@ type Signer interface {
 type SignerFunc func(key any, payload []byte) ([]byte, error)
 
 func (f SignerFunc) Sign(key any, payload []byte) ([]byte, error) {
-	return f(key, payload)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 var signerDB sync.Map // map[jwa.SignatureAlgorithm]Signer
@@ -45,13 +46,12 @@ func init() {
 // If a custom Signer has been registered for the algorithm, it is returned.
 // Otherwise, a default signer that delegates to jwsbb.Sign is returned.
 func SignerFor(alg jwa.SignatureAlgorithm) (Signer, error) {
-	if v, ok := signerDB.Load(alg); ok {
-		//nolint:forcetypeassert
-		return v.(Signer), nil // always stored as Signer
-	}
-
-	return defaultSigner{alg: alg}, nil
+	_ = "STUB: not implemented"
+	return *new(Signer), nil
 }
+
+//nolint:forcetypeassert
+// always stored as Signer
 
 // RegisterSigner registers a custom Signer for the given algorithm.
 //
@@ -66,10 +66,7 @@ func SignerFor(alg jwa.SignatureAlgorithm) (Signer, error) {
 // using a built-in name with different metadata will fail. Re-registering the
 // exact built-in algorithm value is allowed.
 func RegisterSigner(alg jwa.SignatureAlgorithm, s Signer) error {
-	if err := jwa.RegisterSignatureAlgorithm(alg); err != nil {
-		return fmt.Errorf(`jws.RegisterSigner: failed to register signature algorithm: %w`, err)
-	}
-	signerDB.Store(alg, s)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -88,13 +85,8 @@ func RegisterSigner(alg jwa.SignatureAlgorithm, s Signer) error {
 // Register/Unregister cycles from init() — should check the
 // returned value and propagate on failure to stay
 // forward-compatible, matching the convention on [RegisterSigner].
-func UnregisterSigner(alg jwa.SignatureAlgorithm) error {
-	signerDB.Delete(alg)
-	return nil
-}
+func UnregisterSigner(alg jwa.SignatureAlgorithm) error { _ = "STUB: not implemented"; return nil }
 
 type noneSigner struct{}
 
-func (noneSigner) Sign(_ any, _ []byte) ([]byte, error) {
-	return nil, nil
-}
+func (noneSigner) Sign(_ any, _ []byte) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }

@@ -3,10 +3,7 @@
 package jwa
 
 import (
-	"encoding/json"
 	"fmt"
-
-	"github.com/lestrrat-go/option/v3"
 )
 
 func init() {
@@ -37,86 +34,53 @@ func init() {
 }
 
 // ES256 returns an object representing ECDSA signature algorithm using P-256 curve and SHA-256.
-func ES256() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("ES256")
-}
+func ES256() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // ES384 returns an object representing ECDSA signature algorithm using P-384 curve and SHA-384.
-func ES384() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("ES384")
-}
+func ES384() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // ES512 returns an object representing ECDSA signature algorithm using P-521 curve and SHA-512.
-func ES512() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("ES512")
-}
+func ES512() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // EdDSA returns an object representing EdDSA signature algorithms (deprecated by RFC 9864, use EdDSAEd25519 or EdDSAEd448).
-func EdDSA() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("EdDSA")
-}
+func EdDSA() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // EdDSAEd25519 returns an object representing EdDSA signature algorithm using Ed25519 (RFC 9864). The function name is tentative and may change in future releases.
-func EdDSAEd25519() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("Ed25519")
-}
+func EdDSAEd25519() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // HS256 returns an object representing HMAC signature algorithm using SHA-256.
-func HS256() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("HS256")
-}
+func HS256() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // HS384 returns an object representing HMAC signature algorithm using SHA-384.
-func HS384() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("HS384")
-}
+func HS384() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // HS512 returns an object representing HMAC signature algorithm using SHA-512.
-func HS512() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("HS512")
-}
+func HS512() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // NoSignature returns an object representing the lack of a signature algorithm. Using this value specifies that the content should not be signed, which you should avoid doing.
-func NoSignature() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("none")
-}
+func NoSignature() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // PS256 returns an object representing RSASSA-PSS signature algorithm using SHA-256 and MGF1-SHA256.
-func PS256() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("PS256")
-}
+func PS256() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // PS384 returns an object representing RSASSA-PSS signature algorithm using SHA-384 and MGF1-SHA384.
-func PS384() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("PS384")
-}
+func PS384() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // PS512 returns an object representing RSASSA-PSS signature algorithm using SHA-512 and MGF1-SHA512.
-func PS512() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("PS512")
-}
+func PS512() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // RS256 returns an object representing RSASSA-PKCS-v1.5 signature algorithm using SHA-256.
-func RS256() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("RS256")
-}
+func RS256() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // RS384 returns an object representing RSASSA-PKCS-v1.5 signature algorithm using SHA-384.
-func RS384() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("RS384")
-}
+func RS384() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 // RS512 returns an object representing RSASSA-PKCS-v1.5 signature algorithm using SHA-512.
-func RS512() SignatureAlgorithm {
-	return lookupBuiltinSignatureAlgorithm("RS512")
-}
+func RS512() SignatureAlgorithm { _ = "STUB: not implemented"; return *new(SignatureAlgorithm) }
 
 func lookupBuiltinSignatureAlgorithm(name string) SignatureAlgorithm {
-	v, ok := lookupAlgorithm(algKindSignature, name)
-	if !ok {
-		panic(fmt.Sprintf(`jwa: SignatureAlgorithm %q not registered`, name))
-	}
-	return v.(SignatureAlgorithm)
+	_ = "STUB: not implemented"
+	return *new(SignatureAlgorithm)
 }
 
 // SignatureAlgorithm represents the various signature algorithms as described in https://tools.ietf.org/html/rfc7518#section-3.1
@@ -127,46 +91,33 @@ type SignatureAlgorithm struct {
 }
 
 func (s SignatureAlgorithm) String() string {
-	return s.name
+	_ = "STUB: not implemented"
+
+	// IsDeprecated returns true if the SignatureAlgorithm object is deprecated.
+	return ""
 }
 
-// IsDeprecated returns true if the SignatureAlgorithm object is deprecated.
-func (s SignatureAlgorithm) IsDeprecated() bool {
-	return s.deprecated
-}
+func (s SignatureAlgorithm) IsDeprecated() bool { _ = "STUB: not implemented"; return false }
 
 // IsSymmetric returns true if the SignatureAlgorithm object is symmetric. Symmetric algorithms use the same key for both encryption and decryption.
-func (s SignatureAlgorithm) IsSymmetric() bool {
-	return s.isSymmetric
-}
+func (s SignatureAlgorithm) IsSymmetric() bool { _ = "STUB: not implemented"; return false }
 
 // EmptySignatureAlgorithm returns an empty SignatureAlgorithm object, used as a zero value.
 func EmptySignatureAlgorithm() SignatureAlgorithm {
-	return SignatureAlgorithm{}
+	_ = "STUB: not implemented"
+	return *new(SignatureAlgorithm)
 }
 
 // NewSignatureAlgorithm creates a new SignatureAlgorithm object with the given name.
 func NewSignatureAlgorithm(name string, options ...NewSignatureAlgorithmOption) SignatureAlgorithm {
-	var deprecated bool
-	var isSymmetric bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identIsSymmetric{}:
-			isSymmetric = option.MustGet[bool](opt)
-		case identDeprecated{}:
-			deprecated = option.MustGet[bool](opt)
-		}
-	}
-	return SignatureAlgorithm{name: name, deprecated: deprecated, isSymmetric: isSymmetric}
+	_ = "STUB: not implemented"
+	return *new(SignatureAlgorithm)
 }
 
 // LookupSignatureAlgorithm returns the SignatureAlgorithm object for the given name.
 func LookupSignatureAlgorithm(name string) (SignatureAlgorithm, bool) {
-	if v, ok := lookupAlgorithm(algKindSignature, name); ok {
-		return v.(SignatureAlgorithm), true
-	}
-	var zero SignatureAlgorithm
-	return zero, false
+	_ = "STUB: not implemented"
+	return *new(SignatureAlgorithm), false
 }
 
 // RegisterSignatureAlgorithm registers a new SignatureAlgorithm. The signature value must be immutable
@@ -182,47 +133,28 @@ func LookupSignatureAlgorithm(name string) (SignatureAlgorithm, bool) {
 // different kind returns an error naming both the existing and the requested
 // kind.
 func RegisterSignatureAlgorithm(algorithms ...SignatureAlgorithm) error {
-	for _, alg := range algorithms {
-		if err := registerAlgorithm(algKindSignature, alg); err != nil {
-			return err
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // UnregisterSignatureAlgorithm unregisters a SignatureAlgorithm from its known database.
 // Non-existent entries, as well as built-in algorithms will silently be ignored.
 func UnregisterSignatureAlgorithm(algorithms ...SignatureAlgorithm) {
-	for _, alg := range algorithms {
-		unregisterAlgorithm(algKindSignature, alg.String())
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // SignatureAlgorithms returns a list of all available values for SignatureAlgorithm.
-func SignatureAlgorithms() []SignatureAlgorithm {
-	raw := listAlgorithmsByKind(algKindSignature)
-	out := make([]SignatureAlgorithm, len(raw))
-	for i, alg := range raw {
-		out[i] = alg.(SignatureAlgorithm)
-	}
-	return out
-}
+func SignatureAlgorithms() []SignatureAlgorithm { _ = "STUB: not implemented"; return nil }
 
 // MarshalJSON serializes the SignatureAlgorithm object to a JSON string.
 func (s SignatureAlgorithm) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // UnmarshalJSON deserializes the JSON string to a SignatureAlgorithm object.
 func (s *SignatureAlgorithm) UnmarshalJSON(data []byte) error {
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		return fmt.Errorf(`failed to unmarshal SignatureAlgorithm: %w`, err)
-	}
-	v, ok := LookupSignatureAlgorithm(name)
-	if !ok {
-		return fmt.Errorf(`unknown SignatureAlgorithm: %q`, name)
-	}
-	*s = v
+	_ = "STUB: not implemented"
 	return nil
 }

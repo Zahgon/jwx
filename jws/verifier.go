@@ -1,11 +1,9 @@
 package jws
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/lestrrat-go/jwx/v4/jwa"
-	"github.com/lestrrat-go/jwx/v4/jws/jwsbb"
 )
 
 type defaultVerifier struct {
@@ -13,7 +11,8 @@ type defaultVerifier struct {
 }
 
 func (v defaultVerifier) Verify(key any, payload, signature []byte) error {
-	return jwsbb.Verify(key, v.alg.String(), payload, signature)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Verifier is an interface for objects that can verify signatures.
@@ -28,7 +27,8 @@ type Verifier interface {
 type VerifierFunc func(key any, payload, signature []byte) error
 
 func (f VerifierFunc) Verify(key any, payload, signature []byte) error {
-	return f(key, payload, signature)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 var verifierDB sync.Map // map[jwa.SignatureAlgorithm]Verifier
@@ -38,13 +38,12 @@ var verifierDB sync.Map // map[jwa.SignatureAlgorithm]Verifier
 // If a custom Verifier has been registered for the algorithm, it is returned.
 // Otherwise, a default verifier that delegates to jwsbb.Verify is returned.
 func VerifierFor(alg jwa.SignatureAlgorithm) (Verifier, error) {
-	if v, ok := verifierDB.Load(alg); ok {
-		//nolint:forcetypeassert
-		return v.(Verifier), nil // always stored as Verifier
-	}
-
-	return defaultVerifier{alg: alg}, nil
+	_ = "STUB: not implemented"
+	return *new(Verifier), nil
 }
+
+//nolint:forcetypeassert
+// always stored as Verifier
 
 // RegisterVerifier registers a custom Verifier for the given algorithm.
 //
@@ -55,10 +54,7 @@ func VerifierFor(alg jwa.SignatureAlgorithm) (Verifier, error) {
 // using a built-in name with different metadata will fail. Re-registering the
 // exact built-in algorithm value is allowed.
 func RegisterVerifier(alg jwa.SignatureAlgorithm, v Verifier) error {
-	if err := jwa.RegisterSignatureAlgorithm(alg); err != nil {
-		return fmt.Errorf(`jws.RegisterVerifier: failed to register signature algorithm: %w`, err)
-	}
-	verifierDB.Store(alg, v)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -77,7 +73,4 @@ func RegisterVerifier(alg jwa.SignatureAlgorithm, v Verifier) error {
 // Register/Unregister cycles from init() — should check the
 // returned value and propagate on failure to stay
 // forward-compatible, matching the convention on [RegisterVerifier].
-func UnregisterVerifier(alg jwa.SignatureAlgorithm) error {
-	verifierDB.Delete(alg)
-	return nil
-}
+func UnregisterVerifier(alg jwa.SignatureAlgorithm) error { _ = "STUB: not implemented"; return nil }

@@ -1,330 +1,38 @@
 package main
 
 import (
-	"bytes"
-	"crypto/ecdh"
-	"crypto/ecdsa"
-	"crypto/rand"
-	"crypto/rsa"
-	"encoding/json"
-	"fmt"
 	"io"
-	"os"
 
-	"github.com/lestrrat-go/jwx/v4/jwa"
 	"github.com/lestrrat-go/jwx/v4/jwk"
-	ourecdsa "github.com/lestrrat-go/jwx/v4/jwk/ecdsa"
-	"github.com/lestrrat-go/jwx/v4/jwk/jwkbb"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/crypto/ed25519"
-	"golang.org/x/term"
 )
 
 func init() {
 	topLevelCommands = append(topLevelCommands, makeJwkCmd())
 }
 
-func jwkSetFlag() cli.Flag {
-	return &cli.BoolFlag{
-		Name:  "set",
-		Usage: "generate as a JWK set",
-	}
-}
+func jwkSetFlag() cli.Flag { _ = "STUB: not implemented"; return *new(cli.Flag) }
 
-func jwkOutputFormatFlag() cli.Flag {
-	return &cli.StringFlag{
-		Name:    "output-format",
-		Aliases: []string{"O"},
-		Value:   "json",
-		Usage:   "Output format `OUTPUT` (json/pem)",
-	}
-}
+func jwkOutputFormatFlag() cli.Flag { _ = "STUB: not implemented"; return *new(cli.Flag) }
 
-func publicKeyFlag() cli.Flag {
-	return &cli.BoolFlag{
-		Name:    "public-key",
-		Aliases: []string{"p"},
-		Usage:   "Display public key version of the key",
-	}
-}
+func publicKeyFlag() cli.Flag { _ = "STUB: not implemented"; return *new(cli.Flag) }
 
-func makeJwkCmd() *cli.Command {
-	var cmd cli.Command
-	cmd.Name = "jwk"
-	cmd.Usage = "Work with JWK and JWK sets"
-
-	cmd.Subcommands = []*cli.Command{
-		makeJwkGenerateCmd(),
-		makeJwkFormatCmd(),
-	}
-	return &cmd
-}
+func makeJwkCmd() *cli.Command { _ = "STUB: not implemented"; return nil }
 
 func dumpJWKSet(dst io.Writer, keyset jwk.Set, format string, preserve bool) error {
-	if format == "pem" {
-		raws, err := jwk.ExportAll[any](keyset)
-		if err != nil {
-			return fmt.Errorf(`failed to export keys: %w`, err)
-		}
-		buf, err := jwkbb.EncodePEM(raws...)
-		if err != nil {
-			return fmt.Errorf(`failed to format key in PEM format: %w`, err)
-		}
-		if _, err := dst.Write(buf); err != nil {
-			return fmt.Errorf(`failed to write to destination: %w`, err)
-		}
-		return nil
-	}
-
-	if format == "json" {
-		if preserve || keyset.Len() != 1 {
-			if err := dumpJSON(dst, keyset); err != nil {
-				return fmt.Errorf(`failed to marshal keyset into JSON format: %w`, err)
-			}
-		} else {
-			key, _ := keyset.Key(0)
-			if err := dumpJSON(dst, key); err != nil {
-				return fmt.Errorf(`failed to marshal key into JSON format: %w`, err)
-			}
-		}
-		return nil
-	}
-
-	return fmt.Errorf(`invalid JWK format "%s"`, format)
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func makeJwkGenerateCmd() *cli.Command {
-	var crvnames bytes.Buffer
+func makeJwkGenerateCmd() *cli.Command { _ = "STUB: not implemented"; return nil }
 
-	for i, crv := range jwa.EllipticCurveAlgorithms() {
-		if i > 0 {
-			crvnames.WriteByte('/')
-		}
-		crvnames.WriteString(crv.String())
-	}
+// If the caller is about to dump private key material to a
+// terminal — the default when -o is omitted and --public-key
+// is not set — emit a stderr warning. The key still goes to
+// stdout, so pipes (`| jq`, `| tee key.json`) and shell
+// redirections continue to work; only the interactive
+// "dump-to-scrollback" footgun gets a signal.
 
-	var cmd cli.Command
-	cmd.Name = "generate"
-	cmd.Aliases = []string{"gen"}
-	cmd.Usage = "Generate a new JWK private key"
-	cmd.Flags = []cli.Flag{
-		&cli.StringFlag{
-			Name:     "type",
-			Aliases:  []string{"t"},
-			Usage:    "JWK type `TYPE` (RSA/EC/OKP/oct)",
-			Required: true,
-		},
-		&cli.StringFlag{
-			Name:    "curve",
-			Aliases: []string{"c"},
-			Usage:   "Elliptic curve name `CURVE` (" + crvnames.String() + ") for ECDSA and OKP keys",
-		},
-		&cli.StringFlag{
-			Name:  "template",
-			Usage: `Extra values in the JWK as JSON object`,
-		},
-		&cli.IntFlag{
-			Name:    "keysize",
-			Aliases: []string{"s"},
-			Usage:   "Integer `SIZE`: bits for RSA (default 2048), bytes for oct. Ignored for EC and OKP keys.",
-			Value:   2048,
-		},
-		publicKeyFlag(),
-		outputFlag(),
-		jwkOutputFormatFlag(),
-		jwkSetFlag(),
-	}
+func makeJwkFormatCmd() *cli.Command { _ = "STUB: not implemented"; return nil }
 
-	cmd.Action = func(c *cli.Context) error {
-		var rawkey any
-		typ, ok := jwa.LookupKeyType(c.String("type"))
-		if !ok {
-			return fmt.Errorf(`invalid key type %s`, c.String("type"))
-		}
-
-		switch typ {
-		case jwa.RSA():
-			v, err := rsa.GenerateKey(rand.Reader, c.Int("keysize"))
-			if err != nil {
-				return fmt.Errorf(`failed to generate rsa private key: %w`, err)
-			}
-			rawkey = v
-		case jwa.EC():
-			var crvalg jwa.EllipticCurveAlgorithm
-			{
-				v, ok := jwa.LookupEllipticCurveAlgorithm(c.String("curve"))
-				if !ok {
-					return fmt.Errorf(`invalid elliptic curve name %q`, c.String("curve"))
-				}
-				crvalg = v
-			}
-
-			crv, err := ourecdsa.CurveFromAlgorithm(crvalg)
-			if err != nil {
-				return fmt.Errorf(`invalid elliptic curve for ECDSA: %s (expected %s): %w`, crvalg, crvnames.String(), err)
-			}
-
-			v, err := ecdsa.GenerateKey(crv, rand.Reader)
-			if err != nil {
-				return fmt.Errorf(`failed to generate ECDSA private key: %w`, err)
-			}
-			rawkey = v
-		case jwa.OctetSeq():
-			size := c.Int("keysize")
-			if size <= 0 {
-				return fmt.Errorf(`invalid --keysize %d for oct: must be greater than zero (units for oct are bytes; for RSA they are bits)`, size)
-			}
-			octets := make([]byte, size)
-			if _, err := io.ReadFull(rand.Reader, octets); err != nil {
-				return fmt.Errorf(`failed to generate octet seq key: %w`, err)
-			}
-
-			rawkey = octets
-		case jwa.OKP():
-			var crvalg jwa.EllipticCurveAlgorithm
-			{
-				v, ok := jwa.LookupEllipticCurveAlgorithm(c.String("curve"))
-				if !ok {
-					return fmt.Errorf(`invalid elliptic curve name %q`, c.String("curve"))
-				}
-				crvalg = v
-			}
-
-			switch crvalg {
-			case jwa.Ed25519():
-				_, priv, err := ed25519.GenerateKey(rand.Reader)
-				if err != nil {
-					return fmt.Errorf(`failed to generate ed25519 private key: %w`, err)
-				}
-				rawkey = priv
-			case jwa.X25519():
-				priv, err := ecdh.X25519().GenerateKey(rand.Reader)
-				if err != nil {
-					return fmt.Errorf(`failed to generate x25519 private key: %w`, err)
-				}
-				rawkey = priv
-			default:
-				return fmt.Errorf(`invalid elliptic curve for OKP: %s (expected %s/%s)`, crvalg, jwa.Ed25519(), jwa.X25519())
-			}
-		default:
-			return fmt.Errorf(`invalid key type %s`, typ)
-		}
-		var attrs map[string]any
-		if tmpl := c.String("template"); tmpl != "" {
-			if err := json.Unmarshal([]byte(tmpl), &attrs); err != nil {
-				return fmt.Errorf(`failed to unmarshal template: %w`, err)
-			}
-		}
-		key, err := jwk.Import[jwk.Key](rawkey)
-		if err != nil {
-			return fmt.Errorf(`failed to create new JWK from raw key: %w`, err)
-		}
-
-		for k, v := range attrs {
-			if err := key.Set(k, v); err != nil {
-				return fmt.Errorf(`failed to set field %s: %w`, k, err)
-			}
-		}
-
-		keyset := jwk.NewSet()
-		keyset.AddKey(key)
-
-		if c.Bool("public-key") {
-			pubks, err := jwk.PublicSetOf(keyset)
-			if err != nil {
-				return fmt.Errorf(`failed to generate public keys: %w`, err)
-			}
-			keyset = pubks
-		}
-
-		// If the caller is about to dump private key material to a
-		// terminal — the default when -o is omitted and --public-key
-		// is not set — emit a stderr warning. The key still goes to
-		// stdout, so pipes (`| jq`, `| tee key.json`) and shell
-		// redirections continue to work; only the interactive
-		// "dump-to-scrollback" footgun gets a signal.
-		if c.String("output") == "-" && !c.Bool("public-key") && term.IsTerminal(int(os.Stdout.Fd())) {
-			fmt.Fprintln(os.Stderr,
-				"warning: writing private key material to a terminal — leaks into scrollback, "+
-					"shell history, and any session recording. Re-run with -o FILE to write to a "+
-					"0600-mode file, or pipe to another command to suppress this warning.")
-		}
-
-		output, err := getOutput(c.String("output"))
-		if err != nil {
-			return err
-		}
-		defer output.Close()
-
-		return dumpJWKSet(output, keyset, c.String("output-format"), c.Bool("set"))
-	}
-	return &cmd
-}
-
-func makeJwkFormatCmd() *cli.Command {
-	var cmd cli.Command
-	cmd.Name = "format"
-	cmd.Aliases = []string{"fmt"}
-	cmd.Usage = "Format JWK"
-	cmd.Flags = []cli.Flag{
-		publicKeyFlag(),
-		&cli.StringFlag{
-			Name:    "input-format",
-			Aliases: []string{"I"},
-			Value:   "json",
-			Usage:   "Input format `INPUT` (json/pem)",
-		},
-		jwkOutputFormatFlag(),
-		jwkSetFlag(),
-		outputFlag(),
-	}
-
-	// jwx jwk format <file>
-	cmd.Action = func(c *cli.Context) error {
-		if c.Args().Get(0) == "" {
-			cli.ShowCommandHelpAndExit(c, "format", 1)
-		}
-
-		src, err := getSource(c.Args().Get(0))
-		if err != nil {
-			return err
-		}
-		defer src.Close()
-
-		buf, err := io.ReadAll(src)
-		if err != nil {
-			return fmt.Errorf(`failed to read data from source: %w`, err)
-		}
-
-		var options []jwk.ParseOption
-		switch format := c.String("input-format"); format {
-		case "json":
-		case "pem":
-			options = append(options, jwk.WithX509(true))
-		default:
-			return fmt.Errorf(`invalid input format %s`, format)
-		}
-
-		keyset, err := jwk.Parse(buf, options...)
-		if err != nil {
-			return fmt.Errorf(`failed to parse keyset: %w`, err)
-		}
-
-		output, err := getOutput(c.String("output"))
-		if err != nil {
-			return err
-		}
-		defer output.Close()
-
-		if c.Bool("public-key") {
-			pubks, err := jwk.PublicSetOf(keyset)
-			if err != nil {
-				return fmt.Errorf(`failed to generate public keys: %w`, err)
-			}
-			keyset = pubks
-		}
-
-		return dumpJWKSet(output, keyset, c.String("output-format"), c.Bool("set"))
-	}
-	return &cmd
-}
+// jwx jwk format <file>

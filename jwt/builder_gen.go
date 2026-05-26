@@ -3,7 +3,6 @@
 package jwt
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -21,9 +20,7 @@ type Builder struct {
 	claims map[string]any
 }
 
-func NewBuilder() *Builder {
-	return &Builder{}
-}
+func NewBuilder() *Builder { _ = "STUB: not implemented"; return nil }
 
 func (b *Builder) init() {
 	if b.claims == nil {
@@ -31,41 +28,21 @@ func (b *Builder) init() {
 	}
 }
 
-func (b *Builder) Claim(name string, value any) *Builder {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	b.init()
-	b.claims[name] = value
-	return b
-}
+func (b *Builder) Claim(name string, value any) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Audience(v []string) *Builder {
-	return b.Claim(AudienceKey, v)
-}
+func (b *Builder) Audience(v []string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Expiration(v time.Time) *Builder {
-	return b.Claim(ExpirationKey, v)
-}
+func (b *Builder) Expiration(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) IssuedAt(v time.Time) *Builder {
-	return b.Claim(IssuedAtKey, v)
-}
+func (b *Builder) IssuedAt(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Issuer(v string) *Builder {
-	return b.Claim(IssuerKey, v)
-}
+func (b *Builder) Issuer(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) JwtID(v string) *Builder {
-	return b.Claim(JwtIDKey, v)
-}
+func (b *Builder) JwtID(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) NotBefore(v time.Time) *Builder {
-	return b.Claim(NotBeforeKey, v)
-}
+func (b *Builder) NotBefore(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Subject(v string) *Builder {
-	return b.Claim(SubjectKey, v)
-}
+func (b *Builder) Subject(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
 // Build creates a new token based on the claims that the builder has received
 // so far. If a claim cannot be set, then the method returns a nil Token with
@@ -73,16 +50,4 @@ func (b *Builder) Subject(v string) *Builder {
 //
 // Once `Build()` is called, all claims are cleared from the Builder, and the
 // Builder can be reused to build another token
-func (b *Builder) Build() (Token, error) {
-	b.mu.Lock()
-	claims := b.claims
-	b.claims = nil
-	b.mu.Unlock()
-	tok := New()
-	for k, v := range claims {
-		if err := tok.Set(k, v); err != nil {
-			return nil, fmt.Errorf(`failed to set claim %q: %w`, k, err)
-		}
-	}
-	return tok, nil
-}
+func (b *Builder) Build() (Token, error) { _ = "STUB: not implemented"; return *new(Token), nil }

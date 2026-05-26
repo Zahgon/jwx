@@ -16,27 +16,20 @@ type Pool[T any] struct {
 // return the modified instance of T. This is required for cases when you reset operations
 // can modify the underlying data structure, such as slices or maps.
 func New[T any](allocator func() T, destructor func(T) T) *Pool[T] {
-	return &Pool[T]{
-		pool: sync.Pool{
-			New: func() any {
-				return allocator()
-			},
-		},
-		destructor: destructor,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Get retrieves an item of type T from the pool.
 func (p *Pool[T]) Get() T {
+	_ = "STUB: not implemented"
 	//nolint:forcetypeassert
-	return p.pool.Get().(T)
+	return *new(T)
 }
 
 // Put returns an item of type T to the pool.
 // The item is first processed by the destructor function to ensure it is in a clean state.
-func (p *Pool[T]) Put(item T) {
-	p.pool.Put(p.destructor(item))
-}
+func (p *Pool[T]) Put(item T) { _ = "STUB: not implemented"; return }
 
 // SlicePool is a specialized pool for slices of type T. It is identical to Pool[T] but
 // provides additional functionality to get slices with a specific capacity.
@@ -45,26 +38,12 @@ type SlicePool[T any] struct {
 }
 
 func NewSlicePool[T any](allocator func() []T, destructor func([]T) []T) SlicePool[T] {
-	return SlicePool[T]{
-		pool: New(allocator, destructor),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p SlicePool[T]) Get() []T {
-	return p.pool.Get()
-}
+func (p SlicePool[T]) Get() []T { _ = "STUB: not implemented"; return nil }
 
-func (p SlicePool[T]) GetCapacity(capacity int) []T {
-	if capacity <= 0 {
-		return p.Get()
-	}
-	s := p.Get()
-	if cap(s) < capacity {
-		s = make([]T, 0, capacity)
-	}
-	return s
-}
+func (p SlicePool[T]) GetCapacity(capacity int) []T { _ = "STUB: not implemented"; return nil }
 
-func (p SlicePool[T]) Put(s []T) {
-	p.pool.Put(s)
-}
+func (p SlicePool[T]) Put(s []T) { _ = "STUB: not implemented"; return }

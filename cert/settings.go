@@ -1,10 +1,7 @@
 package cert
 
 import (
-	"fmt"
 	"sync/atomic"
-
-	"github.com/lestrrat-go/option/v3"
 )
 
 const (
@@ -31,53 +28,15 @@ func init() {
 // validation (for example, a negative [WithMaxChainLength] or
 // [WithMaxCertificateSize]).
 func Settings(options ...GlobalOption) error {
+	_ = "STUB: not implemented"
 	// Validate first so the call is all-or-nothing on error.
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identMaxChainLength{}:
-			if v := option.MustGet[int](opt); v < 0 {
-				return fmt.Errorf(`cert.Settings: WithMaxChainLength must be greater than or equal to zero, got %d`, v)
-			}
-		case identMaxCertificateSize{}:
-			if v := option.MustGet[int64](opt); v < 0 {
-				return fmt.Errorf(`cert.Settings: WithMaxCertificateSize must be greater than or equal to zero, got %d`, v)
-			}
-		}
-	}
-
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identMaxChainLength{}:
-			maxChainLength.Store(int64(option.MustGet[int](opt)))
-		case identMaxCertificateSize{}:
-			maxCertificateSize.Store(option.MustGet[int64](opt))
-		}
-	}
 	return nil
 }
 
-func currentMaxChainLength() int64 {
-	return maxChainLength.Load()
-}
+func currentMaxChainLength() int64 { _ = "STUB: not implemented"; return 0 }
 
-func currentMaxCertificateSize() int64 {
-	return maxCertificateSize.Load()
-}
+func currentMaxCertificateSize() int64 { _ = "STUB: not implemented"; return 0 }
 
-func validateChainLength(n int) error {
-	limit := currentMaxChainLength()
-	if limit == 0 || int64(n) <= limit {
-		return nil
-	}
+func validateChainLength(n int) error { _ = "STUB: not implemented"; return nil }
 
-	return fmt.Errorf(`certificate chain length %d exceeds maximum allowed length of %d`, n, limit)
-}
-
-func validateCertificateSize(n int) error {
-	limit := currentMaxCertificateSize()
-	if limit == 0 || int64(n) <= limit {
-		return nil
-	}
-
-	return fmt.Errorf(`certificate size %d exceeds maximum allowed size of %d bytes`, n, limit)
-}
+func validateCertificateSize(n int) error { _ = "STUB: not implemented"; return nil }

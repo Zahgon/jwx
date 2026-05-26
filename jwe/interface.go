@@ -35,13 +35,21 @@ type KeyEncryptFunc struct {
 	Encrypt func([]byte) ([]byte, error)
 }
 
-func (f KeyEncryptFunc) Algorithm() jwa.KeyEncryptionAlgorithm { return f.Alg }
-func (f KeyEncryptFunc) EncryptKey(cek []byte) ([]byte, error) { return f.Encrypt(cek) }
+func (f KeyEncryptFunc) Algorithm() jwa.KeyEncryptionAlgorithm {
+	_ = "STUB: not implemented"
+	return *new(jwa.KeyEncryptionAlgorithm)
+}
+func (f KeyEncryptFunc) EncryptKey(cek []byte) ([]byte, error) {
+	_ = "STUB: not implemented"
+	return nil,
 
-// KeyIDer is an interface for things that can return a key ID.
-//
-// As of this writing, this is solely used to identify KeyEncrypter
-// objects that also carry a key ID on its own.
+		// KeyIDer is an interface for things that can return a key ID.
+		//
+		// As of this writing, this is solely used to identify KeyEncrypter
+		// objects that also carry a key ID on its own.
+		nil
+}
+
 type KeyIDer interface {
 	KeyID() (string, bool)
 }
@@ -103,7 +111,8 @@ type KeyDecrypter interface {
 type KeyDecryptFunc func(alg jwa.KeyEncryptionAlgorithm, encryptedKey []byte, recipient Recipient, message *Message) ([]byte, error)
 
 func (f KeyDecryptFunc) DecryptKey(alg jwa.KeyEncryptionAlgorithm, encryptedKey []byte, recipient Recipient, message *Message) ([]byte, error) {
-	return f(alg, encryptedKey, recipient, message)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Recipient holds the encrypted key and hints to decrypt the key

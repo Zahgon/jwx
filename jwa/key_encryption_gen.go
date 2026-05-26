@@ -3,11 +3,9 @@
 package jwa
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/lestrrat-go/jwx/v4/internal/tokens"
-	"github.com/lestrrat-go/option/v3"
 )
 
 func init() {
@@ -49,135 +47,157 @@ func init() {
 
 // A128GCMKW returns an object representing AES-GCM key wrap (128) key encryption algorithm.
 func A128GCMKW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.A128GCMKW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // A128KW returns an object representing AES key wrap (128) key encryption algorithm.
 func A128KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.A128KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // A192GCMKW returns an object representing AES-GCM key wrap (192) key encryption algorithm.
 func A192GCMKW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.A192GCMKW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // A192KW returns an object representing AES key wrap (192) key encryption algorithm.
 func A192KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.A192KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // A256GCMKW returns an object representing AES-GCM key wrap (256) key encryption algorithm.
 func A256GCMKW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.A256GCMKW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // A256KW returns an object representing AES key wrap (256) key encryption algorithm.
 func A256KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.A256KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // DIRECT returns an object representing Direct key encryption algorithm.
 func DIRECT() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.DIRECT)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // ECDH_ES returns an object representing ECDH-ES key encryption algorithm.
 func ECDH_ES() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.ECDH_ES)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // ECDH_ES_A128KW returns an object representing ECDH-ES + AES key wrap (128) key encryption algorithm.
 func ECDH_ES_A128KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.ECDH_ES_A128KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // ECDH_ES_A192KW returns an object representing ECDH-ES + AES key wrap (192) key encryption algorithm.
 func ECDH_ES_A192KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.ECDH_ES_A192KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // ECDH_ES_A256KW returns an object representing ECDH-ES + AES key wrap (256) key encryption algorithm.
 func ECDH_ES_A256KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.ECDH_ES_A256KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // HPKE_0_KE returns an object representing HPKE-0-KE key encryption (DHKEM(P-256) + HKDF-SHA256 + AES-128-GCM). Based on draft-ietf-jose-hpke-encrypt-16: API is not yet stable.
 func HPKE_0_KE() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.HPKE_0_KE)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // HPKE_1_KE returns an object representing HPKE-1-KE key encryption (DHKEM(P-384) + HKDF-SHA384 + AES-256-GCM). Based on draft-ietf-jose-hpke-encrypt-16: API is not yet stable.
 func HPKE_1_KE() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.HPKE_1_KE)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // HPKE_2_KE returns an object representing HPKE-2-KE key encryption (DHKEM(P-521) + HKDF-SHA512 + AES-256-GCM). Based on draft-ietf-jose-hpke-encrypt-16: API is not yet stable.
 func HPKE_2_KE() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.HPKE_2_KE)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // HPKE_3_KE returns an object representing HPKE-3-KE key encryption (DHKEM(X25519) + HKDF-SHA256 + AES-128-GCM). Based on draft-ietf-jose-hpke-encrypt-16: API is not yet stable.
 func HPKE_3_KE() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.HPKE_3_KE)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // HPKE_4_KE returns an object representing HPKE-4-KE key encryption (DHKEM(X25519) + HKDF-SHA256 + ChaCha20Poly1305). Based on draft-ietf-jose-hpke-encrypt-16: API is not yet stable.
 func HPKE_4_KE() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.HPKE_4_KE)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // HPKE_7_KE returns an object representing HPKE-7-KE key encryption (DHKEM(P-256) + HKDF-SHA256 + AES-256-GCM). Based on draft-ietf-jose-hpke-encrypt-16: API is not yet stable.
 func HPKE_7_KE() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.HPKE_7_KE)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // PBES2_HS256_A128KW returns an object representing PBES2 + HMAC-SHA256 + AES key wrap (128) key encryption algorithm.
 func PBES2_HS256_A128KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.PBES2_HS256_A128KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // PBES2_HS384_A192KW returns an object representing PBES2 + HMAC-SHA384 + AES key wrap (192) key encryption algorithm.
 func PBES2_HS384_A192KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.PBES2_HS384_A192KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // PBES2_HS512_A256KW returns an object representing PBES2 + HMAC-SHA512 + AES key wrap (256) key encryption algorithm.
 func PBES2_HS512_A256KW() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.PBES2_HS512_A256KW)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // RSA1_5 returns an object representing RSA-PKCS1v1.5 key encryption algorithm.
 func RSA1_5() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.RSA1_5)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // RSA_OAEP returns an object representing RSA-OAEP-SHA1 key encryption algorithm.
 func RSA_OAEP() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.RSA_OAEP)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // RSA_OAEP_256 returns an object representing RSA-OAEP-SHA256 key encryption algorithm.
 func RSA_OAEP_256() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.RSA_OAEP_256)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // RSA_OAEP_384 returns an object representing RSA-OAEP-SHA384 key encryption algorithm.
 func RSA_OAEP_384() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.RSA_OAEP_384)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // RSA_OAEP_512 returns an object representing RSA-OAEP-SHA512 key encryption algorithm.
 func RSA_OAEP_512() KeyEncryptionAlgorithm {
-	return lookupBuiltinKeyEncryptionAlgorithm(tokens.RSA_OAEP_512)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 func lookupBuiltinKeyEncryptionAlgorithm(name string) KeyEncryptionAlgorithm {
-	v, ok := lookupAlgorithm(algKindKeyEncryption, name)
-	if !ok {
-		panic(fmt.Sprintf(`jwa: KeyEncryptionAlgorithm %q not registered`, name))
-	}
-	return v.(KeyEncryptionAlgorithm)
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // KeyEncryptionAlgorithm represents the various encryption algorithms as described in https://tools.ietf.org/html/rfc7518#section-4.1
@@ -188,46 +208,33 @@ type KeyEncryptionAlgorithm struct {
 }
 
 func (s KeyEncryptionAlgorithm) String() string {
-	return s.name
+	_ = "STUB: not implemented"
+
+	// IsDeprecated returns true if the KeyEncryptionAlgorithm object is deprecated.
+	return ""
 }
 
-// IsDeprecated returns true if the KeyEncryptionAlgorithm object is deprecated.
-func (s KeyEncryptionAlgorithm) IsDeprecated() bool {
-	return s.deprecated
-}
+func (s KeyEncryptionAlgorithm) IsDeprecated() bool { _ = "STUB: not implemented"; return false }
 
 // IsSymmetric returns true if the KeyEncryptionAlgorithm object is symmetric. Symmetric algorithms use the same key for both encryption and decryption.
-func (s KeyEncryptionAlgorithm) IsSymmetric() bool {
-	return s.isSymmetric
-}
+func (s KeyEncryptionAlgorithm) IsSymmetric() bool { _ = "STUB: not implemented"; return false }
 
 // EmptyKeyEncryptionAlgorithm returns an empty KeyEncryptionAlgorithm object, used as a zero value.
 func EmptyKeyEncryptionAlgorithm() KeyEncryptionAlgorithm {
-	return KeyEncryptionAlgorithm{}
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // NewKeyEncryptionAlgorithm creates a new KeyEncryptionAlgorithm object with the given name.
 func NewKeyEncryptionAlgorithm(name string, options ...NewKeyEncryptionAlgorithmOption) KeyEncryptionAlgorithm {
-	var deprecated bool
-	var isSymmetric bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identIsSymmetric{}:
-			isSymmetric = option.MustGet[bool](opt)
-		case identDeprecated{}:
-			deprecated = option.MustGet[bool](opt)
-		}
-	}
-	return KeyEncryptionAlgorithm{name: name, deprecated: deprecated, isSymmetric: isSymmetric}
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm)
 }
 
 // LookupKeyEncryptionAlgorithm returns the KeyEncryptionAlgorithm object for the given name.
 func LookupKeyEncryptionAlgorithm(name string) (KeyEncryptionAlgorithm, bool) {
-	if v, ok := lookupAlgorithm(algKindKeyEncryption, name); ok {
-		return v.(KeyEncryptionAlgorithm), true
-	}
-	var zero KeyEncryptionAlgorithm
-	return zero, false
+	_ = "STUB: not implemented"
+	return *new(KeyEncryptionAlgorithm), false
 }
 
 // RegisterKeyEncryptionAlgorithm registers a new KeyEncryptionAlgorithm. The signature value must be immutable
@@ -243,47 +250,28 @@ func LookupKeyEncryptionAlgorithm(name string) (KeyEncryptionAlgorithm, bool) {
 // different kind returns an error naming both the existing and the requested
 // kind.
 func RegisterKeyEncryptionAlgorithm(algorithms ...KeyEncryptionAlgorithm) error {
-	for _, alg := range algorithms {
-		if err := registerAlgorithm(algKindKeyEncryption, alg); err != nil {
-			return err
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // UnregisterKeyEncryptionAlgorithm unregisters a KeyEncryptionAlgorithm from its known database.
 // Non-existent entries, as well as built-in algorithms will silently be ignored.
 func UnregisterKeyEncryptionAlgorithm(algorithms ...KeyEncryptionAlgorithm) {
-	for _, alg := range algorithms {
-		unregisterAlgorithm(algKindKeyEncryption, alg.String())
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // KeyEncryptionAlgorithms returns a list of all available values for KeyEncryptionAlgorithm.
-func KeyEncryptionAlgorithms() []KeyEncryptionAlgorithm {
-	raw := listAlgorithmsByKind(algKindKeyEncryption)
-	out := make([]KeyEncryptionAlgorithm, len(raw))
-	for i, alg := range raw {
-		out[i] = alg.(KeyEncryptionAlgorithm)
-	}
-	return out
-}
+func KeyEncryptionAlgorithms() []KeyEncryptionAlgorithm { _ = "STUB: not implemented"; return nil }
 
 // MarshalJSON serializes the KeyEncryptionAlgorithm object to a JSON string.
 func (s KeyEncryptionAlgorithm) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // UnmarshalJSON deserializes the JSON string to a KeyEncryptionAlgorithm object.
 func (s *KeyEncryptionAlgorithm) UnmarshalJSON(data []byte) error {
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		return fmt.Errorf(`failed to unmarshal KeyEncryptionAlgorithm: %w`, err)
-	}
-	v, ok := LookupKeyEncryptionAlgorithm(name)
-	if !ok {
-		return fmt.Errorf(`unknown KeyEncryptionAlgorithm: %q`, name)
-	}
-	*s = v
+	_ = "STUB: not implemented"
 	return nil
 }

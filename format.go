@@ -1,10 +1,7 @@
 package jwx
 
 import (
-	"bytes"
 	"encoding/json"
-
-	"github.com/lestrrat-go/jwx/v4/internal/tokens"
 )
 
 type FormatKind int
@@ -50,55 +47,21 @@ type formatHint struct {
 // This function requires an extra parsing of the payload, and therefore
 // may be inefficient if you call it every time before parsing.
 func GuessFormat(payload []byte) FormatKind {
+	_ = "STUB: not implemented"
 	// The check against kty, keys, and aud are something this library
 	// made up. for the distinctions between JWE and JWS, we used
 	// https://datatracker.ietf.org/doc/html/rfc7516#section-9.
 	//
 	// The above RFC described several ways to distinguish between
 	// a JWE and JWS JSON, but we're only using one of them
-
-	payload = bytes.TrimSpace(payload)
-	if len(payload) <= 0 {
-		return UnknownFormat
-	}
-
-	if payload[0] != tokens.OpenCurlyBracket {
-		// Compact format. It's probably a JWS or JWE
-		sep := []byte{tokens.Period} // I want to const this :/
-
-		// Note: this counts the number of occurrences of the
-		// separator, but the RFC talks about the number of segments.
-		// number of tokens.Period == segments - 1, so that's why we have 2 and 4 here
-		switch count := bytes.Count(payload, sep); count {
-		case 2:
-			return JWS
-		case 4:
-			return JWE
-		default:
-			return InvalidFormat
-		}
-	}
-
-	// If we got here, we probably have JSON.
-	var h formatHint
-	if err := json.Unmarshal(payload, &h); err != nil {
-		return UnknownFormat
-	}
-
-	if h.Audience != nil {
-		return JWT
-	}
-	if h.KeyType != nil {
-		return JWK
-	}
-	if h.Keys != nil {
-		return JWKS
-	}
-	if h.Ciphertext != nil {
-		return JWE
-	}
-	if h.Signatures != nil && h.Payload != nil {
-		return JWS
-	}
-	return UnknownFormat
+	return *new(FormatKind)
 }
+
+// Compact format. It's probably a JWS or JWE
+// I want to const this :/
+
+// Note: this counts the number of occurrences of the
+// separator, but the RFC talks about the number of segments.
+// number of tokens.Period == segments - 1, so that's why we have 2 and 4 here
+
+// If we got here, we probably have JSON.

@@ -2,27 +2,19 @@ package json
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
-	"fmt"
 	"io"
 
 	"sync/atomic"
-
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
 )
 
 var globalUseNumber atomic.Bool
 
 // SetUseNumber controls whether JSON numbers in private/custom fields
 // should be decoded as json.Number instead of float64.
-func SetUseNumber(v bool) {
-	globalUseNumber.Store(v)
-}
+func SetUseNumber(v bool) { _ = "STUB: not implemented"; return }
 
 // GetUseNumber returns the current UseNumber setting.
-func GetUseNumber() bool {
-	return globalUseNumber.Load()
-}
+func GetUseNumber() bool { _ = "STUB: not implemented"; return false }
 
 type (
 	Decoder    = jsontext.Decoder
@@ -30,101 +22,40 @@ type (
 	RawMessage = jsontext.Value
 )
 
-func Engine() string {
-	return "encoding/json/v2"
-}
+func Engine() string { _ = "STUB: not implemented"; return "" }
 
-func NewDecoder(r io.Reader) *jsontext.Decoder {
-	return jsontext.NewDecoder(r)
-}
+func NewDecoder(r io.Reader) *jsontext.Decoder { _ = "STUB: not implemented"; return nil }
 
-func NewEncoder(w io.Writer) *jsontext.Encoder {
-	return jsontext.NewEncoder(w)
-}
+func NewEncoder(w io.Writer) *jsontext.Encoder { _ = "STUB: not implemented"; return nil }
 
-func Marshal(v any) ([]byte, error) {
-	return jsonv2.Marshal(v)
-}
+func Marshal(v any) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
-	b, err := jsonv2.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-	var val jsontext.Value = b
-	if err := val.Indent(jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent)); err != nil {
-		return nil, err
-	}
-	return []byte(val), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func Unmarshal(b []byte, v any) error {
-	return jsonv2.Unmarshal(b, v)
-}
+func Unmarshal(b []byte, v any) error { _ = "STUB: not implemented"; return nil }
 
-func MarshalEncode(enc *jsontext.Encoder, v any) error {
-	return jsonv2.MarshalEncode(enc, v)
-}
+func MarshalEncode(enc *jsontext.Encoder, v any) error { _ = "STUB: not implemented"; return nil }
 
-func UnmarshalDecode(dec *jsontext.Decoder, v any) error {
-	return jsonv2.UnmarshalDecode(dec, v)
-}
+func UnmarshalDecode(dec *jsontext.Decoder, v any) error { _ = "STUB: not implemented"; return nil }
 
-func AssignNextBytesToken(dst *[]byte, dec *Decoder) error {
-	tok, err := dec.ReadToken()
-	if err != nil {
-		return fmt.Errorf(`error reading next value: %w`, err)
-	}
-	if tok.Kind() != jsontext.KindString {
-		return fmt.Errorf(`expected string token for base64 value, got %s`, tok.Kind())
-	}
+func AssignNextBytesToken(dst *[]byte, dec *Decoder) error { _ = "STUB: not implemented"; return nil }
 
-	buf, err := base64.DecodeString(tok.String())
-	if err != nil {
-		return fmt.Errorf(`expected base64 encoded []byte`)
-	}
-	*dst = buf
-	return nil
-}
-
-func shouldRejectNullStrings(dc DecodeCtx) bool {
-	if dc != nil {
-		if sdc, ok := dc.(StrictStringDecodeCtx); ok {
-			return sdc.StrictStrings()
-		}
-	}
-	return false
-}
+func shouldRejectNullStrings(dc DecodeCtx) bool { _ = "STUB: not implemented"; return false }
 
 // ReadNextStringToken reads the next JSON token from the decoder and
 // returns it as a string. By default, JSON null is silently accepted as "".
 // When the given DecodeCtx implements StrictStringDecodeCtx and StrictStrings()
 // returns true, null values are rejected.
 func ReadNextStringToken(dec *Decoder, dc DecodeCtx) (string, error) {
-	tok, err := dec.ReadToken()
-	if err != nil {
-		return "", fmt.Errorf(`error reading next value: %w`, err)
-	}
-
-	switch tok.Kind() {
-	case jsontext.KindNull:
-		if shouldRejectNullStrings(dc) {
-			return "", fmt.Errorf(`error reading next value: expected string, got null`)
-		}
-		return "", nil
-	case jsontext.KindString:
-		return tok.String(), nil
-	default:
-		return "", fmt.Errorf(`error reading next value: expected string, got %s`, tok.Kind())
-	}
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 func AssignNextStringToken(dst **string, dec *Decoder, dc DecodeCtx) error {
-	val, err := ReadNextStringToken(dec, dc)
-	if err != nil {
-		return err
-	}
-	*dst = &val
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -140,23 +71,13 @@ func AssignNextStringToken(dst **string, dec *Decoder, dc DecodeCtx) error {
 var FlattenAudience uint32
 
 func MarshalAudience(aud []string, flatten bool) ([]byte, error) {
-	var val any
-	if len(aud) == 1 && flatten {
-		val = aud[0]
-	} else {
-		val = aud
-	}
-	return Marshal(val)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func EncodeAudience(enc *Encoder, aud []string, flatten bool) error {
-	var val any
-	if len(aud) == 1 && flatten {
-		val = aud[0]
-	} else {
-		val = aud
-	}
-	return MarshalEncode(enc, val)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DecodeCtx is an interface for objects that needs that extra something
@@ -185,20 +106,15 @@ type decodeCtx struct {
 }
 
 // NewDecodeCtx creates a new DecodeCtx with the given registry.
-func NewDecodeCtx(r *Registry) DecodeCtx {
-	return &decodeCtx{registry: r}
-}
+func NewDecodeCtx(r *Registry) DecodeCtx { _ = "STUB: not implemented"; return *new(DecodeCtx) }
 
 // NewDecodeCtxStrictStrings creates a new DecodeCtx with the given registry
 // and strict string rejection flag.
 func NewDecodeCtxStrictStrings(r *Registry, strict bool) DecodeCtx {
-	return &decodeCtx{registry: r, strictStrings: strict}
+	_ = "STUB: not implemented"
+	return *new(DecodeCtx)
 }
 
-func (dc *decodeCtx) Registry() *Registry {
-	return dc.registry
-}
+func (dc *decodeCtx) Registry() *Registry { _ = "STUB: not implemented"; return nil }
 
-func (dc *decodeCtx) StrictStrings() bool {
-	return dc.strictStrings
-}
+func (dc *decodeCtx) StrictStrings() bool { _ = "STUB: not implemented"; return false }

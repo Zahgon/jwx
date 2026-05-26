@@ -21,12 +21,7 @@ type CaseConfig struct {
 }
 
 // receiverName returns the configured receiver name, defaulting to "h".
-func (c CaseConfig) receiverName() string {
-	if c.ReceiverName == "" {
-		return "h"
-	}
-	return c.ReceiverName
-}
+func (c CaseConfig) receiverName() string { _ = "STUB: not implemented"; return "" }
 
 // MethodConfig holds configuration for full method generators.
 type MethodConfig struct {

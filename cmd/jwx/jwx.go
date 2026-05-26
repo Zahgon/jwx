@@ -2,11 +2,9 @@ package main
 
 import (
 	"cmp"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"slices"
 
 	"github.com/lestrrat-go/jwx/v4/jwk"
@@ -19,35 +17,13 @@ type dummyWriteCloser struct {
 	io.Writer
 }
 
-func (*dummyWriteCloser) Close() error {
-	return nil
-}
+func (*dummyWriteCloser) Close() error { _ = "STUB: not implemented"; return nil }
 
-func outputFlag() cli.Flag {
-	return &cli.StringFlag{
-		Name:    "output",
-		Aliases: []string{"o"},
-		Usage:   "Write output to `FILE` (default \"-\" for stdout). For commands that emit private key material, prefer an explicit -o FILE: file output is created with mode 0600 and truncated on each run, while stdout has no such protection.",
-		Value:   "-",
-	}
-}
+func outputFlag() cli.Flag { _ = "STUB: not implemented"; return *new(cli.Flag) }
 
-func keyFlag(use string) cli.Flag {
-	return &cli.StringFlag{
-		Name:     "key",
-		Aliases:  []string{"k"},
-		Usage:    "`FILE` containing the key to " + use + " with",
-		Required: true,
-	}
-}
+func keyFlag(use string) cli.Flag { _ = "STUB: not implemented"; return *new(cli.Flag) }
 
-func keyFormatFlag() cli.Flag {
-	return &cli.StringFlag{
-		Name:  "key-format",
-		Usage: "JWK format: json or pem",
-		Value: "json",
-	}
-}
+func keyFormatFlag() cli.Flag { _ = "STUB: not implemented"; return *new(cli.Flag) }
 
 func main() {
 	var app cli.App
@@ -64,67 +40,24 @@ func main() {
 	}
 }
 
-func dumpJSON(dst io.Writer, v any) error {
-	buf, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		return fmt.Errorf(`failed to serialize to JSON: %w`, err)
-	}
-	dst.Write(buf)
-	return nil
-}
+func dumpJSON(dst io.Writer, v any) error { _ = "STUB: not implemented"; return nil }
 
 func getSource(filename string) (io.ReadCloser, error) {
-	var src io.ReadCloser
-	if filename == "-" {
-		src = io.NopCloser(os.Stdin)
-	} else {
-		if filename == "" {
-			return nil, fmt.Errorf(`filename required (use "-" to read from stdin)`)
-		}
-		f, err := os.Open(filename)
-		if err != nil {
-			return nil, fmt.Errorf(`failed to open file %s: %w`, filename, err)
-		}
-		src = f
-	}
-	return src, nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }
 
 func getOutput(filename string) (io.WriteCloser, error) {
-	var output io.WriteCloser
-	switch filename {
-	case "-":
-		output = &dummyWriteCloser{os.Stdout}
-	case "":
-		return nil, fmt.Errorf(`output must be a file name, or "-" for STDOUT`)
-	default:
-		// Output may be private key material (jwk generate), decrypted
-		// plaintext (jwe decrypt), or an extracted JWS payload (jws verify).
-		// Use 0600 and always truncate so a shorter re-run cannot leak
-		// tail bytes left over from a previous invocation.
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
-		if err != nil {
-			return nil, fmt.Errorf(`failed to create file %s: %w`, filename, err)
-		}
-		output = f
-	}
-
-	return output, nil
+	_ = "STUB: not implemented"
+	return *new(io.WriteCloser), nil
 }
 
-func getKeyFile(keyfile, format string) (jwk.Set, error) {
-	var keyoptions []jwk.ParseOption
-	switch format {
-	case "json":
-	case "pem":
-		keyoptions = append(keyoptions, jwk.WithX509(true))
-	default:
-		return nil, fmt.Errorf(`invalid JWK format "%s"`, format)
-	}
-	keyset, err := jwk.ParseFS(os.DirFS(filepath.Dir(keyfile)), filepath.Base(keyfile), keyoptions...)
-	if err != nil {
-		return nil, fmt.Errorf(`failed to parse key: %w`, err)
-	}
+// Output may be private key material (jwk generate), decrypted
+// plaintext (jwe decrypt), or an extracted JWS payload (jws verify).
+// Use 0600 and always truncate so a shorter re-run cannot leak
+// tail bytes left over from a previous invocation.
 
-	return keyset, nil
+func getKeyFile(keyfile, format string) (jwk.Set, error) {
+	_ = "STUB: not implemented"
+	return *new(jwk.Set), nil
 }

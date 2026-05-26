@@ -3,16 +3,10 @@
 package jwt
 
 import (
-	"bytes"
-	"cmp"
-	"fmt"
 	"iter"
-	"slices"
 	"sync"
 	"time"
 
-	"github.com/lestrrat-go/jwx/v4/internal/json"
-	"github.com/lestrrat-go/jwx/v4/internal/pool"
 	"github.com/lestrrat-go/jwx/v4/jwt/internal/types"
 )
 
@@ -105,249 +99,49 @@ type stdToken struct {
 // New creates a standard token, with minimal knowledge of
 // possible claims. Standard claims include"aud", "exp", "iat", "iss", "jti", "nbf" and "sub".
 // Convenience accessors are provided for these standard claims
-func New() Token {
-	return &stdToken{
-		privateClaims: make(map[string]any),
-		options:       DefaultOptionSet(),
-	}
-}
+func New() Token { _ = "STUB: not implemented"; return *new(Token) }
 
-func (t *stdToken) Options() *TokenOptionSet {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	return &t.options
-}
+func (t *stdToken) Options() *TokenOptionSet { _ = "STUB: not implemented"; return nil }
 
-func (t *stdToken) Has(name string) bool {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	switch name {
-	case AudienceKey:
-		return t.audience != nil
-	case ExpirationKey:
-		return t.expiration != nil
-	case IssuedAtKey:
-		return t.issuedAt != nil
-	case IssuerKey:
-		return t.issuer != nil
-	case JwtIDKey:
-		return t.jwtID != nil
-	case NotBeforeKey:
-		return t.notBefore != nil
-	case SubjectKey:
-		return t.subject != nil
-	default:
-		_, ok := t.privateClaims[name]
-		return ok
-	}
-}
+func (t *stdToken) Has(name string) bool { _ = "STUB: not implemented"; return false }
 
 func (t *stdToken) Field(name string) (any, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	switch name {
-	case AudienceKey:
-		if t.audience == nil {
-			return nil, false
-		}
-		return t.audience.Get(), true
-	case ExpirationKey:
-		if t.expiration == nil {
-			return nil, false
-		}
-		return t.expiration.Get(), true
-	case IssuedAtKey:
-		if t.issuedAt == nil {
-			return nil, false
-		}
-		return t.issuedAt.Get(), true
-	case IssuerKey:
-		if t.issuer == nil {
-			return nil, false
-		}
-		return *(t.issuer), true
-	case JwtIDKey:
-		if t.jwtID == nil {
-			return nil, false
-		}
-		return *(t.jwtID), true
-	case NotBeforeKey:
-		if t.notBefore == nil {
-			return nil, false
-		}
-		return t.notBefore.Get(), true
-	case SubjectKey:
-		if t.subject == nil {
-			return nil, false
-		}
-		return *(t.subject), true
-	default:
-		v, ok := t.privateClaims[name]
-		return v, ok
-	}
+	_ = "STUB: not implemented"
+	return *new(any), false
 }
 
-func (t *stdToken) Remove(key string) error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	switch key {
-	case AudienceKey:
-		t.audience = nil
-	case ExpirationKey:
-		t.expiration = nil
-	case IssuedAtKey:
-		t.issuedAt = nil
-	case IssuerKey:
-		t.issuer = nil
-	case JwtIDKey:
-		t.jwtID = nil
-	case NotBeforeKey:
-		t.notBefore = nil
-	case SubjectKey:
-		t.subject = nil
-	default:
-		delete(t.privateClaims, key)
-	}
-	return nil
-}
+func (t *stdToken) Remove(key string) error { _ = "STUB: not implemented"; return nil }
 
-func (t *stdToken) Set(name string, value any) error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	return t.setNoLock(name, value)
-}
+func (t *stdToken) Set(name string, value any) error { _ = "STUB: not implemented"; return nil }
 
-func (t *stdToken) DecodeCtx() DecodeCtx {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	return t.dc
-}
+func (t *stdToken) DecodeCtx() DecodeCtx { _ = "STUB: not implemented"; return *new(DecodeCtx) }
 
-func (t *stdToken) SetDecodeCtx(v DecodeCtx) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	t.dc = v
-}
+func (t *stdToken) SetDecodeCtx(v DecodeCtx) { _ = "STUB: not implemented"; return }
 
-func (t *stdToken) setNoLock(name string, value any) error {
-	switch name {
-	case AudienceKey:
-		var acceptor types.StringList
-		if err := acceptor.Accept(value); err != nil {
-			return fmt.Errorf(`invalid value for %s key: %w`, AudienceKey, err)
-		}
-		t.audience = acceptor
-		return nil
-	case ExpirationKey:
-		var acceptor types.NumericDate
-		if err := acceptor.Accept(value); err != nil {
-			return fmt.Errorf(`invalid value for %s key: %w`, ExpirationKey, err)
-		}
-		t.expiration = &acceptor
-		return nil
-	case IssuedAtKey:
-		var acceptor types.NumericDate
-		if err := acceptor.Accept(value); err != nil {
-			return fmt.Errorf(`invalid value for %s key: %w`, IssuedAtKey, err)
-		}
-		t.issuedAt = &acceptor
-		return nil
-	case IssuerKey:
-		if v, ok := value.(string); ok {
-			t.issuer = &v
-			return nil
-		}
-		return fmt.Errorf(`invalid value for %s key: %T`, IssuerKey, value)
-	case JwtIDKey:
-		if v, ok := value.(string); ok {
-			t.jwtID = &v
-			return nil
-		}
-		return fmt.Errorf(`invalid value for %s key: %T`, JwtIDKey, value)
-	case NotBeforeKey:
-		var acceptor types.NumericDate
-		if err := acceptor.Accept(value); err != nil {
-			return fmt.Errorf(`invalid value for %s key: %w`, NotBeforeKey, err)
-		}
-		t.notBefore = &acceptor
-		return nil
-	case SubjectKey:
-		if v, ok := value.(string); ok {
-			t.subject = &v
-			return nil
-		}
-		return fmt.Errorf(`invalid value for %s key: %T`, SubjectKey, value)
-	default:
-		if t.privateClaims == nil {
-			t.privateClaims = map[string]any{}
-		}
-		t.privateClaims[name] = value
-	}
-	return nil
-}
+func (t *stdToken) setNoLock(name string, value any) error { _ = "STUB: not implemented"; return nil }
 
-func (t *stdToken) Audience() ([]string, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.audience != nil {
-		return t.audience.Get(), true
-	}
-	return nil, false
-}
+func (t *stdToken) Audience() ([]string, bool) { _ = "STUB: not implemented"; return nil, false }
 
 func (t *stdToken) Expiration() (time.Time, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.expiration != nil {
-		return t.expiration.Get(), true
-	}
-	return time.Time{}, false
+	_ = "STUB: not implemented"
+	return *new(time.Time), false
 }
 
 func (t *stdToken) IssuedAt() (time.Time, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.issuedAt != nil {
-		return t.issuedAt.Get(), true
-	}
-	return time.Time{}, false
+	_ = "STUB: not implemented"
+	return *new(time.Time), false
 }
 
-func (t *stdToken) Issuer() (string, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.issuer != nil {
-		return *(t.issuer), true
-	}
-	return "", false
-}
+func (t *stdToken) Issuer() (string, bool) { _ = "STUB: not implemented"; return "", false }
 
-func (t *stdToken) JwtID() (string, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.jwtID != nil {
-		return *(t.jwtID), true
-	}
-	return "", false
-}
+func (t *stdToken) JwtID() (string, bool) { _ = "STUB: not implemented"; return "", false }
 
 func (t *stdToken) NotBefore() (time.Time, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.notBefore != nil {
-		return t.notBefore.Get(), true
-	}
-	return time.Time{}, false
+	_ = "STUB: not implemented"
+	return *new(time.Time), false
 }
 
-func (t *stdToken) Subject() (string, bool) {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.subject != nil {
-		return *(t.subject), true
-	}
-	return "", false
-}
+func (t *stdToken) Subject() (string, bool) { _ = "STUB: not implemented"; return "", false }
 
 // PrivateClaims returns the underlying map of non-standard claims held by
 // the token. The returned map is the live map used by the token, not a copy:
@@ -360,230 +154,17 @@ func (t *stdToken) Subject() (string, bool) {
 // jwxfilter companion module: jwtfilter.Standard().Reject(token) from
 // github.com/jwx-go/jwxfilter/v4/jwtfilter (or openidfilter.Standard().Reject
 // for openid.Token).
-func (t *stdToken) PrivateClaims() map[string]any {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	return t.privateClaims
-}
+func (t *stdToken) PrivateClaims() map[string]any { _ = "STUB: not implemented"; return nil }
 
-func (t *stdToken) UnmarshalJSON(buf []byte) error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	t.audience = nil
-	t.expiration = nil
-	t.issuedAt = nil
-	t.issuer = nil
-	t.jwtID = nil
-	t.notBefore = nil
-	t.subject = nil
-	dec := json.NewDecoder(bytes.NewReader(buf))
-	tok, err := dec.ReadToken()
-	if err != nil {
-		return fmt.Errorf(`error reading token: %w`, err)
-	}
-	if tok.Kind() != '{' {
-		return fmt.Errorf(`expected '{' but got '%c'`, tok.Kind())
-	}
-	for dec.PeekKind() != '}' {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return fmt.Errorf(`error reading token: %w`, err)
-		}
-		switch tok.String() {
-		case AudienceKey:
-			var decoded types.StringList
-			if err := json.UnmarshalDecode(dec, &decoded); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, AudienceKey, err)
-			}
-			t.audience = decoded
-		case ExpirationKey:
-			var decoded types.NumericDate
-			if err := json.UnmarshalDecode(dec, &decoded); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, ExpirationKey, err)
-			}
-			t.expiration = &decoded
-		case IssuedAtKey:
-			var decoded types.NumericDate
-			if err := json.UnmarshalDecode(dec, &decoded); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, IssuedAtKey, err)
-			}
-			t.issuedAt = &decoded
-		case IssuerKey:
-			if err := json.AssignNextStringToken(&t.issuer, dec, t.dc); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, IssuerKey, err)
-			}
-		case JwtIDKey:
-			if err := json.AssignNextStringToken(&t.jwtID, dec, t.dc); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, JwtIDKey, err)
-			}
-		case NotBeforeKey:
-			var decoded types.NumericDate
-			if err := json.UnmarshalDecode(dec, &decoded); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, NotBeforeKey, err)
-			}
-			t.notBefore = &decoded
-		case SubjectKey:
-			if err := json.AssignNextStringToken(&t.subject, dec, t.dc); err != nil {
-				return fmt.Errorf(`failed to decode value for key %s: %w`, SubjectKey, err)
-			}
-		default:
-			fieldName := tok.String()
-			raw, err := dec.ReadValue()
-			if err != nil {
-				return fmt.Errorf(`could not read value for field %s: %w`, fieldName, err)
-			}
-			if dc := t.dc; dc != nil {
-				if localReg := dc.Registry(); localReg != nil {
-					decoded, err := localReg.Decode(fieldName, raw)
-					if err == nil {
-						t.setNoLock(fieldName, decoded)
-						continue
-					}
-				}
-			}
-			decoded, err := registry.Decode(fieldName, raw)
-			if err == nil {
-				t.setNoLock(fieldName, decoded)
-				continue
-			}
-			return fmt.Errorf(`could not decode field %s: %w`, fieldName, err)
-		}
-	}
-	// consume closing '}'
-	if _, err := dec.ReadToken(); err != nil {
-		return fmt.Errorf(`error reading closing token: %w`, err)
-	}
-	return nil
-}
+func (t *stdToken) UnmarshalJSON(buf []byte) error { _ = "STUB: not implemented"; return nil }
 
-func (t *stdToken) Keys() []string {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	keys := make([]string, 0, 7+len(t.privateClaims))
-	if t.audience != nil {
-		keys = append(keys, AudienceKey)
-	}
-	if t.expiration != nil {
-		keys = append(keys, ExpirationKey)
-	}
-	if t.issuedAt != nil {
-		keys = append(keys, IssuedAtKey)
-	}
-	if t.issuer != nil {
-		keys = append(keys, IssuerKey)
-	}
-	if t.jwtID != nil {
-		keys = append(keys, JwtIDKey)
-	}
-	if t.notBefore != nil {
-		keys = append(keys, NotBeforeKey)
-	}
-	if t.subject != nil {
-		keys = append(keys, SubjectKey)
-	}
-	for k := range t.privateClaims {
-		keys = append(keys, k)
-	}
-	return keys
-}
+// consume closing '}'
 
-func (t *stdToken) Claims() iter.Seq2[string, any] {
-	return func(yield func(string, any) bool) {
-		type claimKV struct {
-			k string
-			v any
-		}
-		t.mu.RLock()
-		snapshot := make([]claimKV, 0, 7+len(t.privateClaims))
-		if t.audience != nil {
-			snapshot = append(snapshot, claimKV{AudienceKey, t.audience})
-		}
-		if t.expiration != nil {
-			snapshot = append(snapshot, claimKV{ExpirationKey, *(t.expiration)})
-		}
-		if t.issuedAt != nil {
-			snapshot = append(snapshot, claimKV{IssuedAtKey, *(t.issuedAt)})
-		}
-		if t.issuer != nil {
-			snapshot = append(snapshot, claimKV{IssuerKey, *(t.issuer)})
-		}
-		if t.jwtID != nil {
-			snapshot = append(snapshot, claimKV{JwtIDKey, *(t.jwtID)})
-		}
-		if t.notBefore != nil {
-			snapshot = append(snapshot, claimKV{NotBeforeKey, *(t.notBefore)})
-		}
-		if t.subject != nil {
-			snapshot = append(snapshot, claimKV{SubjectKey, *(t.subject)})
-		}
-		for k, v := range t.privateClaims {
-			snapshot = append(snapshot, claimKV{k, v})
-		}
-		t.mu.RUnlock()
-		for _, p := range snapshot {
-			if !yield(p.k, p.v) {
-				return
-			}
-		}
-	}
-}
+func (t *stdToken) Keys() []string { _ = "STUB: not implemented"; return nil }
 
-func (dst *stdToken) cloneFrom(src *stdToken) {
-	src.mu.RLock()
-	defer src.mu.RUnlock()
-	dst.mu.Lock()
-	defer dst.mu.Unlock()
-	dst.options = src.options
-	if src.audience != nil {
-		dst.audience = slices.Clone(src.audience)
-	} else {
-		dst.audience = nil
-	}
-	if src.expiration != nil {
-		tmp := *(src.expiration)
-		dst.expiration = &tmp
-	} else {
-		dst.expiration = nil
-	}
-	if src.issuedAt != nil {
-		tmp := *(src.issuedAt)
-		dst.issuedAt = &tmp
-	} else {
-		dst.issuedAt = nil
-	}
-	if src.issuer != nil {
-		tmp := *(src.issuer)
-		dst.issuer = &tmp
-	} else {
-		dst.issuer = nil
-	}
-	if src.jwtID != nil {
-		tmp := *(src.jwtID)
-		dst.jwtID = &tmp
-	} else {
-		dst.jwtID = nil
-	}
-	if src.notBefore != nil {
-		tmp := *(src.notBefore)
-		dst.notBefore = &tmp
-	} else {
-		dst.notBefore = nil
-	}
-	if src.subject != nil {
-		tmp := *(src.subject)
-		dst.subject = &tmp
-	} else {
-		dst.subject = nil
-	}
-	if len(src.privateClaims) > 0 {
-		dst.privateClaims = make(map[string]any, len(src.privateClaims))
-		for k, v := range src.privateClaims {
-			dst.privateClaims[k] = v
-		}
-	} else {
-		dst.privateClaims = make(map[string]any)
-	}
-}
+func (t *stdToken) Claims() iter.Seq2[string, any] { _ = "STUB: not implemented"; return nil }
+
+func (dst *stdToken) cloneFrom(src *stdToken) { _ = "STUB: not implemented"; return }
 
 type claimPair struct {
 	Name  string
@@ -596,82 +177,10 @@ var claimPairPool = sync.Pool{
 	},
 }
 
-func getClaimPairList() []claimPair {
-	return claimPairPool.Get().([]claimPair)
-}
+func getClaimPairList() []claimPair { _ = "STUB: not implemented"; return nil }
 
-func putClaimPairList(list []claimPair) {
-	list = list[:0]
-	claimPairPool.Put(list)
-}
+func putClaimPairList(list []claimPair) { _ = "STUB: not implemented"; return }
 
-func (t *stdToken) makePairs() []claimPair {
-	pairs := getClaimPairList()
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	if t.audience != nil {
-		pairs = append(pairs, claimPair{Name: AudienceKey, Value: t.audience})
-	}
-	if t.expiration != nil {
-		pairs = append(pairs, claimPair{Name: ExpirationKey, Value: t.expiration.Unix()})
-	}
-	if t.issuedAt != nil {
-		pairs = append(pairs, claimPair{Name: IssuedAtKey, Value: t.issuedAt.Unix()})
-	}
-	if t.issuer != nil {
-		pairs = append(pairs, claimPair{Name: IssuerKey, Value: *(t.issuer)})
-	}
-	if t.jwtID != nil {
-		pairs = append(pairs, claimPair{Name: JwtIDKey, Value: *(t.jwtID)})
-	}
-	if t.notBefore != nil {
-		pairs = append(pairs, claimPair{Name: NotBeforeKey, Value: t.notBefore.Unix()})
-	}
-	if t.subject != nil {
-		pairs = append(pairs, claimPair{Name: SubjectKey, Value: *(t.subject)})
-	}
-	for k, v := range t.privateClaims {
-		pairs = append(pairs, claimPair{Name: k, Value: v})
-	}
+func (t *stdToken) makePairs() []claimPair { _ = "STUB: not implemented"; return nil }
 
-	slices.SortFunc(pairs, func(a, b claimPair) int {
-		return cmp.Compare(a.Name, b.Name)
-	})
-
-	return pairs
-}
-
-func (t *stdToken) MarshalJSON() ([]byte, error) {
-	buf := pool.BytesBuffer().Get()
-	defer pool.BytesBuffer().Put(buf)
-	pairs := t.makePairs()
-	buf.WriteByte('{')
-	for i, pair := range pairs {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteByte('"')
-		buf.WriteString(pair.Name)
-		buf.WriteString(`":`)
-		if pair.Name == AudienceKey {
-			if aud, ok := pair.Value.(types.StringList); ok {
-				audBytes, err := json.MarshalAudience(aud, t.options.IsEnabled(FlattenAudience))
-				if err != nil {
-					return nil, fmt.Errorf(`failed to encode "aud": %w`, err)
-				}
-				buf.Write(audBytes)
-				continue
-			}
-		}
-		valBytes, err := json.Marshal(pair.Value)
-		if err != nil {
-			return nil, fmt.Errorf(`failed to encode value for field %q: %w`, pair.Name, err)
-		}
-		buf.Write(valBytes)
-	}
-	buf.WriteByte('}')
-	putClaimPairList(pairs)
-	ret := make([]byte, buf.Len())
-	copy(ret, buf.Bytes())
-	return ret, nil
-}
+func (t *stdToken) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }

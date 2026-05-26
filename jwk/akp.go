@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
 	"github.com/lestrrat-go/jwx/v4/jwa"
 )
 
@@ -26,52 +25,25 @@ func init() {
 const akpPrivateZKey = "z"
 
 func akpKeyKind(algfn func() (jwa.KeyAlgorithm, bool)) KeyKind {
-	if alg, ok := algfn(); ok {
-		return KeyKind(jwa.AKP().String() + ":" + alg.String()).normalize()
-	}
-	return normalizedAKP
+	_ = "STUB: not implemented"
+	return *new(KeyKind)
 }
 
-func (k *akpPublicKey) KeyKind() KeyKind  { return akpKeyKind(k.Algorithm) }
-func (k *akpPrivateKey) KeyKind() KeyKind { return akpKeyKind(k.Algorithm) }
+func (k *akpPublicKey) KeyKind() KeyKind  { _ = "STUB: not implemented"; return *new(KeyKind) }
+func (k *akpPrivateKey) KeyKind() KeyKind { _ = "STUB: not implemented"; return *new(KeyKind) }
 
-func makeAKPPublicKey(src Key) (Key, error) {
-	newKey := newAKPPublicKey()
-	for _, k := range src.Keys() {
-		switch k {
-		case AKPPrivKey, akpPrivateZKey:
-			continue
-		default:
-			v, ok := src.Field(k)
-			if !ok {
-				return nil, fmt.Errorf(`failed to get field %q`, k)
-			}
-			if err := newKey.Set(k, v); err != nil {
-				return nil, fmt.Errorf(`failed to set field %q: %w`, k, err)
-			}
-		}
-	}
-	return newKey, nil
-}
+func makeAKPPublicKey(src Key) (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
-func (k *akpPublicKey) PublicKey() (Key, error) {
-	return makeAKPPublicKey(k)
-}
+func (k *akpPublicKey) PublicKey() (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
-func (k *akpPrivateKey) PublicKey() (Key, error) {
-	return makeAKPPublicKey(k)
-}
+func (k *akpPrivateKey) PublicKey() (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
 // akpThumbprint hashes the canonical JSON form defined by RFC 7638 §3.2
 // for AKP keys: the required members {alg, kty, pub} in lexicographic order.
 // RFC 9802 makes alg a required thumbprint input for AKP because pub is
 // algorithm-scoped — omitting alg would break cross-implementation kid
 // lookup.
-func akpThumbprint(hash crypto.Hash, alg, pub string) []byte {
-	h := hash.New()
-	fmt.Fprintf(h, `{"alg":%q,"kty":"AKP","pub":%q}`, alg, pub)
-	return h.Sum(nil)
-}
+func akpThumbprint(hash crypto.Hash, alg, pub string) []byte { _ = "STUB: not implemented"; return nil }
 
 // Thumbprint returns the RFC 7638 thumbprint of this AKP key.
 //
@@ -82,16 +54,8 @@ func akpThumbprint(hash crypto.Hash, alg, pub string) []byte {
 // types tolerate a missing `alg` because their canonical thumbprint
 // input doesn't include it.
 func (k *akpPublicKey) Thumbprint(hash crypto.Hash) ([]byte, error) {
-	k.mu.RLock()
-	defer k.mu.RUnlock()
-
-	if k.pub == nil {
-		return nil, fmt.Errorf(`missing "pub" field`)
-	}
-	if k.algorithm == nil {
-		return nil, fmt.Errorf(`missing "alg" field (required for AKP thumbprint)`)
-	}
-	return akpThumbprint(hash, (*k.algorithm).String(), base64.EncodeToString(k.pub)), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Thumbprint returns the RFC 7638 thumbprint of this AKP key.
@@ -101,43 +65,10 @@ func (k *akpPublicKey) Thumbprint(hash crypto.Hash) ([]byte, error) {
 // [akpPublicKey]. AKP keys hash the canonical JSON form `{alg, kty, pub}`
 // per RFC 9802 §7; both `alg` and `pub` are required at thumbprint time.
 func (k *akpPrivateKey) Thumbprint(hash crypto.Hash) ([]byte, error) {
-	k.mu.RLock()
-	defer k.mu.RUnlock()
-
-	if k.pub == nil {
-		return nil, fmt.Errorf(`missing "pub" field`)
-	}
-	if k.algorithm == nil {
-		return nil, fmt.Errorf(`missing "alg" field (required for AKP thumbprint)`)
-	}
-	return akpThumbprint(hash, (*k.algorithm).String(), base64.EncodeToString(k.pub)), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (k *akpPublicKey) Validate() error {
-	k.mu.RLock()
-	defer k.mu.RUnlock()
+func (k *akpPublicKey) Validate() error { _ = "STUB: not implemented"; return nil }
 
-	if k.pub == nil || len(k.pub) == 0 {
-		return NewKeyValidationError(fmt.Errorf(`jwk.AKPPublicKey: missing "pub" field`))
-	}
-	if k.algorithm == nil {
-		return NewKeyValidationError(fmt.Errorf(`jwk.AKPPublicKey: missing "alg" field (required for AKP keys)`))
-	}
-	return nil
-}
-
-func (k *akpPrivateKey) Validate() error {
-	k.mu.RLock()
-	defer k.mu.RUnlock()
-
-	if k.pub == nil || len(k.pub) == 0 {
-		return NewKeyValidationError(fmt.Errorf(`jwk.AKPPrivateKey: missing "pub" field`))
-	}
-	if k.priv == nil || len(k.priv) == 0 {
-		return NewKeyValidationError(fmt.Errorf(`jwk.AKPPrivateKey: missing "priv" field`))
-	}
-	if k.algorithm == nil {
-		return NewKeyValidationError(fmt.Errorf(`jwk.AKPPrivateKey: missing "alg" field (required for AKP keys)`))
-	}
-	return nil
-}
+func (k *akpPrivateKey) Validate() error { _ = "STUB: not implemented"; return nil }

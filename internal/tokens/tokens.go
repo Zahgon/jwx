@@ -15,15 +15,7 @@ const (
 // hand-built JSON string literal without escaping. Any byte that
 // would require a JSON escape (control bytes, `"`, `\`) or any
 // non-ASCII byte disqualifies the value.
-func IsJSONSafeASCII(s string) bool {
-	for i := range len(s) {
-		c := s[i]
-		if c < 0x20 || c >= 0x7f || c == '"' || c == '\\' {
-			return false
-		}
-	}
-	return true
-}
+func IsJSONSafeASCII(s string) bool { _ = "STUB: not implemented"; return false }
 
 // Cryptographic key sizes
 const (

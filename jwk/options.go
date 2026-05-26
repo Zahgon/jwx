@@ -1,9 +1,5 @@
 package jwk
 
-import (
-	"github.com/lestrrat-go/option/v3"
-)
-
 type identTypedField struct{}
 
 type typedFieldPair struct {
@@ -30,9 +26,6 @@ type typedFieldPair struct {
 // as it needs to consult multiple definitions sources (global and local), so
 // be careful if you are decoding a large number of tokens, as the effects will stack up.
 func WithTypedField(name string, object any) ParseOption {
-	return &parseOption{
-		option.New(identTypedField{},
-			typedFieldPair{Name: name, Value: object},
-		),
-	}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }

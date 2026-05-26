@@ -25,12 +25,7 @@ var muKeyUsageName sync.RWMutex
 // implementation always returns nil, but callers — especially extension
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
-func RegisterKeyUsage(v string) error {
-	muKeyUsageName.Lock()
-	defer muKeyUsageName.Unlock()
-	keyUsageNames[v] = struct{}{}
-	return nil
-}
+func RegisterKeyUsage(v string) error { _ = "STUB: not implemented"; return nil }
 
 // UnregisterKeyUsage removes v from the allowlist maintained by
 // [RegisterKeyUsage]. The error return is reserved for future
@@ -39,12 +34,7 @@ func RegisterKeyUsage(v string) error {
 // scripting Register/Unregister cycles should check the returned
 // value and propagate on failure to stay forward-compatible,
 // matching the convention on [RegisterKeyUsage].
-func UnregisterKeyUsage(v string) error {
-	muKeyUsageName.Lock()
-	defer muKeyUsageName.Unlock()
-	delete(keyUsageNames, v)
-	return nil
-}
+func UnregisterKeyUsage(v string) error { _ = "STUB: not implemented"; return nil }
 
 func init() {
 	strictKeyUsage.Store(true)
@@ -57,36 +47,11 @@ func init() {
 }
 
 func isValidUsage(v string) bool {
+	_ = "STUB: not implemented"
 	// This function can return true if strictKeyUsage is false
-	if !strictKeyUsage.Load() {
-		return true
-	}
-
-	muKeyUsageName.RLock()
-	defer muKeyUsageName.RUnlock()
-	_, ok := keyUsageNames[v]
-	return ok
+	return false
 }
 
-func (k KeyUsageType) String() string {
-	return string(k)
-}
+func (k KeyUsageType) String() string { _ = "STUB: not implemented"; return "" }
 
-func (k *KeyUsageType) Accept(v any) error {
-	switch v := v.(type) {
-	case KeyUsageType:
-		if !isValidUsage(v.String()) {
-			return fmt.Errorf("invalid key usage type: %q", v)
-		}
-		*k = v
-		return nil
-	case string:
-		if !isValidUsage(v) {
-			return fmt.Errorf("invalid key usage type: %q", v)
-		}
-		*k = KeyUsageType(v)
-		return nil
-	}
-
-	return fmt.Errorf("invalid Go type for key usage type: %T", v)
-}
+func (k *KeyUsageType) Accept(v any) error { _ = "STUB: not implemented"; return nil }

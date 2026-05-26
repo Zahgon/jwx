@@ -2,14 +2,10 @@ package jwk
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
-	"fmt"
-	"maps"
 	"sync"
 
 	"github.com/lestrrat-go/jwx/v4/internal/json"
 	"github.com/lestrrat-go/jwx/v4/internal/pool"
-	"github.com/lestrrat-go/jwx/v4/jwa"
 )
 
 // KeyParser represents a type that can parse a JSON representation of a JWK into
@@ -36,7 +32,8 @@ type KeyParser interface {
 type KeyParseFunc func(probe *KeyProbe, unmarshaler KeyUnmarshaler, payload []byte) (Key, error)
 
 func (f KeyParseFunc) ParseKey(probe *KeyProbe, unmarshaler KeyUnmarshaler, payload []byte) (Key, error) {
-	return f(probe, unmarshaler, payload)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 // protects keyParsers
@@ -53,85 +50,23 @@ var keyParsers = []KeyParser{KeyParseFunc(defaultParseKey)}
 // implementation always returns nil, but callers — especially extension
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
-func RegisterKeyParser(kp KeyParser) error {
-	muKeyParser.Lock()
-	defer muKeyParser.Unlock()
-	keyParsers = append(keyParsers, kp)
-	return nil
-}
+func RegisterKeyParser(kp KeyParser) error { _ = "STUB: not implemented"; return nil }
 
 func defaultParseKey(probe *KeyProbe, unmarshaler KeyUnmarshaler, data []byte) (Key, error) {
-	var key Key
-	ktyV, ok := probe.Field("Kty")
-	if !ok {
-		return nil, fmt.Errorf(`jwk.Parse: %w`, UnknownKeyTypeError{})
-	}
-	kty, ok := ktyV.(string)
-	if !ok {
-		return nil, fmt.Errorf(`jwk.Parse: "kty" hint is not a string`)
-	}
-	// We ignore errors from this field, as it's optional
-	dV, _ := probe.Field("D")
-	d, _ := dV.(json.RawMessage)
-	switch v, _ := jwa.LookupKeyType(kty); v {
-	case jwa.RSA():
-		if d != nil {
-			key = newRSAPrivateKey()
-		} else {
-			key = newRSAPublicKey()
-		}
-	case jwa.EC():
-		if d != nil {
-			key = newECDSAPrivateKey()
-		} else {
-			key = newECDSAPublicKey()
-		}
-	case jwa.OctetSeq():
-		key = newSymmetricKey()
-	case jwa.OKP():
-		if d != nil {
-			key = newOKPPrivateKey()
-		} else {
-			key = newOKPPublicKey()
-		}
-	case jwa.AKP():
-		// AKP keys use "priv" instead of "d" for private key material
-		privV, _ := probe.Field("Priv")
-		priv, _ := privV.(json.RawMessage)
-		if priv != nil {
-			key = newAKPPrivateKey()
-		} else {
-			key = newAKPPublicKey()
-		}
-	default:
-		return nil, UnknownKeyTypeError{KeyType: kty}
-	}
-
-	if err := unmarshaler.UnmarshalKey(data, key); err != nil {
-		return nil, fmt.Errorf(`failed to unmarshal JSON into key (%T): %w`, key, err)
-	}
-	return key, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
+
+// We ignore errors from this field, as it's optional
+
+// AKP keys use "priv" instead of "d" for private key material
 
 type keyUnmarshaler struct {
 	localReg *json.Registry
 }
 
 func (ku *keyUnmarshaler) UnmarshalKey(data []byte, key any) error {
-	if ku.localReg != nil {
-		dcKey, ok := key.(json.DecodeCtxContainer)
-		if !ok {
-			return fmt.Errorf(`typed field was requested, but the key (%T) does not support DecodeCtx`, key)
-		}
-		dc := json.NewDecodeCtx(ku.localReg)
-		dcKey.SetDecodeCtx(dc)
-		defer func() { dcKey.SetDecodeCtx(nil) }()
-	}
-
-	if err := json.Unmarshal(data, key); err != nil {
-		return fmt.Errorf(`failed to unmarshal JSON into key (%T): %w`, key, err)
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -154,39 +89,18 @@ type keyProber struct {
 }
 
 func (kp *keyProber) addField(name string, def probeFieldDef) error {
-	kp.mu.Lock()
-	defer kp.mu.Unlock()
-
-	if _, ok := kp.names[name]; ok {
-		return fmt.Errorf(`field name %s is already registered`, name)
-	}
-
-	def.index = len(kp.fields)
-	kp.fields = append(kp.fields, def)
-
-	// Replace kp.names with a fresh map. KeyProbe instances created by
-	// earlier Probe calls keep their reference to the old map, which is
-	// never mutated again — so KeyProbe.Field reads stay safe even while
-	// a concurrent RegisterProbeField runs.
-	names := make(map[string]int, len(kp.fields))
-	maps.Copy(names, kp.names)
-	names[name] = def.index
-	kp.names = names
-
-	// Rebuild jsonKeys lookup
-	kp.jsonKeys = make(map[string]*probeFieldDef, len(kp.fields))
-	for i := range kp.fields {
-		kp.jsonKeys[kp.fields[i].jsonKey] = &kp.fields[i]
-	}
-
-	// Rebuild pool for new slice size
-	n := len(kp.fields)
-	kp.pool = pool.New(
-		func() []any { return make([]any, n) },
-		func(s []any) []any { clear(s); return s },
-	)
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// Replace kp.names with a fresh map. KeyProbe instances created by
+// earlier Probe calls keep their reference to the old map, which is
+// never mutated again — so KeyProbe.Field reads stay safe even while
+// a concurrent RegisterProbeField runs.
+
+// Rebuild jsonKeys lookup
+
+// Rebuild pool for new slice size
 
 // probeTarget implements json.UnmarshalerFrom to use the pooled decoder
 // from json.Unmarshal, avoiding the overhead of creating a standalone decoder.
@@ -196,66 +110,25 @@ type probeTarget struct {
 }
 
 func (pt *probeTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	_ = "STUB: not implemented"
 	// Consume opening '{'
-	tok, err := dec.ReadToken()
-	if err != nil {
-		return err
-	}
-	if tok.Kind() != '{' {
-		return fmt.Errorf(`probe: expected object, got %s`, tok.Kind())
-	}
-
-	remaining := len(pt.kp.fields)
-	for dec.PeekKind() != '}' {
-		// Read key
-		tok, err = dec.ReadToken()
-		if err != nil {
-			return err
-		}
-		key := tok.String()
-
-		def, ok := pt.kp.jsonKeys[key]
-		// Skip when: the key is not registered for probing, we've
-		// already filled every slot, OR this slot is already filled
-		// (a duplicate occurrence of an earlier field — first-wins).
-		// Without the duplicate-skip, N repeats of one field would
-		// drain `remaining` and prevent later registered fields from
-		// being read, silently misclassifying the key.
-		if !ok || remaining <= 0 || pt.results[def.index] != nil {
-			if err := dec.SkipValue(); err != nil {
-				return err
-			}
-			continue
-		}
-
-		v, err := def.readFrom(dec)
-		if err != nil {
-			return err
-		}
-		pt.results[def.index] = v
-		remaining--
-	}
-
-	// Consume closing '}'
-	if _, err := dec.ReadToken(); err != nil {
-		return err
-	}
-
 	return nil
 }
 
+// Read key
+
+// Skip when: the key is not registered for probing, we've
+// already filled every slot, OR this slot is already filled
+// (a duplicate occurrence of an earlier field — first-wins).
+// Without the duplicate-skip, N repeats of one field would
+// drain `remaining` and prevent later registered fields from
+// being read, silently misclassifying the key.
+
+// Consume closing '}'
+
 func (kp *keyProber) Probe(data []byte) (*KeyProbe, error) {
-	kp.mu.RLock()
-	defer kp.mu.RUnlock()
-
-	results := kp.pool.Get()
-
-	pt := probeTarget{kp: kp, results: results}
-	if err := jsonv2.Unmarshal(data, &pt, jsontext.AllowDuplicateNames(true)); err != nil {
-		return nil, fmt.Errorf(`probe: %w`, err)
-	}
-
-	return &KeyProbe{results: results, names: kp.names}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // KeyProbe is the object that carries the hints when parsing a key.
@@ -273,12 +146,8 @@ type KeyProbe struct {
 // The field type is determined by the type registered through
 // `jwk.RegisterProbeField()`.
 func (kp *KeyProbe) Field(name string) (any, bool) {
-	idx, ok := kp.names[name]
-	if !ok {
-		return nil, false
-	}
-	v := kp.results[idx]
-	return v, v != nil
+	_ = "STUB: not implemented"
+	return *new(any), false
 }
 
 var keyProbe = &keyProber{
@@ -287,34 +156,21 @@ var keyProbe = &keyProber{
 
 // readString reads a JSON string token directly from the decoder.
 func readString(dec *jsontext.Decoder) (any, error) {
-	tok, err := dec.ReadToken()
-	if err != nil {
-		return nil, err
-	}
-	return tok.String(), nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 // readRawValue reads a raw JSON value from the decoder, copying the bytes
 // so the result outlives the decoder's buffer.
 func readRawValue(dec *jsontext.Decoder) (any, error) {
-	val, err := dec.ReadValue()
-	if err != nil {
-		return nil, err
-	}
-	return json.RawMessage(append([]byte{}, val...)), nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 // readGeneric reads a value by reading the raw JSON and unmarshaling it.
 func readGeneric[T any](dec *jsontext.Decoder) (any, error) {
-	val, err := dec.ReadValue()
-	if err != nil {
-		return nil, err
-	}
-	var v T
-	if err := json.Unmarshal(val, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 // RegisterProbeField adds a new field to be probed during the initial
@@ -334,22 +190,7 @@ func readGeneric[T any](dec *jsontext.Decoder) (any, error) {
 // while the actual JSON field name could be "my_hint".
 //
 // If the field name is not unique, an error is returned.
-func RegisterProbeField[T any](name, jsonKey string) error {
-	var readFn func(*jsontext.Decoder) (any, error)
-	switch any((*T)(nil)).(type) {
-	case *string:
-		readFn = readString
-	case *json.RawMessage:
-		readFn = readRawValue
-	default:
-		readFn = readGeneric[T]
-	}
-
-	return keyProbe.addField(name, probeFieldDef{
-		jsonKey:  jsonKey,
-		readFrom: readFn,
-	})
-}
+func RegisterProbeField[T any](name, jsonKey string) error { _ = "STUB: not implemented"; return nil }
 
 // KeyUnmarshaler is a thin wrapper around json.Unmarshal. It behaves almost
 // exactly like json.Unmarshal, but it allows us to add extra magic that

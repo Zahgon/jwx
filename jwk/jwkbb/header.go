@@ -1,8 +1,6 @@
 package jwkbb
 
 import (
-	"fmt"
-
 	"github.com/valyala/fastjson"
 )
 
@@ -10,25 +8,14 @@ type headerNotFoundError struct {
 	key string
 }
 
-func (e headerNotFoundError) Error() string {
-	return fmt.Sprintf(`jwkbb: field "%s" not found`, e.key)
-}
+func (e headerNotFoundError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e headerNotFoundError) Is(target error) bool {
-	switch target.(type) {
-	case headerNotFoundError, *headerNotFoundError:
-		return true
-	default:
-		return false
-	}
-}
+func (e headerNotFoundError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 // ErrHeaderNotFound returns an error that can be passed to errors.Is
 // to check if the error is the result of a field not being found in
 // the parsed JSON.
-func ErrHeaderNotFound() error {
-	return headerNotFoundError{}
-}
+func ErrHeaderNotFound() error { _ = "STUB: not implemented"; return nil }
 
 // Header is an opaque handle to a parsed JWK or JWKS JSON object.
 // It exists for fast, allocation-light field probing without paying
@@ -52,44 +39,32 @@ type header struct {
 	err error
 }
 
-func (h *header) jwkbbHeader() {}
+func (h *header) jwkbbHeader() {
+	_ = "STUB: not implemented"
 
-// HeaderParse parses a JSON byte slice and returns a Header for fast
-// field access. Parse errors are deferred to the first HeaderGet* /
-// HeaderHas call.
-//
-// This function is experimental and may change or be removed in the future.
-func HeaderParse(buf []byte) Header {
-	var p fastjson.Parser
-	v, err := p.ParseBytes(buf)
-	if err != nil {
-		return &header{err: err}
-	}
-	return &header{v: v}
+	// HeaderParse parses a JSON byte slice and returns a Header for fast
+	// field access. Parse errors are deferred to the first HeaderGet* /
+	// HeaderHas call.
+	//
+	// This function is experimental and may change or be removed in the future.
+	return
 }
+
+func HeaderParse(buf []byte) Header { _ = "STUB: not implemented"; return *new(Header) }
 
 func headerGet(h Header, key string) (*fastjson.Value, error) {
+	_ = "STUB: not implemented"
 	//nolint:forcetypeassert
-	hh := h.(*header) // we _know_ this can't be another type
-	if hh.err != nil {
-		return nil, hh.err
-	}
-
-	v := hh.v.Get(key)
-	if v == nil {
-		return nil, headerNotFoundError{key: key}
-	}
-	return v, nil
+	return nil, nil
 }
+
+// we _know_ this can't be another type
 
 // HeaderHas reports whether the given key exists in the parsed JSON object.
 // Returns false on parse errors.
 //
 // This function is experimental and may change or be removed in the future.
-func HeaderHas(h Header, key string) bool {
-	_, err := headerGet(h, key)
-	return err == nil
-}
+func HeaderHas(h Header, key string) bool { _ = "STUB: not implemented"; return false }
 
 // HeaderGetString returns the string value for the given key as a
 // freshly-allocated Go string. The returned value remains valid after
@@ -97,17 +72,8 @@ func HeaderHas(h Header, key string) bool {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetString(h Header, key string) (string, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return "", err
-	}
-
-	sb, err := v.StringBytes()
-	if err != nil {
-		return "", err
-	}
-
-	return string(sb), nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 // HeaderGetStringBytes returns the JSON string bytes for the given key
@@ -121,10 +87,6 @@ func HeaderGetString(h Header, key string) (string, error) {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetStringBytes(h Header, key string) ([]byte, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return nil, err
-	}
-
-	return v.StringBytes()
+	_ = "STUB: not implemented"
+	return nil, nil
 }

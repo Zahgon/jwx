@@ -3,13 +3,8 @@
 package jwa
 
 import (
-	"cmp"
-	"encoding/json"
 	"fmt"
-	"slices"
 	"sync"
-
-	"github.com/lestrrat-go/option/v3"
 )
 
 var muAllCompressionAlgorithm sync.RWMutex
@@ -33,23 +28,17 @@ func init() {
 }
 
 // Deflate returns an object representing the "DEF" content compression algorithm value. Using this value specifies that the content should be compressed using DEFLATE (RFC 1951).
-func Deflate() CompressionAlgorithm {
-	return lookupBuiltinCompressionAlgorithm("DEF")
-}
+func Deflate() CompressionAlgorithm { _ = "STUB: not implemented"; return *new(CompressionAlgorithm) }
 
 // NoCompress returns an object representing an empty compression algorithm value. Using this value specifies that the content should not be compressed.
 func NoCompress() CompressionAlgorithm {
-	return lookupBuiltinCompressionAlgorithm("")
+	_ = "STUB: not implemented"
+	return *new(CompressionAlgorithm)
 }
 
 func lookupBuiltinCompressionAlgorithm(name string) CompressionAlgorithm {
-	muAllCompressionAlgorithm.RLock()
-	v, ok := allCompressionAlgorithm[name]
-	muAllCompressionAlgorithm.RUnlock()
-	if !ok {
-		panic(fmt.Sprintf(`jwa: CompressionAlgorithm %q not registered`, name))
-	}
-	return v
+	_ = "STUB: not implemented"
+	return *new(CompressionAlgorithm)
 }
 
 // CompressionAlgorithm represents the compression algorithms as described in https://tools.ietf.org/html/rfc7518#section-7.3
@@ -59,37 +48,30 @@ type CompressionAlgorithm struct {
 }
 
 func (s CompressionAlgorithm) String() string {
-	return s.name
+	_ = "STUB: not implemented"
+
+	// IsDeprecated returns true if the CompressionAlgorithm object is deprecated.
+	return ""
 }
 
-// IsDeprecated returns true if the CompressionAlgorithm object is deprecated.
-func (s CompressionAlgorithm) IsDeprecated() bool {
-	return s.deprecated
-}
+func (s CompressionAlgorithm) IsDeprecated() bool { _ = "STUB: not implemented"; return false }
 
 // EmptyCompressionAlgorithm returns an empty CompressionAlgorithm object, used as a zero value.
 func EmptyCompressionAlgorithm() CompressionAlgorithm {
-	return CompressionAlgorithm{}
+	_ = "STUB: not implemented"
+	return *new(CompressionAlgorithm)
 }
 
 // NewCompressionAlgorithm creates a new CompressionAlgorithm object with the given name.
 func NewCompressionAlgorithm(name string, options ...NewAlgorithmOption) CompressionAlgorithm {
-	var deprecated bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identDeprecated{}:
-			deprecated = option.MustGet[bool](opt)
-		}
-	}
-	return CompressionAlgorithm{name: name, deprecated: deprecated}
+	_ = "STUB: not implemented"
+	return *new(CompressionAlgorithm)
 }
 
 // LookupCompressionAlgorithm returns the CompressionAlgorithm object for the given name.
 func LookupCompressionAlgorithm(name string) (CompressionAlgorithm, bool) {
-	muAllCompressionAlgorithm.RLock()
-	v, ok := allCompressionAlgorithm[name]
-	muAllCompressionAlgorithm.RUnlock()
-	return v, ok
+	_ = "STUB: not implemented"
+	return *new(CompressionAlgorithm), false
 }
 
 // RegisterCompressionAlgorithm registers a new CompressionAlgorithm. The signature value must be immutable
@@ -99,74 +81,30 @@ func LookupCompressionAlgorithm(name string) (CompressionAlgorithm, bool) {
 // reserved and cannot be replaced by callers after init has completed; use a
 // distinct name for third-party algorithms.
 func RegisterCompressionAlgorithm(algorithms ...CompressionAlgorithm) error {
-	muAllCompressionAlgorithm.Lock()
-	defer muAllCompressionAlgorithm.Unlock()
-	for _, alg := range algorithms {
-		if _, ok := builtinCompressionAlgorithm[alg.String()]; ok {
-			if existing, ok := allCompressionAlgorithm[alg.String()]; ok && existing != alg {
-				return fmt.Errorf(`jwa: CompressionAlgorithm %q is reserved for a built-in value`, alg.String())
-			}
-		}
-	}
-	for _, alg := range algorithms {
-		if _, ok := builtinCompressionAlgorithm[alg.String()]; ok {
-			continue
-		}
-		allCompressionAlgorithm[alg.String()] = alg
-	}
-	rebuildCompressionAlgorithmLocked()
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // UnregisterCompressionAlgorithm unregisters a CompressionAlgorithm from its known database.
 // Non-existent entries, as well as built-in algorithms will silently be ignored.
 func UnregisterCompressionAlgorithm(algorithms ...CompressionAlgorithm) {
-	muAllCompressionAlgorithm.Lock()
-	defer muAllCompressionAlgorithm.Unlock()
-	for _, alg := range algorithms {
-		if _, ok := builtinCompressionAlgorithm[alg.String()]; ok {
-			continue
-		}
-		delete(allCompressionAlgorithm, alg.String())
-	}
-	rebuildCompressionAlgorithmLocked()
+	_ = "STUB: not implemented"
+	return
 }
 
-func rebuildCompressionAlgorithmLocked() {
-	list := make([]CompressionAlgorithm, 0, len(allCompressionAlgorithm))
-	for _, v := range allCompressionAlgorithm {
-		list = append(list, v)
-	}
-	slices.SortFunc(list, func(a, b CompressionAlgorithm) int {
-		return cmp.Compare(a.String(), b.String())
-	})
-	muListCompressionAlgorithm.Lock()
-	listCompressionAlgorithm = list
-	muListCompressionAlgorithm.Unlock()
-}
+func rebuildCompressionAlgorithmLocked() { _ = "STUB: not implemented"; return }
 
 // CompressionAlgorithms returns a list of all available values for CompressionAlgorithm.
-func CompressionAlgorithms() []CompressionAlgorithm {
-	muListCompressionAlgorithm.RLock()
-	defer muListCompressionAlgorithm.RUnlock()
-	return listCompressionAlgorithm
-}
+func CompressionAlgorithms() []CompressionAlgorithm { _ = "STUB: not implemented"; return nil }
 
 // MarshalJSON serializes the CompressionAlgorithm object to a JSON string.
 func (s CompressionAlgorithm) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // UnmarshalJSON deserializes the JSON string to a CompressionAlgorithm object.
 func (s *CompressionAlgorithm) UnmarshalJSON(data []byte) error {
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		return fmt.Errorf(`failed to unmarshal CompressionAlgorithm: %w`, err)
-	}
-	v, ok := LookupCompressionAlgorithm(name)
-	if !ok {
-		return fmt.Errorf(`unknown CompressionAlgorithm: %q`, name)
-	}
-	*s = v
+	_ = "STUB: not implemented"
 	return nil
 }

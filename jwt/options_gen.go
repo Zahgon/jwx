@@ -24,9 +24,13 @@ type encryptOption struct {
 	Option
 }
 
-func (*encryptOption) encryptOption() {}
+func (*encryptOption) encryptOption() {
+	_ = "STUB: not implemented"
 
-// GlobalOption describes an Option that can be passed to `Settings()`.
+	// GlobalOption describes an Option that can be passed to `Settings()`.
+	return
+}
+
 type GlobalOption interface {
 	Option
 	globalOption()
@@ -36,10 +40,14 @@ type globalOption struct {
 	Option
 }
 
-func (*globalOption) globalOption() {}
+func (*globalOption) globalOption() {
+	_ = "STUB: not implemented"
 
-// GlobalParseOption describes an Option that can be passed to `jwt.Settings()`
-// and `jwt.Parse()`.
+	// GlobalParseOption describes an Option that can be passed to `jwt.Settings()`
+	// and `jwt.Parse()`.
+	return
+}
+
 type GlobalParseOption interface {
 	Option
 	globalOption()
@@ -50,11 +58,15 @@ type globalParseOption struct {
 	Option
 }
 
-func (*globalParseOption) globalOption() {}
+func (*globalParseOption) globalOption() { _ = "STUB: not implemented"; return }
 
-func (*globalParseOption) parseOption() {}
+func (*globalParseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// GlobalValidateOption describes an Option that can be passed to `jwt.Settings()` and `jwt.Validate()`
+	// GlobalValidateOption describes an Option that can be passed to `jwt.Settings()` and `jwt.Validate()`
+	return
+}
+
 type GlobalValidateOption interface {
 	Option
 	globalOption()
@@ -66,13 +78,17 @@ type globalValidateOption struct {
 	Option
 }
 
-func (*globalValidateOption) globalOption() {}
+func (*globalValidateOption) globalOption() { _ = "STUB: not implemented"; return }
 
-func (*globalValidateOption) parseOption() {}
+func (*globalValidateOption) parseOption() { _ = "STUB: not implemented"; return }
 
-func (*globalValidateOption) validateOption() {}
+func (*globalValidateOption) validateOption() {
+	_ = "STUB: not implemented"
 
-// ParseOption describes an Option that can be passed to `jwt.Parse()`.
+	// ParseOption describes an Option that can be passed to `jwt.Parse()`.
+	return
+}
+
 type ParseOption interface {
 	Option
 	parseOption()
@@ -82,10 +98,14 @@ type parseOption struct {
 	Option
 }
 
-func (*parseOption) parseOption() {}
+func (*parseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// SignEncryptParseOption describes an Option that can be passed to both `jwt.Sign()` or
-// `jwt.Parse()`
+	// SignEncryptParseOption describes an Option that can be passed to both `jwt.Sign()` or
+	// `jwt.Parse()`
+	return
+}
+
 type SignEncryptParseOption interface {
 	Option
 	parseOption()
@@ -97,14 +117,18 @@ type signEncryptParseOption struct {
 	Option
 }
 
-func (*signEncryptParseOption) parseOption() {}
+func (*signEncryptParseOption) parseOption() { _ = "STUB: not implemented"; return }
 
-func (*signEncryptParseOption) encryptOption() {}
+func (*signEncryptParseOption) encryptOption() { _ = "STUB: not implemented"; return }
 
-func (*signEncryptParseOption) signOption() {}
+func (*signEncryptParseOption) signOption() {
+	_ = "STUB: not implemented"
 
-// SignOption describes an Option that can be passed to `jwt.Sign()` or
-// (jwt.Serializer).Sign
+	// SignOption describes an Option that can be passed to `jwt.Sign()` or
+	// (jwt.Serializer).Sign
+	return
+}
+
 type SignOption interface {
 	Option
 	signOption()
@@ -114,10 +138,14 @@ type signOption struct {
 	Option
 }
 
-func (*signOption) signOption() {}
+func (*signOption) signOption() {
+	_ = "STUB: not implemented"
 
-// SignParseOption describes an Option that can be passed to both `jwt.Sign()` or
-// `jwt.Parse()`
+	// SignParseOption describes an Option that can be passed to both `jwt.Sign()` or
+	// `jwt.Parse()`
+	return
+}
+
 type SignParseOption interface {
 	Option
 	signOption()
@@ -128,13 +156,17 @@ type signParseOption struct {
 	Option
 }
 
-func (*signParseOption) signOption() {}
+func (*signParseOption) signOption() { _ = "STUB: not implemented"; return }
 
-func (*signParseOption) parseOption() {}
+func (*signParseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// ValidateOption describes an Option that can be passed to Validate().
-// ValidateOption also implements ParseOption, therefore it may be
-// safely passed to `Parse()`
+	// ValidateOption describes an Option that can be passed to Validate().
+	// ValidateOption also implements ParseOption, therefore it may be
+	// safely passed to `Parse()`
+	return
+}
+
 type ValidateOption interface {
 	Option
 	parseOption()
@@ -145,9 +177,9 @@ type validateOption struct {
 	Option
 }
 
-func (*validateOption) parseOption() {}
+func (*validateOption) parseOption() { _ = "STUB: not implemented"; return }
 
-func (*validateOption) validateOption() {}
+func (*validateOption) validateOption() { _ = "STUB: not implemented"; return }
 
 type identAcceptableSkew struct{}
 type identBase64Encoder struct{}
@@ -175,123 +207,73 @@ type identValidate struct{}
 type identValidator struct{}
 type identVerify struct{}
 
-func (identAcceptableSkew) String() string {
-	return "WithAcceptableSkew"
-}
+func (identAcceptableSkew) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identBase64Encoder) String() string {
-	return "WithBase64Encoder"
-}
+func (identBase64Encoder) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identClock) String() string {
-	return "WithClock"
-}
+func (identClock) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identCollectErrors) String() string {
-	return "WithCollectErrors"
-}
+func (identCollectErrors) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identContext) String() string {
-	return "WithContext"
-}
+func (identContext) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identCookie) String() string {
-	return "WithCookie"
-}
+func (identCookie) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identCookieKey) String() string {
-	return "WithCookieKey"
-}
+func (identCookieKey) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identEncryptOption) String() string {
-	return "WithEncryptOption"
-}
+func (identEncryptOption) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identFlattenAudience) String() string {
-	return "WithFlattenAudience"
-}
+func (identFlattenAudience) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identFormKey) String() string {
-	return "WithFormKey"
-}
+func (identFormKey) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identHeaderKey) String() string {
-	return "WithHeaderKey"
-}
+func (identHeaderKey) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identKeyProvider) String() string {
-	return "WithKeyProvider"
-}
+func (identKeyProvider) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identNumericDateFormatPrecision) String() string {
-	return "WithNumericDateFormatPrecision"
-}
+func (identNumericDateFormatPrecision) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identNumericDateParsePedantic) String() string {
-	return "WithNumericDateParsePedantic"
-}
+func (identNumericDateParsePedantic) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identNumericDateParsePrecision) String() string {
-	return "WithNumericDateParsePrecision"
-}
+func (identNumericDateParsePrecision) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identPedantic) String() string {
-	return "WithPedantic"
-}
+func (identPedantic) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identResetValidators) String() string {
-	return "WithResetValidators"
-}
+func (identResetValidators) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identSignOption) String() string {
-	return "WithSignOption"
-}
+func (identSignOption) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identStrictBase64Encoding) String() string {
-	return "WithStrictBase64Encoding"
-}
+func (identStrictBase64Encoding) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identStrictStringClaims) String() string {
-	return "WithStrictStringClaims"
-}
+func (identStrictStringClaims) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identToken) String() string {
-	return "WithToken"
-}
+func (identToken) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identTruncation) String() string {
-	return "WithTruncation"
-}
+func (identTruncation) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identValidate) String() string {
-	return "WithValidate"
-}
+func (identValidate) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identValidator) String() string {
-	return "WithValidator"
-}
+func (identValidator) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identVerify) String() string {
-	return "WithVerify"
-}
+func (identVerify) String() string { _ = "STUB: not implemented"; return "" }
 
 // WithAcceptableSkew specifies the duration in which exp, iat and nbf
 // claims may differ by. This value should be positive
 func WithAcceptableSkew(v time.Duration) ValidateOption {
-	return &validateOption{option.New(identAcceptableSkew{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithBase64Encoder specifies the base64 encoder to use for signing
 // tokens and verifying JWS signatures.
 func WithBase64Encoder(v jws.Base64Encoder) SignParseOption {
-	return &signParseOption{option.New(identBase64Encoder{}, v)}
+	_ = "STUB: not implemented"
+	return *new(SignParseOption)
 }
 
 // WithClock specifies the `Clock` to be used when verifying
 // exp, iat and nbf claims.
-func WithClock(v Clock) ValidateOption {
-	return &validateOption{option.New(identClock{}, v)}
-}
+func WithClock(v Clock) ValidateOption { _ = "STUB: not implemented"; return *new(ValidateOption) }
 
 // WithCollectErrors specifies that all validators should be run and
 // all errors collected, instead of returning on the first failure.
@@ -310,7 +292,8 @@ func WithClock(v Clock) ValidateOption {
 // (TokenExpiredError, InvalidAudienceError, caller-supplied
 // Validator return values, and similar) are collected.
 func WithCollectErrors(v bool) ValidateOption {
-	return &validateOption{option.New(identCollectErrors{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithContext allows you to specify a context.Context object to be used
@@ -320,7 +303,8 @@ func WithCollectErrors(v bool) ValidateOption {
 // `jwt.Validate()`'s signature will change to include an explicit
 // `context.Context` object.
 func WithContext(v context.Context) ValidateOption {
-	return &validateOption{option.New(identContext{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithCookie is used to specify a variable to store the cookie used when `jwt.ParseCookie()`
@@ -329,23 +313,20 @@ func WithContext(v context.Context) ValidateOption {
 //
 // While the type system allows this option to be passed to `jwt.Parse()` directly,
 // doing so will have no effect. Only use it for HTTP request parsing functions
-func WithCookie(v **http.Cookie) ParseOption {
-	return &parseOption{option.New(identCookie{}, v)}
-}
+func WithCookie(v **http.Cookie) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithCookieKey is used to specify cookie keys to search for tokens.
 //
 // While the type system allows this option to be passed to `jwt.Parse()` directly,
 // doing so will have no effect. Only use it for HTTP request parsing functions
-func WithCookieKey(v string) ParseOption {
-	return &parseOption{option.New(identCookieKey{}, v)}
-}
+func WithCookieKey(v string) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithEncryptOption provides an escape hatch for cases where extra options to
 // `(jws.Serializer).Encrypt()` must be specified when using `jwt.Sign()`. Normally you do not
 // need to use this.
 func WithEncryptOption(v jwe.EncryptOption) EncryptOption {
-	return &encryptOption{option.New(identEncryptOption{}, v)}
+	_ = "STUB: not implemented"
+	return *new(EncryptOption)
 }
 
 // WithFlattenAudience specifies the the `jwt.FlattenAudience` option on
@@ -354,38 +335,34 @@ func WithEncryptOption(v jwe.EncryptOption) EncryptOption {
 //
 // See the documentation for `jwt.TokenOptionSet`, `(jwt.Token).Options`, and
 // `jwt.FlattenAudience` for more details
-func WithFlattenAudience(v bool) GlobalOption {
-	return &globalOption{option.New(identFlattenAudience{}, v)}
-}
+func WithFlattenAudience(v bool) GlobalOption { _ = "STUB: not implemented"; return *new(GlobalOption) }
 
 // WithFormKey is used to specify header keys to search for tokens.
 //
 // While the type system allows this option to be passed to jwt.Parse() directly,
 // doing so will have no effect. Only use it for HTTP request parsing functions
-func WithFormKey(v string) ParseOption {
-	return &parseOption{option.New(identFormKey{}, v)}
-}
+func WithFormKey(v string) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithHeaderKey is used to specify header keys to search for tokens.
 //
 // While the type system allows this option to be passed to `jwt.Parse()` directly,
 // doing so will have no effect. Only use it for HTTP request parsing functions
-func WithHeaderKey(v string) ParseOption {
-	return &parseOption{option.New(identHeaderKey{}, v)}
-}
+func WithHeaderKey(v string) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithKeyProvider allows users to specify an object to provide keys to
 // sign/verify tokens using arbitrary code. Please read the documentation
 // for `jws.KeyProvider` in the `jws` package for details on how this works.
 func WithKeyProvider(v jws.KeyProvider) ParseOption {
-	return &parseOption{option.New(identKeyProvider{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }
 
 // WithNumericDateFormatPrecision sets the precision up to which the
 // library uses to format fractional dates found in the numeric date
 // fields. Default is 0 (second, no fractions), max is 9 (nanosecond)
 func WithNumericDateFormatPrecision(v int) GlobalOption {
-	return &globalOption{option.New(identNumericDateFormatPrecision{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 // WithNumericDateParsePedantic specifies if the parser should behave
@@ -398,21 +375,21 @@ func WithNumericDateFormatPrecision(v int) GlobalOption {
 // However, when you set WithNumericDateParePedantic to `true`, the
 // RFC3339 parser is not tried, and we expect a numeric value strictly
 func WithNumericDateParsePedantic(v bool) GlobalOption {
-	return &globalOption{option.New(identNumericDateParsePedantic{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 // WithNumericDateParsePrecision sets the precision up to which the
 // library uses to parse fractional dates found in the numeric date
 // fields. Default is 0 (second, no fractions), max is 9 (nanosecond)
 func WithNumericDateParsePrecision(v int) GlobalOption {
-	return &globalOption{option.New(identNumericDateParsePrecision{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 // WithPedantic enables pedantic mode for parsing JWTs. Currently this only
 // applies to checking for the correct `typ` and/or `cty` when necessary.
-func WithPedantic(v bool) ParseOption {
-	return &parseOption{option.New(identPedantic{}, v)}
-}
+func WithPedantic(v bool) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithResetValidators specifies that the default validators should be
 // reset before applying the custom validators. By default `jwt.Validate()`
@@ -433,14 +410,16 @@ func WithPedantic(v bool) ParseOption {
 //
 // The default value is `false` (`iat`, `exp`, and `nbf` are automatically checked).
 func WithResetValidators(v bool) ValidateOption {
-	return &validateOption{option.New(identResetValidators{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithSignOption provides an escape hatch for cases where extra options to
 // `jws.Sign()` must be specified when using `jwt.Sign()`. Normally you do not
 // need to use this.
 func WithSignOption(v jws.SignOption) SignOption {
-	return &signOption{option.New(identSignOption{}, v)}
+	_ = "STUB: not implemented"
+	return *new(SignOption)
 }
 
 // WithStrictBase64Encoding controls whether base64 decoding during
@@ -459,7 +438,8 @@ func WithSignOption(v jws.SignOption) SignOption {
 // auto-detecting base64 decoder. As a result, "strict by default"
 // applies only when the message has no "crit" header.
 func WithStrictBase64Encoding(v bool) ParseOption {
-	return &parseOption{option.New(identStrictBase64Encoding{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }
 
 // WithStrictStringClaims controls whether JSON null values for string
@@ -471,14 +451,13 @@ func WithStrictBase64Encoding(v bool) ParseOption {
 // This option only affects JWT claims. JWK, JWE, and JWS fields are
 // not subject to this check and will always accept null as an empty string.
 func WithStrictStringClaims(v bool) ParseOption {
-	return &parseOption{option.New(identStrictStringClaims{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }
 
 // WithToken specifies the token instance in which the resulting JWT is stored
 // when parsing JWT tokens
-func WithToken(v Token) ParseOption {
-	return &parseOption{option.New(identToken{}, v)}
-}
+func WithToken(v Token) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithTruncation specifies the amount that should be used when
 // truncating time values used during time-based validation routines,
@@ -491,7 +470,8 @@ func WithToken(v Token) ParseOption {
 // Since v3, this option can be passed to `jwt.Settings()` to set the truncation
 // value globally, as well as per invocation of `jwt.Validate()`
 func WithTruncation(v time.Duration) GlobalValidateOption {
-	return &globalValidateOption{option.New(identTruncation{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalValidateOption)
 }
 
 // WithValidate is passed to `Parse()` method to denote that the
@@ -502,9 +482,7 @@ func WithTruncation(v time.Duration) GlobalValidateOption {
 //
 // If you would like disable validation,
 // you must use `jwt.WithValidate(false)` or use `jwt.ParseInsecure()`
-func WithValidate(v bool) ParseOption {
-	return &parseOption{option.New(identValidate{}, v)}
-}
+func WithValidate(v bool) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // WithValidator validates the token with the given Validator.
 //
@@ -518,7 +496,8 @@ func WithValidate(v bool) ParseOption {
 //	})
 //	err := jwt.Validate(token, jwt.WithValidator(validator))
 func WithValidator(v Validator) ValidateOption {
-	return &validateOption{option.New(identValidator{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithVerify is passed to `Parse()` method to denote that the
@@ -532,6 +511,4 @@ func WithValidator(v Validator) ValidateOption {
 //
 // If you would like to only parse the JWT payload and not verify it,
 // you must use `jwt.WithVerify(false)` or use `jwt.ParseInsecure()`
-func WithVerify(v bool) ParseOption {
-	return &parseOption{option.New(identVerify{}, v)}
-}
+func WithVerify(v bool) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }

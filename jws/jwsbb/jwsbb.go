@@ -18,8 +18,6 @@ package jwsbb
 
 import (
 	"crypto"
-	"crypto/ed25519"
-	"fmt"
 	"sync"
 
 	"github.com/lestrrat-go/dsig"
@@ -100,38 +98,24 @@ func init() {
 // implementation always returns nil, but callers — especially extension
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
-func RegisterDsigAlgorithm(jwsAlg, dsigAlg string) error {
-	dsigAlgorithmDB.Store(jwsAlg, dsigAlg)
-	return nil
-}
+func RegisterDsigAlgorithm(jwsAlg, dsigAlg string) error { _ = "STUB: not implemented"; return nil }
 
 // GetDsigAlgorithm returns the dsig algorithm name registered for the given
 // JWS algorithm name. It returns ok=false if the algorithm has not been
 // registered; extension modules register new mappings with
 // [RegisterDsigAlgorithm] at init time.
-func GetDsigAlgorithm(jwsAlg string) (string, bool) {
-	v, ok := dsigAlgorithmDB.Load(jwsAlg)
-	if !ok {
-		return "", false
-	}
-	//nolint:forcetypeassert
-	return v.(string), true // always stored as string
-}
+func GetDsigAlgorithm(jwsAlg string) (string, bool) { _ = "STUB: not implemented"; return "", false }
+
+//nolint:forcetypeassert
+// always stored as string
 
 // validateEdDSACurve enforces that fully-specified EdDSA algorithms (RFC 9864)
 // are only used with the correct key curve. The polymorphic "EdDSA" algorithm
 // accepts any EdDSA key without curve checks. The pub argument must be the
 // already-extracted public key (after jwk.Key unwrapping / keyconv).
 func validateEdDSACurve(jwsAlg string, pub crypto.PublicKey) error {
-	switch jwsAlg {
-	case edDSAEd25519:
-		if _, ok := pub.(ed25519.PublicKey); !ok {
-			return fmt.Errorf(`algorithm %q requires an Ed25519 key, got %T`, jwsAlg, pub)
-		}
-	case edDSA:
-		// Polymorphic EdDSA: no curve restriction
-	default:
-		return fmt.Errorf(`unsupported fully-specified EdDSA algorithm %q`, jwsAlg)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// Polymorphic EdDSA: no curve restriction

@@ -19,9 +19,7 @@ var errCritPresent = errors.New("VerifyCompactFast: protected header contains \"
 // when the protected header contains a "crit" list. The error returned
 // from VerifyCompactFast also matches jws.VerifyError(), so callers that
 // only branch on the general class still classify the refusal correctly.
-func ErrCritPresent() error {
-	return errCritPresent
-}
+func ErrCritPresent() error { _ = "STUB: not implemented"; return nil }
 
 // errB64Present is returned by VerifyCompactFast when the protected
 // header carries a "b64" entry (typically b64=false per RFC 7797). The
@@ -41,9 +39,7 @@ var errB64Present = errors.New("VerifyCompactFast: protected header contains \"b
 // when the protected header contains a "b64" entry. The error returned
 // from VerifyCompactFast also matches jws.VerifyError(), so callers that
 // only branch on the general class still classify the refusal correctly.
-func ErrB64Present() error {
-	return errB64Present
-}
+func ErrB64Present() error { _ = "STUB: not implemented"; return nil }
 
 // errUnclassifiableKey is the common sentinel for AlgorithmsForKey
 // failures: the key shape cannot be matched to any registered key type
@@ -62,9 +58,7 @@ var errUnclassifiableKey = errors.New("jws: key cannot be classified for signing
 // a 'we can't tell what this key is' failure?" — the wrapping error
 // also carries the concrete %T or %q diagnostic in its message, so the
 // human-readable error stays specific.
-func ErrUnclassifiableKey() error {
-	return errUnclassifiableKey
-}
+func ErrUnclassifiableKey() error { _ = "STUB: not implemented"; return nil }
 
 type signError struct {
 	error
@@ -78,21 +72,15 @@ const (
 var errDefaultSignError = makeSignError(prefixJwsSign, `unknown error`)
 
 // SignError returns an error that can be passed to `errors.Is` to check if the error is a sign error.
-func SignError() error {
-	return errDefaultSignError
-}
+func SignError() error { _ = "STUB: not implemented"; return nil }
 
-func (e signError) Unwrap() error {
-	return e.error
-}
+func (e signError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (signError) Is(err error) bool {
-	_, ok := err.(signError)
-	return ok
-}
+func (signError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 func makeSignError(prefix string, f string, args ...any) error {
-	return signError{fmt.Errorf(prefix+`: `+f, args...)}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // This error is returned when jws.Verify fails, but note that there's another type of
@@ -104,22 +92,13 @@ type verifyError struct {
 var errDefaultVerifyError = makeVerifyError(`unknown error`)
 
 // VerifyError returns an error that can be passed to `errors.Is` to check if the error is a verify error.
-func VerifyError() error {
-	return errDefaultVerifyError
-}
+func VerifyError() error { _ = "STUB: not implemented"; return nil }
 
-func (e verifyError) Unwrap() error {
-	return e.error
-}
+func (e verifyError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (verifyError) Is(err error) bool {
-	_, ok := err.(verifyError)
-	return ok
-}
+func (verifyError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
-func makeVerifyError(f string, args ...any) error {
-	return verifyError{fmt.Errorf(`jws.Verify: `+f, args...)}
-}
+func makeVerifyError(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 // verificationError is returned when the actual _verification_ of the key/payload fails.
 type verificationError struct {
@@ -129,18 +108,11 @@ type verificationError struct {
 var errDefaultVerificationError = verificationError{fmt.Errorf(`unknown verification error`)}
 
 // VerificationError returns an error that can be passed to `errors.Is` to check if the error is a verification error.
-func VerificationError() error {
-	return errDefaultVerificationError
-}
+func VerificationError() error { _ = "STUB: not implemented"; return nil }
 
-func (e verificationError) Unwrap() error {
-	return e.error
-}
+func (e verificationError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (verificationError) Is(err error) bool {
-	_, ok := err.(verificationError)
-	return ok
-}
+func (verificationError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 type parseError struct {
 	error
@@ -149,21 +121,15 @@ type parseError struct {
 var errDefaultParseError = makeParseError(`jws.Parse`, `unknown error`)
 
 // ParseError returns an error that can be passed to `errors.Is` to check if the error is a parse error.
-func ParseError() error {
-	return errDefaultParseError
-}
+func ParseError() error { _ = "STUB: not implemented"; return nil }
 
-func (e parseError) Unwrap() error {
-	return e.error
-}
+func (e parseError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (parseError) Is(err error) bool {
-	_, ok := err.(parseError)
-	return ok
-}
+func (parseError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 func makeParseError(prefix string, f string, args ...any) error {
-	return parseError{fmt.Errorf(prefix+": "+f, args...)}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 //-------------------------------------------------------------------
@@ -177,14 +143,9 @@ type FieldNotFoundError struct {
 	Name string
 }
 
-func (e FieldNotFoundError) Error() string {
-	return fmt.Sprintf(`field %q not found`, e.Name)
-}
+func (e FieldNotFoundError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e FieldNotFoundError) Is(target error) bool {
-	_, ok := target.(FieldNotFoundError)
-	return ok
-}
+func (e FieldNotFoundError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // FieldTypeMismatchError
@@ -208,11 +169,6 @@ type FieldTypeMismatchError struct {
 	Want any
 }
 
-func (e FieldTypeMismatchError) Error() string {
-	return fmt.Sprintf(`field %q is %T, not %T`, e.Name, e.Got, e.Want)
-}
+func (e FieldTypeMismatchError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e FieldTypeMismatchError) Is(target error) bool {
-	_, ok := target.(FieldTypeMismatchError)
-	return ok
-}
+func (e FieldTypeMismatchError) Is(target error) bool { _ = "STUB: not implemented"; return false }

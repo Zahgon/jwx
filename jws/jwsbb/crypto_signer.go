@@ -2,8 +2,6 @@ package jwsbb
 
 import (
 	"crypto"
-	"crypto/rand"
-	"fmt"
 	"io"
 )
 
@@ -13,21 +11,8 @@ import (
 //
 // rr is an io.Reader that provides randomness for signing. If rr is nil, it defaults to rand.Reader.
 func cryptosign(signer crypto.Signer, payload []byte, hash crypto.Hash, opts crypto.SignerOpts, rr io.Reader) ([]byte, error) {
-	if rr == nil {
-		rr = rand.Reader
-	}
-
-	var digest []byte
-	if hash == crypto.Hash(0) {
-		digest = payload
-	} else {
-		h := hash.New()
-		if _, err := h.Write(payload); err != nil {
-			return nil, fmt.Errorf(`failed to write payload to hash: %w`, err)
-		}
-		digest = h.Sum(nil)
-	}
-	return signer.Sign(rr, digest, opts)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SignCryptoSigner generates a signature using a crypto.Signer interface.
@@ -38,8 +23,6 @@ func cryptosign(signer crypto.Signer, payload []byte, hash crypto.Hash, opts cry
 //
 // Returns the signature bytes or an error if signing fails.
 func SignCryptoSigner(signer crypto.Signer, raw []byte, h crypto.Hash, opts crypto.SignerOpts, rr io.Reader) ([]byte, error) {
-	if signer == nil {
-		return nil, fmt.Errorf("jwsbb.SignCryptoSignerRaw: signer is nil")
-	}
-	return cryptosign(signer, raw, h, opts, rr)
+	_ = "STUB: not implemented"
+	return nil, nil
 }

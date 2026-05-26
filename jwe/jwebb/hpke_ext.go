@@ -39,24 +39,14 @@ type HPKEKeyDecrypter interface {
 
 // KeyEncryptHPKECustom encrypts using a custom HPKE key encrypter.
 func KeyEncryptHPKECustom(cek []byte, alg, calg string, enc HPKEKeyEncrypter) (keygen.ByteSource, error) {
-	sealedCEK, encKey, err := enc.EncryptHPKE(cek, alg, calg)
-	if err != nil {
-		return nil, fmt.Errorf(`HPKE key encrypt (custom): %w`, err)
-	}
-
-	return keygen.ByteWithEncapsulatedKey{
-		ByteKey:    keygen.ByteKey(sealedCEK),
-		Ciphertext: encKey,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(keygen.ByteSource), nil
 }
 
 // KeyDecryptHPKECustom decrypts using a custom HPKE key decrypter.
 func KeyDecryptHPKECustom(sealedCEK []byte, alg, calg string, dec HPKEKeyDecrypter, enc []byte) ([]byte, error) {
-	cek, err := dec.DecryptHPKE(sealedCEK, alg, calg, enc)
-	if err != nil {
-		return nil, fmt.Errorf(`HPKE key decrypt (custom): %w`, err)
-	}
-	return cek, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 var (
@@ -113,23 +103,9 @@ func init() {
 // error and panic on failure to stay forward-compatible — even though
 // the current implementation always returns nil, the error return is
 // part of the contract.
-func RegisterHPKEAlgorithm(alg string) error {
-	muHPKEAlgs.Lock()
-	defer muHPKEAlgs.Unlock()
-	hpkeAlgSet[alg] = struct{}{}
-	return nil
-}
+func RegisterHPKEAlgorithm(alg string) error { _ = "STUB: not implemented"; return nil }
 
-func unregisterHPKEAlgorithm(alg string) {
-	muHPKEAlgs.Lock()
-	defer muHPKEAlgs.Unlock()
-	delete(hpkeAlgSet, alg)
-}
+func unregisterHPKEAlgorithm(alg string) { _ = "STUB: not implemented"; return }
 
 // isRegisteredHPKE checks whether alg is a registered HPKE algorithm.
-func isRegisteredHPKE(alg string) bool {
-	muHPKEAlgs.RLock()
-	defer muHPKEAlgs.RUnlock()
-	_, ok := hpkeAlgSet[alg]
-	return ok
-}
+func isRegisteredHPKE(alg string) bool { _ = "STUB: not implemented"; return false }

@@ -3,13 +3,8 @@
 package jwa
 
 import (
-	"cmp"
-	"encoding/json"
 	"fmt"
-	"slices"
 	"sync"
-
-	"github.com/lestrrat-go/option/v3"
 )
 
 var muAllEllipticCurveAlgorithm sync.RWMutex
@@ -38,49 +33,39 @@ func init() {
 
 // Ed25519 returns an object representing Ed25519 algorithm for EdDSA operations.
 func Ed25519() EllipticCurveAlgorithm {
-	return lookupBuiltinEllipticCurveAlgorithm("Ed25519")
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm)
 }
 
 var invalidEllipticCurve = NewEllipticCurveAlgorithm("P-invalid")
 
 // InvalidEllipticCurve returns an object representing an invalid elliptic curve.
 func InvalidEllipticCurve() EllipticCurveAlgorithm {
-	return invalidEllipticCurve
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm)
 }
 
 // P256 returns an object representing P-256 algorithm for ECDSA operations.
-func P256() EllipticCurveAlgorithm {
-	return lookupBuiltinEllipticCurveAlgorithm("P-256")
-}
+func P256() EllipticCurveAlgorithm { _ = "STUB: not implemented"; return *new(EllipticCurveAlgorithm) }
 
 // P384 returns an object representing P-384 algorithm for ECDSA operations.
-func P384() EllipticCurveAlgorithm {
-	return lookupBuiltinEllipticCurveAlgorithm("P-384")
-}
+func P384() EllipticCurveAlgorithm { _ = "STUB: not implemented"; return *new(EllipticCurveAlgorithm) }
 
 // P521 returns an object representing P-521 algorithm for ECDSA operations.
-func P521() EllipticCurveAlgorithm {
-	return lookupBuiltinEllipticCurveAlgorithm("P-521")
-}
+func P521() EllipticCurveAlgorithm { _ = "STUB: not implemented"; return *new(EllipticCurveAlgorithm) }
 
 // X25519 returns an object representing X25519 algorithm for ECDH operations.
 func X25519() EllipticCurveAlgorithm {
-	return lookupBuiltinEllipticCurveAlgorithm("X25519")
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm)
 }
 
 // X448 returns an object representing X448 algorithm for ECDH operations.
-func X448() EllipticCurveAlgorithm {
-	return lookupBuiltinEllipticCurveAlgorithm("X448")
-}
+func X448() EllipticCurveAlgorithm { _ = "STUB: not implemented"; return *new(EllipticCurveAlgorithm) }
 
 func lookupBuiltinEllipticCurveAlgorithm(name string) EllipticCurveAlgorithm {
-	muAllEllipticCurveAlgorithm.RLock()
-	v, ok := allEllipticCurveAlgorithm[name]
-	muAllEllipticCurveAlgorithm.RUnlock()
-	if !ok {
-		panic(fmt.Sprintf(`jwa: EllipticCurveAlgorithm %q not registered`, name))
-	}
-	return v
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm)
 }
 
 // EllipticCurveAlgorithm represents the algorithms used for EC keys
@@ -90,37 +75,30 @@ type EllipticCurveAlgorithm struct {
 }
 
 func (s EllipticCurveAlgorithm) String() string {
-	return s.name
+	_ = "STUB: not implemented"
+
+	// IsDeprecated returns true if the EllipticCurveAlgorithm object is deprecated.
+	return ""
 }
 
-// IsDeprecated returns true if the EllipticCurveAlgorithm object is deprecated.
-func (s EllipticCurveAlgorithm) IsDeprecated() bool {
-	return s.deprecated
-}
+func (s EllipticCurveAlgorithm) IsDeprecated() bool { _ = "STUB: not implemented"; return false }
 
 // EmptyEllipticCurveAlgorithm returns an empty EllipticCurveAlgorithm object, used as a zero value.
 func EmptyEllipticCurveAlgorithm() EllipticCurveAlgorithm {
-	return EllipticCurveAlgorithm{}
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm)
 }
 
 // NewEllipticCurveAlgorithm creates a new EllipticCurveAlgorithm object with the given name.
 func NewEllipticCurveAlgorithm(name string, options ...NewAlgorithmOption) EllipticCurveAlgorithm {
-	var deprecated bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identDeprecated{}:
-			deprecated = option.MustGet[bool](opt)
-		}
-	}
-	return EllipticCurveAlgorithm{name: name, deprecated: deprecated}
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm)
 }
 
 // LookupEllipticCurveAlgorithm returns the EllipticCurveAlgorithm object for the given name.
 func LookupEllipticCurveAlgorithm(name string) (EllipticCurveAlgorithm, bool) {
-	muAllEllipticCurveAlgorithm.RLock()
-	v, ok := allEllipticCurveAlgorithm[name]
-	muAllEllipticCurveAlgorithm.RUnlock()
-	return v, ok
+	_ = "STUB: not implemented"
+	return *new(EllipticCurveAlgorithm), false
 }
 
 // RegisterEllipticCurveAlgorithm registers a new EllipticCurveAlgorithm. The signature value must be immutable
@@ -130,74 +108,30 @@ func LookupEllipticCurveAlgorithm(name string) (EllipticCurveAlgorithm, bool) {
 // reserved and cannot be replaced by callers after init has completed; use a
 // distinct name for third-party algorithms.
 func RegisterEllipticCurveAlgorithm(algorithms ...EllipticCurveAlgorithm) error {
-	muAllEllipticCurveAlgorithm.Lock()
-	defer muAllEllipticCurveAlgorithm.Unlock()
-	for _, alg := range algorithms {
-		if _, ok := builtinEllipticCurveAlgorithm[alg.String()]; ok {
-			if existing, ok := allEllipticCurveAlgorithm[alg.String()]; ok && existing != alg {
-				return fmt.Errorf(`jwa: EllipticCurveAlgorithm %q is reserved for a built-in value`, alg.String())
-			}
-		}
-	}
-	for _, alg := range algorithms {
-		if _, ok := builtinEllipticCurveAlgorithm[alg.String()]; ok {
-			continue
-		}
-		allEllipticCurveAlgorithm[alg.String()] = alg
-	}
-	rebuildEllipticCurveAlgorithmLocked()
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // UnregisterEllipticCurveAlgorithm unregisters a EllipticCurveAlgorithm from its known database.
 // Non-existent entries, as well as built-in algorithms will silently be ignored.
 func UnregisterEllipticCurveAlgorithm(algorithms ...EllipticCurveAlgorithm) {
-	muAllEllipticCurveAlgorithm.Lock()
-	defer muAllEllipticCurveAlgorithm.Unlock()
-	for _, alg := range algorithms {
-		if _, ok := builtinEllipticCurveAlgorithm[alg.String()]; ok {
-			continue
-		}
-		delete(allEllipticCurveAlgorithm, alg.String())
-	}
-	rebuildEllipticCurveAlgorithmLocked()
+	_ = "STUB: not implemented"
+	return
 }
 
-func rebuildEllipticCurveAlgorithmLocked() {
-	list := make([]EllipticCurveAlgorithm, 0, len(allEllipticCurveAlgorithm))
-	for _, v := range allEllipticCurveAlgorithm {
-		list = append(list, v)
-	}
-	slices.SortFunc(list, func(a, b EllipticCurveAlgorithm) int {
-		return cmp.Compare(a.String(), b.String())
-	})
-	muListEllipticCurveAlgorithm.Lock()
-	listEllipticCurveAlgorithm = list
-	muListEllipticCurveAlgorithm.Unlock()
-}
+func rebuildEllipticCurveAlgorithmLocked() { _ = "STUB: not implemented"; return }
 
 // EllipticCurveAlgorithms returns a list of all available values for EllipticCurveAlgorithm.
-func EllipticCurveAlgorithms() []EllipticCurveAlgorithm {
-	muListEllipticCurveAlgorithm.RLock()
-	defer muListEllipticCurveAlgorithm.RUnlock()
-	return listEllipticCurveAlgorithm
-}
+func EllipticCurveAlgorithms() []EllipticCurveAlgorithm { _ = "STUB: not implemented"; return nil }
 
 // MarshalJSON serializes the EllipticCurveAlgorithm object to a JSON string.
 func (s EllipticCurveAlgorithm) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // UnmarshalJSON deserializes the JSON string to a EllipticCurveAlgorithm object.
 func (s *EllipticCurveAlgorithm) UnmarshalJSON(data []byte) error {
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		return fmt.Errorf(`failed to unmarshal EllipticCurveAlgorithm: %w`, err)
-	}
-	v, ok := LookupEllipticCurveAlgorithm(name)
-	if !ok {
-		return fmt.Errorf(`unknown EllipticCurveAlgorithm: %q`, name)
-	}
-	*s = v
+	_ = "STUB: not implemented"
 	return nil
 }

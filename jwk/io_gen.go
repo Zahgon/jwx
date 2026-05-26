@@ -4,18 +4,12 @@ package jwk
 
 import (
 	"io/fs"
-	"os"
 )
 
 // ParseFS opens path on fsys and parses the contents.
 func ParseFS(fsys fs.FS, path string, options ...ParseOption) (Set, error) {
-	f, err := fsys.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	return ParseReader(f, options...)
+	_ = "STUB: not implemented"
+	return *new(Set), nil
 }
 
 // ReadFile opens path with os.Open and parses the contents. It accepts
@@ -24,11 +18,6 @@ func ParseFS(fsys fs.FS, path string, options ...ParseOption) (Set, error) {
 // Deprecated: prefer ParseFS, which works with any fs.FS (e.g. os.DirFS,
 // embed.FS, testing/fstest). ReadFile is retained for v3 source compatibility.
 func ReadFile(path string, options ...ParseOption) (Set, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	return ParseReader(f, options...)
+	_ = "STUB: not implemented"
+	return *new(Set), nil
 }

@@ -3,7 +3,6 @@ package jws
 import (
 	"github.com/lestrrat-go/jwx/v4/jwa"
 	"github.com/lestrrat-go/jwx/v4/jwk"
-	"github.com/lestrrat-go/option/v3"
 )
 
 type identInsecureNoSignature struct{}
@@ -41,7 +40,8 @@ type identCritExtension struct{}
 //     the application's purposes, even though jws.Verify() returned
 //     no error.
 func WithCritExtension(names ...string) VerifyOption {
-	return &verifyOption{option.New(identCritExtension{}, names)}
+	_ = "STUB: not implemented"
+	return *new(VerifyOption)
 }
 
 // WithJSON specifies that the result of `jws.Sign()` is serialized in
@@ -50,19 +50,8 @@ func WithCritExtension(names ...string) VerifyOption {
 // If you pass multiple keys to `jws.Sign()`, it will fail unless
 // you also pass this option.
 func WithJSON(options ...WithJSONSuboption) SignVerifyParseOption {
-	var pretty bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identPretty{}:
-			pretty = option.MustGet[bool](opt)
-		}
-	}
-
-	format := fmtJSON
-	if pretty {
-		format = fmtJSONPretty
-	}
-	return &signVerifyParseOption{option.New(identSerialization{}, format)}
+	_ = "STUB: not implemented"
+	return *new(SignVerifyParseOption)
 }
 
 type withKey struct {
@@ -91,15 +80,12 @@ type withKey struct {
 // name reflects the side effect so callers reviewing code do not
 // mistake the call for a pure accessor.
 func (w *withKey) SetProtectedDefault(v Headers) Headers {
-	if w.protected == nil && v != nil {
-		w.protected = v
-		// Invalidate the precomputed header JSON because the caller
-		// will likely modify the headers (e.g., jwt sets "typ").
-		w.cachedHdrJSON = nil
-		w.cachedHdrErr = nil
-	}
-	return w.protected
+	_ = "STUB: not implemented"
+	return *new(Headers)
 }
+
+// Invalidate the precomputed header JSON because the caller
+// will likely modify the headers (e.g., jwt sets "typ").
 
 // WithKey is used to pass a static algorithm/key pair to either `jws.Sign()` or `jws.Verify()`.
 //
@@ -161,56 +147,23 @@ func (w *withKey) SetProtectedDefault(v Headers) Headers {
 // interface distinct from `jwe.WithKeySuboption`. The Go compiler rejects any
 // attempt to pass a `jwe.*` suboption to `jws.WithKey()` (and vice versa).
 func WithKey(alg jwa.KeyAlgorithm, key any, options ...WithKeySuboption) SignVerifyOption {
+	_ = "STUB: not implemented"
 	// Implementation note: this option is shared between Sign() and
 	// Verify(). As such we don't create a KeyProvider here because
 	// if used in Sign() we would be doing something else.
-	var protected, public Headers
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identProtectedHeaders{}:
-			protected = option.MustGet[Headers](opt)
-		case identPublicHeaders{}:
-			public = option.MustGet[Headers](opt)
-		}
-	}
-
-	wk := &withKey{
-		alg:       alg,
-		key:       key,
-		protected: protected,
-		public:    public,
-	}
-
-	// Precompute header JSON and validate algorithm-key compatibility
-	// at construction time so we can skip this work on every Sign() call.
-	if salg, ok := alg.(jwa.SignatureAlgorithm); ok {
-		if validateAlgorithmForKey(salg, key) == nil {
-			wk.keyPrevalidated = true
-		}
-
-		// Cache header JSON when there are no custom headers and the key
-		// won't inject a kid (only jwk.Key with a non-empty kid does that).
-		if protected == nil && public == nil {
-			needsKid := false
-			if jwkKey, ok := key.(jwk.Key); ok {
-				if kid, ok := jwkKey.KeyID(); ok && kid != "" {
-					needsKid = true
-				}
-			}
-			if !needsKid {
-				// WithKey cannot return an error, so defer any validation
-				// failure (unsafe alg characters) to Sign() time via
-				// cachedHdrErr. The sign path checks this before using
-				// the cached bytes.
-				wk.cachedHdrJSON, wk.cachedHdrErr = buildAlgHeaderJSON(salg.String())
-			}
-		}
-	}
-
-	return &signVerifyOption{
-		option.New(identKey{}, wk),
-	}
+	return *new(SignVerifyOption)
 }
+
+// Precompute header JSON and validate algorithm-key compatibility
+// at construction time so we can skip this work on every Sign() call.
+
+// Cache header JSON when there are no custom headers and the key
+// won't inject a kid (only jwk.Key with a non-empty kid does that).
+
+// WithKey cannot return an error, so defer any validation
+// failure (unsafe alg characters) to Sign() time via
+// cachedHdrErr. The sign path checks this before using
+// the cached bytes.
 
 // WithKeySet specifies a JWKS (jwk.Set) to use for verification.
 //
@@ -232,28 +185,8 @@ func WithKey(alg jwa.KeyAlgorithm, key any, options ...WithKeySuboption) SignVer
 //
 // See the documentation for `WithInferAlgorithm()` for more details.
 func WithKeySet(set jwk.Set, options ...WithKeySetSuboption) VerifyOption {
-	requireKid := true
-	var useDefault, inferAlgorithm, multipleKeysPerKeyID bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identRequireKid{}:
-			requireKid = option.MustGet[bool](opt)
-		case identUseDefault{}:
-			useDefault = option.MustGet[bool](opt)
-		case identMultipleKeysPerKeyID{}:
-			multipleKeysPerKeyID = option.MustGet[bool](opt)
-		case identInferAlgorithmFromKey{}:
-			inferAlgorithm = option.MustGet[bool](opt)
-		}
-	}
-
-	return WithKeyProvider(&keySetProvider{
-		set:                  set,
-		requireKid:           requireKid,
-		useDefault:           useDefault,
-		multipleKeysPerKeyID: multipleKeysPerKeyID,
-		inferAlgorithm:       inferAlgorithm,
-	})
+	_ = "STUB: not implemented"
+	return *new(VerifyOption)
 }
 
 // WithVerifyAuto enables automatic verification of the signature using
@@ -305,7 +238,8 @@ func WithKeySet(set jwk.Set, options ...WithKeySetSuboption) VerifyOption {
 // A nil fetcher is not permitted: jku verification errors at use
 // time rather than silently falling back to any default.
 func WithVerifyAuto(f jwk.Fetcher) VerifyOption {
-	return WithKeyProvider(jkuProvider{fetcher: f})
+	_ = "STUB: not implemented"
+	return *new(VerifyOption)
 }
 
 type withInsecureNoSignature struct {
@@ -316,10 +250,8 @@ type withInsecureNoSignature struct {
 // supplied default when none was configured via WithProtectedHeaders.
 // See (*withKey).SetProtectedDefault for the full semantics.
 func (w *withInsecureNoSignature) SetProtectedDefault(v Headers) Headers {
-	if w.protected == nil && v != nil {
-		w.protected = v
-	}
-	return w.protected
+	_ = "STUB: not implemented"
+	return *new(Headers)
 }
 
 // WithInsecureNoSignature creates an option that allows the user to use the
@@ -332,19 +264,6 @@ func (w *withInsecureNoSignature) SetProtectedDefault(v Headers) Headers {
 //
 // TODO: create specific suboption set for this option
 func WithInsecureNoSignature(options ...WithKeySuboption) SignOption {
-	var protected Headers
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identProtectedHeaders{}:
-			protected = option.MustGet[Headers](opt)
-		}
-	}
-
-	return &signOption{
-		option.New(identInsecureNoSignature{},
-			&withInsecureNoSignature{
-				protected: protected,
-			},
-		),
-	}
+	_ = "STUB: not implemented"
+	return *new(SignOption)
 }

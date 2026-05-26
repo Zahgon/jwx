@@ -34,14 +34,6 @@
 // FAQ style documentation can be found in the repository (https://github.com/lestrrat-go/jwx/tree/develop/v4/docs/99-faq.md)
 package jwx
 
-import (
-	"fmt"
-
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
-	"github.com/lestrrat-go/jwx/v4/internal/json"
-	"github.com/lestrrat-go/option/v3"
-)
-
 // implementationNoteStreaming documents a library-wide design decision:
 // jwx remains buffer-oriented for parse/sign/verify/encrypt/decrypt paths
 // even when an io.Reader helper exists as an input convenience.
@@ -81,31 +73,9 @@ var _ implementationNoteStreaming
 // Returns a non-nil error and applies no changes if any option fails
 // validation (for example, a nil [WithBase64Encoder] or [WithBase64Decoder]).
 func Settings(options ...GlobalOption) error {
+	_ = "STUB: not implemented"
 	// Validate first so the call is all-or-nothing on error.
 	// For interface-typed options, a nil value is unwrapped when passed
 	// through any, so option.Get returns ok=false — treat that as "nil".
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identBase64Encoder{}:
-			if v, ok := option.Get[Base64Encoder](opt); !ok || v == nil {
-				return fmt.Errorf(`jwx.Settings: WithBase64Encoder must not be nil`)
-			}
-		case identBase64Decoder{}:
-			if v, ok := option.Get[Base64Decoder](opt); !ok || v == nil {
-				return fmt.Errorf(`jwx.Settings: WithBase64Decoder must not be nil`)
-			}
-		}
-	}
-
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identUseNumber{}:
-			json.SetUseNumber(option.MustGet[bool](opt))
-		case identBase64Encoder{}:
-			base64.SetEncoder(option.MustGet[Base64Encoder](opt))
-		case identBase64Decoder{}:
-			base64.SetDecoder(option.MustGet[Base64Decoder](opt))
-		}
-	}
 	return nil
 }

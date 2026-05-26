@@ -2,7 +2,6 @@ package ecdsa
 
 import (
 	"crypto/elliptic"
-	"fmt"
 	"math/big"
 	"sync"
 
@@ -49,7 +48,8 @@ type PointValidatorFunc func(x, y *big.Int) error
 
 // ValidatePoint calls f(x, y).
 func (f PointValidatorFunc) ValidatePoint(x, y *big.Int) error {
-	return f(x, y)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type curveInfo struct {
@@ -92,23 +92,7 @@ func init() {
 // unregister API, which keeps the built-in NIST entries effectively
 // sealed once jwk is imported.
 func RegisterCurve(alg jwa.EllipticCurveAlgorithm, crv elliptic.Curve, validator PointValidator) error {
-	if validator == nil {
-		return fmt.Errorf(`jwk/ecdsa: RegisterCurve: validator must not be nil`)
-	}
-
-	muCurves.Lock()
-	defer muCurves.Unlock()
-
-	if _, exists := algToCurveMap[alg]; exists {
-		return fmt.Errorf(`jwk/ecdsa: RegisterCurve: algorithm %q is already registered`, alg)
-	}
-	if _, exists := curveToAlgMap[crv]; exists {
-		return fmt.Errorf(`jwk/ecdsa: RegisterCurve: curve %q is already registered`, crv.Params().Name)
-	}
-
-	algToCurveMap[alg] = curveInfo{curve: crv, validator: validator}
-	curveToAlgMap[crv] = alg
-	rebuildCurves()
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -116,67 +100,27 @@ func RegisterCurve(alg jwa.EllipticCurveAlgorithm, crv elliptic.Curve, validator
 // alongside the given curve via RegisterCurve. It returns an error if
 // no curve is registered for the given alg.
 func ValidatorFromCurve(alg jwa.EllipticCurveAlgorithm) (PointValidator, error) {
-	muCurves.RLock()
-	defer muCurves.RUnlock()
-
-	info, ok := algToCurveMap[alg]
-	if !ok {
-		return nil, fmt.Errorf(`unknown elliptic curve algorithm: %q`, alg)
-	}
-	return info.validator, nil
+	_ = "STUB: not implemented"
+	return *new(PointValidator), nil
 }
 
-func rebuildCurves() {
-	l := len(algToCurveMap)
-	if cap(algList) < l {
-		algList = make([]jwa.EllipticCurveAlgorithm, 0, l)
-	} else {
-		algList = algList[:0]
-	}
-
-	for alg := range algToCurveMap {
-		algList = append(algList, alg)
-	}
-}
+func rebuildCurves() { _ = "STUB: not implemented"; return }
 
 // Algorithms returns a snapshot of the registered
 // jwa.EllipticCurveAlgorithms that can be used for ECDSA keys.
 //
 // The returned slice is caller-owned. Modifying it does not affect the
 // package registry, and ordering is unspecified.
-func Algorithms() []jwa.EllipticCurveAlgorithm {
-	muCurves.RLock()
-	defer muCurves.RUnlock()
-
-	return append([]jwa.EllipticCurveAlgorithm(nil), algList...)
-}
+func Algorithms() []jwa.EllipticCurveAlgorithm { _ = "STUB: not implemented"; return nil }
 
 func AlgorithmFromCurve(crv elliptic.Curve) (jwa.EllipticCurveAlgorithm, error) {
-	muCurves.RLock()
-	defer muCurves.RUnlock()
-
-	alg, ok := curveToAlgMap[crv]
-	if !ok {
-		return jwa.InvalidEllipticCurve(), fmt.Errorf(`unknown elliptic curve: %q`, crv)
-	}
-	return alg, nil
+	_ = "STUB: not implemented"
+	return *new(jwa.EllipticCurveAlgorithm), nil
 }
 
 func CurveFromAlgorithm(alg jwa.EllipticCurveAlgorithm) (elliptic.Curve, error) {
-	muCurves.RLock()
-	defer muCurves.RUnlock()
-
-	info, ok := algToCurveMap[alg]
-	if !ok {
-		return nil, fmt.Errorf(`unknown elliptic curve algorithm: %q`, alg)
-	}
-	return info.curve, nil
+	_ = "STUB: not implemented"
+	return *new(elliptic.Curve), nil
 }
 
-func IsCurveAvailable(alg jwa.EllipticCurveAlgorithm) bool {
-	muCurves.RLock()
-	defer muCurves.RUnlock()
-
-	_, ok := algToCurveMap[alg]
-	return ok
-}
+func IsCurveAvailable(alg jwa.EllipticCurveAlgorithm) bool { _ = "STUB: not implemented"; return false }

@@ -15,9 +15,8 @@ import (
 var registry = json.NewRegistry()
 
 func (t *stdToken) Clone() (jwt.Token, error) {
-	dst, _ := New().(*stdToken)
-	dst.cloneFrom(t)
-	return dst, nil
+	_ = "STUB: not implemented"
+	return *new(jwt.Token), nil
 }
 
 // RegisterCustomField registers a private claim to be decoded as type T
@@ -29,10 +28,7 @@ func (t *stdToken) Clone() (jwt.Token, error) {
 // implementation always returns nil, but callers — especially extension
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
-func RegisterCustomField[T any](name string) error {
-	json.RegisterTyped[T](registry, name)
-	return nil
-}
+func RegisterCustomField[T any](name string) error { _ = "STUB: not implemented"; return nil }
 
 // RegisterCustomDecoder registers a private claim with a custom decoder
 // function. This option has a global effect.
@@ -42,7 +38,7 @@ func RegisterCustomField[T any](name string) error {
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
 func RegisterCustomDecoder[T any](name string, dec json.CustomDecodeFunc[T]) error {
-	json.RegisterCustomDecoder[T](registry, name, dec)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -54,7 +50,4 @@ func RegisterCustomDecoder[T any](name string, dec json.CustomDecodeFunc[T]) err
 // cycles from init() — should check the returned value and propagate
 // on failure to stay forward-compatible, matching the convention on
 // [RegisterCustomField] / [RegisterCustomDecoder].
-func UnregisterCustomField(name string) error {
-	registry.Unregister(name)
-	return nil
-}
+func UnregisterCustomField(name string) error { _ = "STUB: not implemented"; return nil }

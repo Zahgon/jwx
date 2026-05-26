@@ -2,7 +2,6 @@ package jwe
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/lestrrat-go/jwx/v4/jwa"
 )
@@ -11,62 +10,42 @@ type encryptError struct {
 	error
 }
 
-func (e encryptError) Unwrap() error {
-	return e.error
-}
+func (e encryptError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (encryptError) Is(err error) bool {
-	_, ok := err.(encryptError)
-	return ok
-}
+func (encryptError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 var errDefaultEncryptError = encryptError{errors.New(`encrypt error`)}
 
 // EncryptError returns an error that can be passed to `errors.Is` to check if the error is an error returned by `jwe.Encrypt`.
-func EncryptError() error {
-	return errDefaultEncryptError
-}
+func EncryptError() error { _ = "STUB: not implemented"; return nil }
 
 func makeEncryptError(prefix string, f string, args ...any) error {
-	return encryptError{fmt.Errorf(prefix+": "+f, args...)}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type decryptError struct {
 	error
 }
 
-func (e decryptError) Unwrap() error {
-	return e.error
-}
+func (e decryptError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (decryptError) Is(err error) bool {
-	_, ok := err.(decryptError)
-	return ok
-}
+func (decryptError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 var errDefaultDecryptError = decryptError{errors.New(`decrypt error`)}
 
 // DecryptError returns an error that can be passed to `errors.Is` to check if the error is an error returned by `jwe.Decrypt`.
-func DecryptError() error {
-	return errDefaultDecryptError
-}
+func DecryptError() error { _ = "STUB: not implemented"; return nil }
 
-func makeDecryptError(f string, args ...any) error {
-	return decryptError{fmt.Errorf("jwe.Decrypt: "+f, args...)}
-}
+func makeDecryptError(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 type recipientError struct {
 	error
 }
 
-func (e recipientError) Unwrap() error {
-	return e.error
-}
+func (e recipientError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (recipientError) Is(err error) bool {
-	_, ok := err.(recipientError)
-	return ok
-}
+func (recipientError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 var errDefaultRecipientError = recipientError{errors.New(`recipient error`)}
 
@@ -77,62 +56,43 @@ var errDefaultRecipientError = recipientError{errors.New(`recipient error`)}
 // `jwe.DecryptError`, but NOT `jwe.RecipientError`. However, if the JWE message could not
 // be decrypted for any of the recipients, then it will be a `jwe.RecipientError`
 // (actually, it will be _multiple_ `jwe.RecipientError` errors, one for each recipient)
-func RecipientError() error {
-	return errDefaultRecipientError
-}
+func RecipientError() error { _ = "STUB: not implemented"; return nil }
 
-func makeRecipientError(err error) error {
-	return recipientError{err}
-}
+func makeRecipientError(err error) error { _ = "STUB: not implemented"; return nil }
 
 type hpkeError struct {
 	error
 }
 
-func (e hpkeError) Unwrap() error {
-	return e.error
-}
+func (e hpkeError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (hpkeError) Is(err error) bool {
-	_, ok := err.(hpkeError)
-	return ok
-}
+func (hpkeError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 var errDefaultHPKEError = hpkeError{errors.New(`HPKE error`)}
 
 // HPKEError returns an error that can be passed to `errors.Is` to check
 // if the error originated from an HPKE encrypt or decrypt operation.
-func HPKEError() error {
-	return errDefaultHPKEError
-}
+func HPKEError() error { _ = "STUB: not implemented"; return nil }
 
-func makeHPKEError(f string, args ...any) error {
-	return hpkeError{fmt.Errorf(f, args...)}
-}
+func makeHPKEError(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 type parseError struct {
 	error
 }
 
-func (e parseError) Unwrap() error {
-	return e.error
-}
+func (e parseError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (parseError) Is(err error) bool {
-	_, ok := err.(parseError)
-	return ok
-}
+func (parseError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 var errDefaultParseError = parseError{errors.New(`parse error`)}
 
 // ParseError returns an error that can be passed to `errors.Is` to check if the error
 // is an error returned by `jwe.Parse` and related functions.
-func ParseError() error {
-	return errDefaultParseError
-}
+func ParseError() error { _ = "STUB: not implemented"; return nil }
 
 func makeParseError(prefix string, f string, args ...any) error {
-	return parseError{fmt.Errorf(prefix+": "+f, args...)}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 //-------------------------------------------------------------------
@@ -149,14 +109,9 @@ func makeParseError(prefix string, f string, args ...any) error {
 //	if errors.Is(err, jwe.MissingContentEncryptionError{}) { ... }
 type MissingContentEncryptionError struct{}
 
-func (MissingContentEncryptionError) Error() string {
-	return `failed to retrieve content encryption algorithm from protected headers`
-}
+func (MissingContentEncryptionError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (MissingContentEncryptionError) Is(target error) bool {
-	_, ok := target.(MissingContentEncryptionError)
-	return ok
-}
+func (MissingContentEncryptionError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // AlgorithmMismatchError
@@ -187,14 +142,9 @@ type AlgorithmMismatchError struct {
 	Got jwa.KeyEncryptionAlgorithm
 }
 
-func (e AlgorithmMismatchError) Error() string {
-	return fmt.Sprintf(`key (%q) and recipient (%q) algorithms do not match`, e.Expected, e.Got)
-}
+func (e AlgorithmMismatchError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (AlgorithmMismatchError) Is(target error) bool {
-	_, ok := target.(AlgorithmMismatchError)
-	return ok
-}
+func (AlgorithmMismatchError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // FieldNotFoundError
@@ -207,14 +157,9 @@ type FieldNotFoundError struct {
 	Name string
 }
 
-func (e FieldNotFoundError) Error() string {
-	return fmt.Sprintf(`field %q not found`, e.Name)
-}
+func (e FieldNotFoundError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e FieldNotFoundError) Is(target error) bool {
-	_, ok := target.(FieldNotFoundError)
-	return ok
-}
+func (e FieldNotFoundError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // FieldTypeMismatchError
@@ -238,11 +183,6 @@ type FieldTypeMismatchError struct {
 	Want any
 }
 
-func (e FieldTypeMismatchError) Error() string {
-	return fmt.Sprintf(`field %q is %T, not %T`, e.Name, e.Got, e.Want)
-}
+func (e FieldTypeMismatchError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e FieldTypeMismatchError) Is(target error) bool {
-	_, ok := target.(FieldTypeMismatchError)
-	return ok
-}
+func (e FieldTypeMismatchError) Is(target error) bool { _ = "STUB: not implemented"; return false }

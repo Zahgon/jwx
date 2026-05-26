@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -14,9 +13,7 @@ var errUnknownPayloadType = errors.New(`unknown payload type (payload is not JWT
 // the incoming buffer.
 //
 // This value should only be used for comparison using errors.Is().
-func UnknownPayloadTypeError() error {
-	return errUnknownPayloadType
-}
+func UnknownPayloadTypeError() error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // ClaimNotFoundError
@@ -28,14 +25,9 @@ type ClaimNotFoundError struct {
 	Name string
 }
 
-func (e ClaimNotFoundError) Error() string {
-	return fmt.Sprintf(`field "%s" not found`, e.Name)
-}
+func (e ClaimNotFoundError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e ClaimNotFoundError) Is(target error) bool {
-	_, ok := target.(ClaimNotFoundError)
-	return ok
-}
+func (e ClaimNotFoundError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // ClaimTypeMismatchError
@@ -59,14 +51,9 @@ type ClaimTypeMismatchError struct {
 	Want any
 }
 
-func (e ClaimTypeMismatchError) Error() string {
-	return fmt.Sprintf(`field "%s" is %T, not %T`, e.Name, e.Got, e.Want)
-}
+func (e ClaimTypeMismatchError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e ClaimTypeMismatchError) Is(target error) bool {
-	_, ok := target.(ClaimTypeMismatchError)
-	return ok
-}
+func (e ClaimTypeMismatchError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // ClaimAssignmentFailedError
@@ -79,18 +66,11 @@ type ClaimAssignmentFailedError struct {
 	Err error
 }
 
-func (e ClaimAssignmentFailedError) Error() string {
-	return fmt.Sprintf(`failed to assign value to dst: %s`, e.Err.Error())
-}
+func (e ClaimAssignmentFailedError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e ClaimAssignmentFailedError) Unwrap() error {
-	return e.Err
-}
+func (e ClaimAssignmentFailedError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (e ClaimAssignmentFailedError) Is(target error) bool {
-	_, ok := target.(ClaimAssignmentFailedError)
-	return ok
-}
+func (e ClaimAssignmentFailedError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // ParseError
@@ -101,18 +81,11 @@ type ParseError struct {
 	error
 }
 
-func (e ParseError) Unwrap() error {
-	return e.error
-}
+func (e ParseError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (ParseError) Is(err error) bool {
-	_, ok := err.(ParseError)
-	return ok
-}
+func (ParseError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
-func parseErrorf(prefix, f string, args ...any) error {
-	return ParseError{fmt.Errorf(prefix+": "+f, args...)}
-}
+func parseErrorf(prefix, f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // ValidationError
@@ -124,22 +97,13 @@ type ValidationError struct {
 	error
 }
 
-func (ValidationError) Is(err error) bool {
-	_, ok := err.(ValidationError)
-	return ok
-}
+func (ValidationError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
-func (err ValidationError) Unwrap() error {
-	return err.error
-}
+func (err ValidationError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func validateErrorf(f string, args ...any) error {
-	return ValidationError{fmt.Errorf(`jwt.Validate: `+f, args...)}
-}
+func validateErrorf(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
-func validateErrorJoin(errs ...error) error {
-	return ValidationError{fmt.Errorf("jwt.Validate: validation failed: %w", errors.Join(errs...))}
-}
+func validateErrorJoin(errs ...error) error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // InvalidIssuerError
@@ -150,18 +114,11 @@ type InvalidIssuerError struct {
 	error
 }
 
-func (err InvalidIssuerError) Is(target error) bool {
-	_, ok := target.(InvalidIssuerError)
-	return ok
-}
+func (err InvalidIssuerError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err InvalidIssuerError) Unwrap() error {
-	return err.error
-}
+func (err InvalidIssuerError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func issuerErrorf(f string, args ...any) error {
-	return InvalidIssuerError{fmt.Errorf(`"iss" not satisfied: `+f, args...)}
-}
+func issuerErrorf(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // TokenExpiredError
@@ -181,22 +138,13 @@ type TokenExpiredError struct {
 	Skew time.Duration
 }
 
-func (err TokenExpiredError) Is(target error) bool {
-	_, ok := target.(TokenExpiredError)
-	return ok
-}
+func (err TokenExpiredError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err TokenExpiredError) Unwrap() error {
-	return err.error
-}
+func (err TokenExpiredError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
 func newTokenExpiredError(expiration, now time.Time, skew time.Duration) error {
-	return TokenExpiredError{
-		error:      errors.New(`"exp" not satisfied: token is expired`),
-		Expiration: expiration,
-		Now:        now,
-		Skew:       skew,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 //-------------------------------------------------------------------
@@ -215,22 +163,13 @@ type InvalidIssuedAtError struct {
 	Skew time.Duration
 }
 
-func (err InvalidIssuedAtError) Is(target error) bool {
-	_, ok := target.(InvalidIssuedAtError)
-	return ok
-}
+func (err InvalidIssuedAtError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err InvalidIssuedAtError) Unwrap() error {
-	return err.error
-}
+func (err InvalidIssuedAtError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
 func newInvalidIssuedAtError(issuedAt, now time.Time, skew time.Duration) error {
-	return InvalidIssuedAtError{
-		error:    errors.New(`"iat" not satisfied`),
-		IssuedAt: issuedAt,
-		Now:      now,
-		Skew:     skew,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 //-------------------------------------------------------------------
@@ -249,22 +188,13 @@ type TokenNotYetValidError struct {
 	Skew time.Duration
 }
 
-func (err TokenNotYetValidError) Is(target error) bool {
-	_, ok := target.(TokenNotYetValidError)
-	return ok
-}
+func (err TokenNotYetValidError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err TokenNotYetValidError) Unwrap() error {
-	return err.error
-}
+func (err TokenNotYetValidError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
 func newTokenNotYetValidError(notBefore, now time.Time, skew time.Duration) error {
-	return TokenNotYetValidError{
-		error:     errors.New(`"nbf" not satisfied: token is not yet valid`),
-		NotBefore: notBefore,
-		Now:       now,
-		Skew:      skew,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 //-------------------------------------------------------------------
@@ -276,18 +206,11 @@ type InvalidAudienceError struct {
 	error
 }
 
-func (err InvalidAudienceError) Is(target error) bool {
-	_, ok := target.(InvalidAudienceError)
-	return ok
-}
+func (err InvalidAudienceError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err InvalidAudienceError) Unwrap() error {
-	return err.error
-}
+func (err InvalidAudienceError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func audienceErrorf(f string, args ...any) error {
-	return InvalidAudienceError{fmt.Errorf(`"aud" not satisfied: `+f, args...)}
-}
+func audienceErrorf(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // MissingRequiredClaimError
@@ -301,22 +224,11 @@ type MissingRequiredClaimError struct {
 	Claim string
 }
 
-func (err MissingRequiredClaimError) Is(target error) bool {
-	switch target.(type) {
-	case MissingRequiredClaimError, *MissingRequiredClaimError:
-		return true
-	default:
-		return false
-	}
-}
+func (err MissingRequiredClaimError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err MissingRequiredClaimError) Unwrap() error {
-	return err.error
-}
+func (err MissingRequiredClaimError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func missingRequiredClaimErrorf(name string) error {
-	return MissingRequiredClaimError{Claim: name, error: fmt.Errorf(`required claim "%s" is missing`, name)}
-}
+func missingRequiredClaimErrorf(name string) error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // ClaimValidationError
@@ -344,22 +256,13 @@ type ClaimValidationError struct {
 	Actual any
 }
 
-func (err ClaimValidationError) Is(target error) bool {
-	_, ok := target.(ClaimValidationError)
-	return ok
-}
+func (err ClaimValidationError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err ClaimValidationError) Unwrap() error {
-	return err.error
-}
+func (err ClaimValidationError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
 func newClaimValidationError(claim string, expected, actual any, msg string) error {
-	return ClaimValidationError{
-		error:    errors.New(msg),
-		Claim:    claim,
-		Expected: expected,
-		Actual:   actual,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 //-------------------------------------------------------------------
@@ -388,24 +291,11 @@ type TimeDeltaError struct {
 	Skew time.Duration
 }
 
-func (err TimeDeltaError) Is(target error) bool {
-	_, ok := target.(TimeDeltaError)
-	return ok
-}
+func (err TimeDeltaError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
-func (err TimeDeltaError) Unwrap() error {
-	return err.error
-}
+func (err TimeDeltaError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
 func newTimeDeltaError(msg, c1, c2 string, v1, v2 time.Time, delta, limit, skew time.Duration) error {
-	return TimeDeltaError{
-		error:  errors.New(msg),
-		Claim1: c1,
-		Claim2: c2,
-		Value1: v1,
-		Value2: v2,
-		Delta:  delta,
-		Limit:  limit,
-		Skew:   skew,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }

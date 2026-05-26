@@ -3,13 +3,8 @@
 package jwa
 
 import (
-	"cmp"
-	"encoding/json"
 	"fmt"
-	"slices"
 	"sync"
-
-	"github.com/lestrrat-go/option/v3"
 )
 
 var muAllKeyType sync.RWMutex
@@ -36,46 +31,31 @@ func init() {
 }
 
 // AKP returns an object representing AKP. Algorithm Key Pair (post-quantum KEM/signature keys)
-func AKP() KeyType {
-	return lookupBuiltinKeyType("AKP")
-}
+func AKP() KeyType { _ = "STUB: not implemented"; return *new(KeyType) }
 
 // EC returns an object representing EC. Elliptic Curve
-func EC() KeyType {
-	return lookupBuiltinKeyType("EC")
-}
+func EC() KeyType { _ = "STUB: not implemented"; return *new(KeyType) }
 
 var invalidKeyType = NewKeyType("")
 
 // InvalidKeyType returns an object representing invalid key type. Invalid KeyType
 func InvalidKeyType() KeyType {
-	return invalidKeyType
+	_ = "STUB: not implemented"
+	return *
+
+	// OKP returns an object representing OKP. Octet string key pairs
+	new(KeyType)
 }
 
-// OKP returns an object representing OKP. Octet string key pairs
-func OKP() KeyType {
-	return lookupBuiltinKeyType("OKP")
-}
+func OKP() KeyType { _ = "STUB: not implemented"; return *new(KeyType) }
 
 // OctetSeq returns an object representing oct. Octet sequence (used to represent symmetric keys)
-func OctetSeq() KeyType {
-	return lookupBuiltinKeyType("oct")
-}
+func OctetSeq() KeyType { _ = "STUB: not implemented"; return *new(KeyType) }
 
 // RSA returns an object representing RSA. RSA
-func RSA() KeyType {
-	return lookupBuiltinKeyType("RSA")
-}
+func RSA() KeyType { _ = "STUB: not implemented"; return *new(KeyType) }
 
-func lookupBuiltinKeyType(name string) KeyType {
-	muAllKeyType.RLock()
-	v, ok := allKeyType[name]
-	muAllKeyType.RUnlock()
-	if !ok {
-		panic(fmt.Sprintf(`jwa: KeyType %q not registered`, name))
-	}
-	return v
-}
+func lookupBuiltinKeyType(name string) KeyType { _ = "STUB: not implemented"; return *new(KeyType) }
 
 // KeyType represents the key type ("kty") that are supported
 type KeyType struct {
@@ -84,37 +64,31 @@ type KeyType struct {
 }
 
 func (s KeyType) String() string {
-	return s.name
+	_ = "STUB: not implemented"
+
+	// IsDeprecated returns true if the KeyType object is deprecated.
+	return ""
 }
 
-// IsDeprecated returns true if the KeyType object is deprecated.
-func (s KeyType) IsDeprecated() bool {
-	return s.deprecated
-}
+func (s KeyType) IsDeprecated() bool { _ = "STUB: not implemented"; return false }
 
 // EmptyKeyType returns an empty KeyType object, used as a zero value.
 func EmptyKeyType() KeyType {
-	return KeyType{}
+	_ = "STUB: not implemented"
+
+	// NewKeyType creates a new KeyType object with the given name.
+	return *new(KeyType)
 }
 
-// NewKeyType creates a new KeyType object with the given name.
 func NewKeyType(name string, options ...NewAlgorithmOption) KeyType {
-	var deprecated bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identDeprecated{}:
-			deprecated = option.MustGet[bool](opt)
-		}
-	}
-	return KeyType{name: name, deprecated: deprecated}
+	_ = "STUB: not implemented"
+	return *new(KeyType)
 }
 
 // LookupKeyType returns the KeyType object for the given name.
 func LookupKeyType(name string) (KeyType, bool) {
-	muAllKeyType.RLock()
-	v, ok := allKeyType[name]
-	muAllKeyType.RUnlock()
-	return v, ok
+	_ = "STUB: not implemented"
+	return *new(KeyType), false
 }
 
 // RegisterKeyType registers a new KeyType. The signature value must be immutable
@@ -123,75 +97,19 @@ func LookupKeyType(name string) (KeyType, bool) {
 // Registration is process-global. Built-in identifiers such as RS256 are
 // reserved and cannot be replaced by callers after init has completed; use a
 // distinct name for third-party algorithms.
-func RegisterKeyType(algorithms ...KeyType) error {
-	muAllKeyType.Lock()
-	defer muAllKeyType.Unlock()
-	for _, alg := range algorithms {
-		if _, ok := builtinKeyType[alg.String()]; ok {
-			if existing, ok := allKeyType[alg.String()]; ok && existing != alg {
-				return fmt.Errorf(`jwa: KeyType %q is reserved for a built-in value`, alg.String())
-			}
-		}
-	}
-	for _, alg := range algorithms {
-		if _, ok := builtinKeyType[alg.String()]; ok {
-			continue
-		}
-		allKeyType[alg.String()] = alg
-	}
-	rebuildKeyTypeLocked()
-	return nil
-}
+func RegisterKeyType(algorithms ...KeyType) error { _ = "STUB: not implemented"; return nil }
 
 // UnregisterKeyType unregisters a KeyType from its known database.
 // Non-existent entries, as well as built-in algorithms will silently be ignored.
-func UnregisterKeyType(algorithms ...KeyType) {
-	muAllKeyType.Lock()
-	defer muAllKeyType.Unlock()
-	for _, alg := range algorithms {
-		if _, ok := builtinKeyType[alg.String()]; ok {
-			continue
-		}
-		delete(allKeyType, alg.String())
-	}
-	rebuildKeyTypeLocked()
-}
+func UnregisterKeyType(algorithms ...KeyType) { _ = "STUB: not implemented"; return }
 
-func rebuildKeyTypeLocked() {
-	list := make([]KeyType, 0, len(allKeyType))
-	for _, v := range allKeyType {
-		list = append(list, v)
-	}
-	slices.SortFunc(list, func(a, b KeyType) int {
-		return cmp.Compare(a.String(), b.String())
-	})
-	muListKeyType.Lock()
-	listKeyType = list
-	muListKeyType.Unlock()
-}
+func rebuildKeyTypeLocked() { _ = "STUB: not implemented"; return }
 
 // KeyTypes returns a list of all available values for KeyType.
-func KeyTypes() []KeyType {
-	muListKeyType.RLock()
-	defer muListKeyType.RUnlock()
-	return listKeyType
-}
+func KeyTypes() []KeyType { _ = "STUB: not implemented"; return nil }
 
 // MarshalJSON serializes the KeyType object to a JSON string.
-func (s KeyType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
-}
+func (s KeyType) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // UnmarshalJSON deserializes the JSON string to a KeyType object.
-func (s *KeyType) UnmarshalJSON(data []byte) error {
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		return fmt.Errorf(`failed to unmarshal KeyType: %w`, err)
-	}
-	v, ok := LookupKeyType(name)
-	if !ok {
-		return fmt.Errorf(`unknown KeyType: %q`, name)
-	}
-	*s = v
-	return nil
-}
+func (s *KeyType) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }

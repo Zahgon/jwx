@@ -23,54 +23,31 @@ var ecpointBufferPool = sync.Pool{
 }
 
 func getCrvFixedBuffer(size int) []byte {
+	_ = "STUB: not implemented"
 	//nolint:forcetypeassert
-	buf := *(ecpointBufferPool.Get().(*[]byte))
-	if size > ec521BufferSize && cap(buf) < size {
-		buf = append(buf, make([]byte, size-cap(buf))...)
-	}
-	return buf[:size]
+	return nil
 }
 
 // ReleaseECPointBuffer releases the []byte buffer allocated.
-func ReleaseECPointBuffer(buf []byte) {
-	buf = buf[:cap(buf)]
-	buf[0] = 0x0
-	for i := 1; i < len(buf); i *= 2 {
-		copy(buf[i:], buf[:i])
-	}
-	buf = buf[:0]
-	ecpointBufferPool.Put(&buf)
-}
+func ReleaseECPointBuffer(buf []byte) { _ = "STUB: not implemented"; return }
 
 func CalculateKeySize(crv elliptic.Curve) int {
+	_ = "STUB: not implemented"
 	// We need to create a buffer that fits the entire curve.
 	// If the curve size is 66, that fits in 9 bytes. If the curve
 	// size is 64, it fits in 8 bytes.
-	bits := crv.Params().BitSize
-
-	// For most common cases we know before hand what the byte length
-	// is going to be. optimize
-	var inBytes int
-	switch bits {
-	case 224, 256, 384: // TODO: use constant?
-		inBytes = bits / 8
-	case 521:
-		inBytes = ec521BufferSize
-	default:
-		inBytes = bits / 8
-		if (bits % 8) != 0 {
-			inBytes++
-		}
-	}
-
-	return inBytes
+	return 0
 }
+
+// For most common cases we know before hand what the byte length
+// is going to be. optimize
+
+// TODO: use constant?
 
 // AllocECPointBuffer allocates a buffer for the given point in the given
 // curve. This buffer should be released using the ReleaseECPointBuffer
 // function.
 func AllocECPointBuffer(v *big.Int, crv elliptic.Curve) []byte {
-	buf := getCrvFixedBuffer(CalculateKeySize(crv))
-	v.FillBytes(buf)
-	return buf
+	_ = "STUB: not implemented"
+	return nil
 }

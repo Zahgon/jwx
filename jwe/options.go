@@ -3,7 +3,6 @@ package jwe
 import (
 	"github.com/lestrrat-go/jwx/v4/jwa"
 	"github.com/lestrrat-go/jwx/v4/jwk"
-	"github.com/lestrrat-go/option/v3"
 )
 
 type identCritExtension struct{}
@@ -27,7 +26,8 @@ type identDisabledKeyAlgorithms struct{}
 // header parsing for diagnostic logs, while this option blocks any actual
 // crypto use.
 func WithDisabledKeyAlgorithms(algorithms ...jwa.KeyEncryptionAlgorithm) GlobalOption {
-	return &globalOption{option.New(identDisabledKeyAlgorithms{}, algorithms)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 // WithCritExtension declares that the caller understands and will process
@@ -63,7 +63,8 @@ func WithDisabledKeyAlgorithms(algorithms ...jwa.KeyEncryptionAlgorithm) GlobalO
 //     the application's purposes, even though jwe.Decrypt() returned
 //     no error.
 func WithCritExtension(names ...string) DecryptOption {
-	return &decryptOption{option.New(identCritExtension{}, names)}
+	_ = "STUB: not implemented"
+	return *new(DecryptOption)
 }
 
 // WithProtectedHeaders is used to specify contents of the protected header.
@@ -77,8 +78,8 @@ func WithCritExtension(names ...string) DecryptOption {
 // `WithKey` suboption passed inside `jws.WithKey(...)`. Do not confuse the
 // two — the Go compiler will reject the wrong placement.
 func WithProtectedHeaders(h Headers) EncryptOption {
-	cloned, _ := h.Clone()
-	return &encryptOption{option.New(identProtectedHeaders{}, cloned)}
+	_ = "STUB: not implemented"
+	return *new(EncryptOption)
 }
 
 type withKey struct {
@@ -96,21 +97,21 @@ type withKeySuboption struct {
 	Option
 }
 
-func (*withKeySuboption) withKeySuboption() {}
+func (*withKeySuboption) withKeySuboption() {
+	_ = "STUB: not implemented"
 
-// WithPerRecipientHeaders is used to pass header values for each recipient.
-// Note that these headers are by definition _unprotected_.
-//
-// The supplied Headers is cloned before being stored in the option, so the
-// caller retains exclusive ownership of the original instance and the
-// library never mutates or pools it.
+	// WithPerRecipientHeaders is used to pass header values for each recipient.
+	// Note that these headers are by definition _unprotected_.
+	//
+	// The supplied Headers is cloned before being stored in the option, so the
+	// caller retains exclusive ownership of the original instance and the
+	// library never mutates or pools it.
+	return
+}
+
 func WithPerRecipientHeaders(hdr Headers) WithKeySuboption {
-	if hdr != nil {
-		if cloned, err := hdr.Clone(); err == nil {
-			hdr = cloned
-		}
-	}
-	return &withKeySuboption{option.New(identPerRecipientHeaders{}, hdr)}
+	_ = "STUB: not implemented"
+	return *new(WithKeySuboption)
 }
 
 // WithKey is used to pass a static algorithm/key pair to either `jwe.Encrypt()` or `jwe.Decrypt()`.
@@ -174,19 +175,8 @@ func WithPerRecipientHeaders(hdr Headers) WithKeySuboption {
 // placement because `jwe.WithKeySuboption` is a sealed interface distinct
 // from `jwe.EncryptOption` (and distinct from `jws.WithKeySuboption`).
 func WithKey(alg jwa.KeyAlgorithm, key any, options ...WithKeySuboption) EncryptDecryptOption {
-	var hdr Headers
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identPerRecipientHeaders{}:
-			hdr = option.MustGet[Headers](opt)
-		}
-	}
-
-	return &encryptDecryptOption{option.New(identKey{}, &withKey{
-		alg:     alg,
-		key:     key,
-		headers: hdr,
-	})}
+	_ = "STUB: not implemented"
+	return *new(EncryptDecryptOption)
 }
 
 // WithKeySet specifies a JWKS (jwk.Set) to use for decryption. The
@@ -215,18 +205,8 @@ func WithKey(alg jwa.KeyAlgorithm, key any, options ...WithKeySuboption) Encrypt
 //     already typed for the expected algorithm rather than relying
 //     on the header-fallback path.
 func WithKeySet(set jwk.Set, options ...WithKeySetSuboption) DecryptOption {
-	requireKid := true
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identRequireKid{}:
-			requireKid = option.MustGet[bool](opt)
-		}
-	}
-
-	return WithKeyProvider(&keySetProvider{
-		set:        set,
-		requireKid: requireKid,
-	})
+	_ = "STUB: not implemented"
+	return *new(DecryptOption)
 }
 
 // WithJSON specifies that the result of `jwe.Encrypt()` is serialized in
@@ -235,17 +215,6 @@ func WithKeySet(set jwk.Set, options ...WithKeySetSuboption) DecryptOption {
 // If you pass multiple keys to `jwe.Encrypt()`, it will fail unless
 // you also pass this option.
 func WithJSON(options ...WithJSONSuboption) EncryptOption {
-	var pretty bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identPretty{}:
-			pretty = option.MustGet[bool](opt)
-		}
-	}
-
-	format := fmtJSON
-	if pretty {
-		format = fmtJSONPretty
-	}
-	return &encryptOption{option.New(identSerialization{}, format)}
+	_ = "STUB: not implemented"
+	return *new(EncryptOption)
 }

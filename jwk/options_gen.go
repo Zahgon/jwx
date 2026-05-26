@@ -20,10 +20,14 @@ type assignKeyIDOption struct {
 	Option
 }
 
-func (*assignKeyIDOption) assignKeyIDOption() {}
+func (*assignKeyIDOption) assignKeyIDOption() {
+	_ = "STUB: not implemented"
 
-// GlobalOption is a type of Option that can be passed to `jwk.Settings()` to
-// change the global configuration of the jwk package.
+	// GlobalOption is a type of Option that can be passed to `jwk.Settings()` to
+	// change the global configuration of the jwk package.
+	return
+}
+
 type GlobalOption interface {
 	Option
 	globalOption()
@@ -33,12 +37,16 @@ type globalOption struct {
 	Option
 }
 
-func (*globalOption) globalOption() {}
+func (*globalOption) globalOption() {
+	_ = "STUB: not implemented"
 
-// GlobalParseOption describes an Option that can be passed to both
-// `jwk.Settings()` (to change the default globally) and
-// `jwk.Parse()` / `jwk.ParseReader()` / `jwk.ParseString()` (to
-// override per call).
+	// GlobalParseOption describes an Option that can be passed to both
+	// `jwk.Settings()` (to change the default globally) and
+	// `jwk.Parse()` / `jwk.ParseReader()` / `jwk.ParseString()` (to
+	// override per call).
+	return
+}
+
 type GlobalParseOption interface {
 	Option
 	globalOption()
@@ -49,11 +57,15 @@ type globalParseOption struct {
 	Option
 }
 
-func (*globalParseOption) globalOption() {}
+func (*globalParseOption) globalOption() { _ = "STUB: not implemented"; return }
 
-func (*globalParseOption) parseOption() {}
+func (*globalParseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// ParseOption is a type of Option that can be passed to `jwk.Parse()`
+	// ParseOption is a type of Option that can be passed to `jwk.Parse()`
+	return
+}
+
 type ParseOption interface {
 	Option
 	parseOption()
@@ -63,9 +75,13 @@ type parseOption struct {
 	Option
 }
 
-func (*parseOption) parseOption() {}
+func (*parseOption) parseOption() {
+	_ = "STUB: not implemented"
 
-// PublicSetOption is a type of Option that can be passed to `jwk.PublicSetOf()`
+	// PublicSetOption is a type of Option that can be passed to `jwk.PublicSetOf()`
+	return
+}
+
 type PublicSetOption interface {
 	Option
 	publicSetOption()
@@ -75,7 +91,7 @@ type publicSetOption struct {
 	Option
 }
 
-func (*publicSetOption) publicSetOption() {}
+func (*publicSetOption) publicSetOption() { _ = "STUB: not implemented"; return }
 
 type identAllowSymmetric struct{}
 type identForceAssign struct{}
@@ -89,64 +105,47 @@ type identStrictKeyUsage struct{}
 type identThumbprintHash struct{}
 type identX509 struct{}
 
-func (identAllowSymmetric) String() string {
-	return "WithAllowSymmetric"
-}
+func (identAllowSymmetric) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identForceAssign) String() string {
-	return "WithForceAssign"
-}
+func (identForceAssign) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identIgnoreParseError) String() string {
-	return "WithIgnoreParseError"
-}
+func (identIgnoreParseError) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identLocalRegistry) String() string {
-	return "withLocalRegistry"
-}
+func (identLocalRegistry) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identMaxKeys) String() string {
-	return "WithMaxKeys"
-}
+func (identMaxKeys) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identMinRSAModulusBits) String() string {
-	return "WithMinRSAModulusBits"
-}
+func (identMinRSAModulusBits) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identMinRSAPublicExponent) String() string {
-	return "WithMinRSAPublicExponent"
-}
+func (identMinRSAPublicExponent) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identRejectDuplicateKID) String() string {
-	return "WithRejectDuplicateKID"
-}
+func (identRejectDuplicateKID) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identStrictKeyUsage) String() string {
-	return "WithStrictKeyUsage"
-}
+func (identStrictKeyUsage) String() string { _ = "STUB: not implemented"; return "" }
 
-func (identThumbprintHash) String() string {
-	return "WithThumbprintHash"
-}
+func (identThumbprintHash) String() string { _ = "STUB: not implemented"; return "" }
 
 func (identX509) String() string {
-	return "WithX509"
+	_ = "STUB: not implemented"
+
+	// WithAllowSymmetric controls whether `jwk.PublicSetOf` tolerates
+	// symmetric (oct) keys in the input set.
+	//
+	// By default this option is false: a symmetric key in the input is
+	// an error, because a symmetric key has no public form — its
+	// "public" representation is the secret itself. Passing such a set
+	// through `PublicSetOf` silently and then publishing the result
+	// (e.g. as `/.well-known/jwks.json`) would leak HMAC secret material.
+	//
+	// Pass `WithAllowSymmetric(true)` only if you are certain the
+	// resulting set will not be published. When true, symmetric keys
+	// are passed through unchanged, matching the legacy behavior.
+	return ""
 }
 
-// WithAllowSymmetric controls whether `jwk.PublicSetOf` tolerates
-// symmetric (oct) keys in the input set.
-//
-// By default this option is false: a symmetric key in the input is
-// an error, because a symmetric key has no public form — its
-// "public" representation is the secret itself. Passing such a set
-// through `PublicSetOf` silently and then publishing the result
-// (e.g. as `/.well-known/jwks.json`) would leak HMAC secret material.
-//
-// Pass `WithAllowSymmetric(true)` only if you are certain the
-// resulting set will not be published. When true, symmetric keys
-// are passed through unchanged, matching the legacy behavior.
 func WithAllowSymmetric(v bool) PublicSetOption {
-	return &publicSetOption{option.New(identAllowSymmetric{}, v)}
+	_ = "STUB: not implemented"
+	return *new(PublicSetOption)
 }
 
 // WithForceAssign forces `jwk.AssignKeyID` to recompute and overwrite
@@ -156,7 +155,8 @@ func WithAllowSymmetric(v bool) PublicSetOption {
 // refresh a `kid` after mutating a key field that invalidates the
 // cached thumbprint.
 func WithForceAssign(v bool) AssignKeyIDOption {
-	return &assignKeyIDOption{option.New(identForceAssign{}, v)}
+	_ = "STUB: not implemented"
+	return *new(AssignKeyIDOption)
 }
 
 // WithIgnoreParseError is only applicable when used with `jwk.Parse()`
@@ -178,13 +178,12 @@ func WithForceAssign(v bool) AssignKeyIDOption {
 // Again, DO NOT USE unless you have exhausted all other routes.
 // When you use this option, you will not be able to tell if you are
 // using a faulty JWKS, except for when there are JSON syntax errors.
-func WithIgnoreParseError(v bool) ParseOption {
-	return &parseOption{option.New(identIgnoreParseError{}, v)}
-}
+func WithIgnoreParseError(v bool) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
 // This option is only available for internal code. Users don't get to play with it
 func withLocalRegistry(v *json.Registry) ParseOption {
-	return &parseOption{option.New(identLocalRegistry{}, v)}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }
 
 // WithMaxKeys specifies the maximum number of keys allowed in a JWK
@@ -203,7 +202,8 @@ func withLocalRegistry(v *json.Registry) ParseOption {
 // raw input bytes remains the caller's responsibility — see
 // docs/13-input-size.md.
 func WithMaxKeys(v int) GlobalParseOption {
-	return &globalParseOption{option.New(identMaxKeys{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalParseOption)
 }
 
 // WithMinRSAModulusBits specifies the minimum RSA modulus size, in bits,
@@ -212,7 +212,8 @@ func WithMaxKeys(v int) GlobalParseOption {
 // The default is 2048. Lower this only for legacy interoperability with
 // older key material. Any value <= 0 disables the modulus-size floor.
 func WithMinRSAModulusBits(v int) GlobalOption {
-	return &globalOption{option.New(identMinRSAModulusBits{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 // WithMinRSAPublicExponent specifies the minimum RSA public exponent
@@ -222,7 +223,8 @@ func WithMinRSAModulusBits(v int) GlobalOption {
 // Lower this only for legacy interoperability. Any value <= 0 disables
 // the minimum-exponent floor.
 func WithMinRSAPublicExponent(v int) GlobalOption {
-	return &globalOption{option.New(identMinRSAPublicExponent{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalOption)
 }
 
 // WithRejectDuplicateKID instructs `jwk.Parse()` /
@@ -245,7 +247,8 @@ func WithMinRSAPublicExponent(v int) GlobalOption {
 // This does not affect `(*Set).AddKey` — programmatic additions
 // remain permissive (AddKey dedupes only by pointer identity).
 func WithRejectDuplicateKID(v bool) GlobalParseOption {
-	return &globalParseOption{option.New(identRejectDuplicateKID{}, v)}
+	_ = "STUB: not implemented"
+	return *new(GlobalParseOption)
 }
 
 // WithStrictKeyUsage specifies if during JWK parsing, the "use" field
@@ -257,18 +260,15 @@ func WithRejectDuplicateKID(v bool) GlobalParseOption {
 // value. If this options is set to true, then the "use" field must
 // be one of the registered values, and otherwise an error will be
 // reported during parsing / assignment to `jwk.KeyUsageType`
-func WithStrictKeyUsage(v bool) GlobalOption {
-	return &globalOption{option.New(identStrictKeyUsage{}, v)}
-}
+func WithStrictKeyUsage(v bool) GlobalOption { _ = "STUB: not implemented"; return *new(GlobalOption) }
 
 func WithThumbprintHash(v crypto.Hash) AssignKeyIDOption {
-	return &assignKeyIDOption{option.New(identThumbprintHash{}, v)}
+	_ = "STUB: not implemented"
+	return *new(AssignKeyIDOption)
 }
 
 // WithX509 specifies that the input to `Parse()` / `ParseKey()` is a
 // PEM-framed X.509-encoded key (or key set). Custom PEM block types can
 // be handled by registering decoders via
 // `jwkbb.RegisterX509Decoder`.
-func WithX509(v bool) ParseOption {
-	return &parseOption{option.New(identX509{}, v)}
-}
+func WithX509(v bool) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }

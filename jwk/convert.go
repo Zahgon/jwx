@@ -6,14 +6,9 @@ import (
 	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rsa"
-	"errors"
-	"fmt"
-	"math/big"
 	"reflect"
-	"strings"
 	"sync"
 
-	"github.com/lestrrat-go/jwx/v4/internal/ecutil"
 	"github.com/lestrrat-go/jwx/v4/jwa"
 )
 
@@ -53,9 +48,7 @@ type KeyKind string
 
 // normalize returns the uppercase form of the KeyKind for case-insensitive
 // map operations.
-func (k KeyKind) normalize() KeyKind {
-	return KeyKind(strings.ToUpper(string(k)))
-}
+func (k KeyKind) normalize() KeyKind { _ = "STUB: not implemented"; return *new(KeyKind) }
 
 // KeyKinder is implemented by keys that need exporter dispatch
 // beyond just their key type.
@@ -107,25 +100,12 @@ var muKeyExporters sync.RWMutex
 // wrap it with [KeyImportFunc]:
 //
 //	jwk.RegisterKeyImporter(jwk.KeyImportFunc[*mypkg.Key](importMyKey))
-func RegisterKeyImporter[T any](ki KeyImporter[T]) error {
-	muKeyImporters.Lock()
-	defer muKeyImporters.Unlock()
-	t := reflect.TypeFor[T]()
-	if _, ok := builtinImporterTypes[t]; ok {
-		return fmt.Errorf(`jwk.RegisterKeyImporter: %s is a built-in raw key type; built-in importers cannot be overridden`, t)
-	}
-	if _, exists := keyImporters[t]; exists {
-		return fmt.Errorf(`jwk.RegisterKeyImporter: an importer for %s is already registered; call jwk.UnregisterKeyImporter[%s]() first if you need to replace it`, t, t)
-	}
-	keyImporters[t] = func(raw any) (Key, error) {
-		// Safe: dispatch in convertRawKey keys this entry by
-		// reflect.TypeOf(raw) matching reflect.TypeFor[T](), so the
-		// assertion cannot fail in the lookup path.
-		//nolint:forcetypeassert
-		return ki.Import(raw.(T))
-	}
-	return nil
-}
+func RegisterKeyImporter[T any](ki KeyImporter[T]) error { _ = "STUB: not implemented"; return nil }
+
+// Safe: dispatch in convertRawKey keys this entry by
+// reflect.TypeOf(raw) matching reflect.TypeFor[T](), so the
+// assertion cannot fail in the lookup path.
+//nolint:forcetypeassert
 
 // UnregisterKeyImporter removes the importer previously registered
 // for type T. Returns true if an importer was removed, false if none
@@ -138,19 +118,7 @@ func RegisterKeyImporter[T any](ki KeyImporter[T]) error {
 // code, prefer letting [RegisterKeyImporter] fail with the
 // already-registered error; that loud failure catches accidental
 // collisions between unrelated extension modules at import time.
-func UnregisterKeyImporter[T any]() bool {
-	muKeyImporters.Lock()
-	defer muKeyImporters.Unlock()
-	t := reflect.TypeFor[T]()
-	if _, ok := builtinImporterTypes[t]; ok {
-		return false
-	}
-	if _, ok := keyImporters[t]; !ok {
-		return false
-	}
-	delete(keyImporters, t)
-	return true
-}
+func UnregisterKeyImporter[T any]() bool { _ = "STUB: not implemented"; return false }
 
 // RegisterKeyExporter registers a [KeyExporter] for the given [KeyKind] identity.
 //
@@ -190,16 +158,7 @@ func UnregisterKeyImporter[T any]() bool {
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
 func RegisterKeyExporter(ident KeyKind, conv KeyExporter) error {
-	muKeyExporters.Lock()
-	defer muKeyExporters.Unlock()
-	norm := ident.normalize()
-	convs, ok := keyExporters[norm]
-	if !ok {
-		convs = []KeyExporter{conv}
-	} else {
-		convs = append([]KeyExporter{conv}, convs...)
-	}
-	keyExporters[norm] = convs
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -230,11 +189,13 @@ type KeyImporter[T any] interface {
 type KeyImportFunc[T any] func(T) (Key, error)
 
 func (f KeyImportFunc[T]) Import(raw T) (Key, error) {
-	return f(raw)
+	_ = "STUB: not implemented"
+
+	// KeyExporter is used to convert from a `jwk.Key` to a raw key. From the PoV of the `jwk.Key`,
+	// we're _exporting_ it to a raw key.
+	return *new(Key), nil
 }
 
-// KeyExporter is used to convert from a `jwk.Key` to a raw key. From the PoV of the `jwk.Key`,
-// we're _exporting_ it to a raw key.
 type KeyExporter interface {
 	// Export takes the `jwk.Key` to be converted, and an optional hint
 	// indicating the desired output type. The hint may be nil, in which
@@ -249,11 +210,14 @@ type KeyExporter interface {
 type KeyExportFunc func(Key, any) (any, error)
 
 func (f KeyExportFunc) Export(key Key, hint any) (any, error) {
-	return f(key, hint)
+	_ = "STUB: not implemented"
+	return *
+
+	// Pre-computed normalized KeyKind values for built-in key types.
+	// These avoid strings.ToUpper allocations in the export dispatch hot path.
+	new(any), nil
 }
 
-// Pre-computed normalized KeyKind values for built-in key types.
-// These avoid strings.ToUpper allocations in the export dispatch hot path.
 var (
 	normalizedRSA KeyKind
 	normalizedEC  KeyKind
@@ -289,199 +253,110 @@ func init() {
 // to touch. Intended for jwk's own init() — runs single-threaded
 // before any goroutine could observe partially-populated state, so
 // the muKeyImporters lock is not taken.
-func registerBuiltinKeyImporter[T any](fn func(T) (Key, error)) {
-	t := reflect.TypeFor[T]()
-	builtinImporterTypes[t] = struct{}{}
-	keyImporters[t] = func(raw any) (Key, error) {
-		// Safe: dispatch keys this entry by reflect.TypeOf(raw)
-		// matching reflect.TypeFor[T](); the assertion cannot fail
-		// when the closure is invoked from convertRawKey.
-		//nolint:forcetypeassert
-		return fn(raw.(T))
-	}
-}
+func registerBuiltinKeyImporter[T any](fn func(T) (Key, error)) { _ = "STUB: not implemented"; return }
+
+// Safe: dispatch keys this entry by reflect.TypeOf(raw)
+// matching reflect.TypeFor[T](); the assertion cannot fail
+// when the closure is invoked from convertRawKey.
+//nolint:forcetypeassert
 
 // panicOnRegistrationError converts a non-nil error returned by a Register*
 // call during jwk's own init() into a panic. Registration cannot actually
 // fail today, but the API reserves the error return for future validation
 // and this helper keeps builtin bootstrap honest if that ever changes.
-func panicOnRegistrationError(err error) {
-	if err != nil {
-		panic(fmt.Sprintf("jwk: failed to register builtin: %s", err))
-	}
-}
+func panicOnRegistrationError(err error) { _ = "STUB: not implemented"; return }
 
 // normalizedKeyKindForType returns the pre-computed normalized KeyKind
 // for built-in key types, avoiding strings.ToUpper allocation.
 func normalizedKeyKindForType(kty jwa.KeyType) KeyKind {
-	switch kty {
-	case jwa.RSA():
-		return normalizedRSA
-	case jwa.EC():
-		return normalizedEC
-	case jwa.OKP():
-		return normalizedOKP
-	case jwa.OctetSeq():
-		return normalizedOCT
-	case jwa.AKP():
-		return normalizedAKP
-	default:
-		return KeyKind(kty.String()).normalize()
-	}
+	_ = "STUB: not implemented"
+	return *new(KeyKind)
 }
 
 // Typed importer functions. Each accepts the concrete type directly,
 // eliminating the type-switch boilerplate from v3.
 
 func importRSAPrivateKey(raw rsa.PrivateKey) (Key, error) {
-	return importRSAPrivateKeyPtr(&raw)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importRSAPrivateKeyPtr(raw *rsa.PrivateKey) (Key, error) {
-	k := newRSAPrivateKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importRSAPublicKey(raw rsa.PublicKey) (Key, error) {
-	return importRSAPublicKeyPtr(&raw)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importRSAPublicKeyPtr(raw *rsa.PublicKey) (Key, error) {
-	k := newRSAPublicKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDSAPrivateKey(raw ecdsa.PrivateKey) (Key, error) {
-	return importECDSAPrivateKeyPtr(&raw)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDSAPrivateKeyPtr(raw *ecdsa.PrivateKey) (Key, error) {
-	k := newECDSAPrivateKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDSAPublicKey(raw ecdsa.PublicKey) (Key, error) {
-	return importECDSAPublicKeyPtr(&raw)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDSAPublicKeyPtr(raw *ecdsa.PublicKey) (Key, error) {
-	k := newECDSAPublicKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importEd25519PrivateKey(raw ed25519.PrivateKey) (Key, error) {
-	k := newOKPPrivateKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importEd25519PublicKey(raw ed25519.PublicKey) (Key, error) {
-	k := newOKPPublicKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDHPrivateKey(raw ecdh.PrivateKey) (Key, error) {
-	return importECDHPrivateKeyPtr(&raw)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDHPrivateKeyPtr(raw *ecdh.PrivateKey) (Key, error) {
-	switch raw.Curve() {
-	case ecdh.X25519():
-		k := newOKPPrivateKey()
-		if err := k.Import(raw); err != nil {
-			return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-		}
-		return k, nil
-	case ecdh.P256():
-		return ecdhPrivateKeyToECJWK(raw, elliptic.P256())
-	case ecdh.P384():
-		return ecdhPrivateKeyToECJWK(raw, elliptic.P384())
-	case ecdh.P521():
-		return ecdhPrivateKeyToECJWK(raw, elliptic.P521())
-	default:
-		return nil, fmt.Errorf(`unsupported curve %s`, raw.Curve())
-	}
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func ecdhPrivateKeyToECJWK(raw *ecdh.PrivateKey, crv elliptic.Curve) (Key, error) {
-	pub := raw.PublicKey()
-	rawpub := pub.Bytes()
-
-	size := ecutil.CalculateKeySize(crv)
-	var x, y, d big.Int
-	x.SetBytes(rawpub[1 : 1+size])
-	y.SetBytes(rawpub[1+size:])
-	d.SetBytes(raw.Bytes())
-
-	var ecdsaPriv ecdsa.PrivateKey
-	ecdsaPriv.Curve = crv
-	ecdsaPriv.D = &d
-	ecdsaPriv.X = &x
-	ecdsaPriv.Y = &y
-	return importECDSAPrivateKeyPtr(&ecdsaPriv)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDHPublicKey(raw ecdh.PublicKey) (Key, error) {
-	return importECDHPublicKeyPtr(&raw)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func importECDHPublicKeyPtr(raw *ecdh.PublicKey) (Key, error) {
-	switch raw.Curve() {
-	case ecdh.X25519():
-		k := newOKPPublicKey()
-		if err := k.Import(raw); err != nil {
-			return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-		}
-		return k, nil
-	case ecdh.P256():
-		return ecdhPublicKeyToECJWK(raw, elliptic.P256())
-	case ecdh.P384():
-		return ecdhPublicKeyToECJWK(raw, elliptic.P384())
-	case ecdh.P521():
-		return ecdhPublicKeyToECJWK(raw, elliptic.P521())
-	default:
-		return nil, fmt.Errorf(`unsupported curve %s`, raw.Curve())
-	}
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 func ecdhPublicKeyToECJWK(raw *ecdh.PublicKey, crv elliptic.Curve) (Key, error) {
-	rawbytes := raw.Bytes()
-	size := ecutil.CalculateKeySize(crv)
-	var x, y big.Int
-
-	x.SetBytes(rawbytes[1 : 1+size])
-	y.SetBytes(rawbytes[1+size:])
-	var ecdsaPub ecdsa.PublicKey
-	ecdsaPub.Curve = crv
-	ecdsaPub.X = &x
-	ecdsaPub.Y = &y
-	return importECDSAPublicKeyPtr(&ecdsaPub)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
-func importSymmetricKey(raw []byte) (Key, error) {
-	k := newSymmetricKey()
-	if err := k.Import(raw); err != nil {
-		return nil, fmt.Errorf(`failed to initialize %T from %T: %w`, k, raw, err)
-	}
-	return k, nil
-}
+func importSymmetricKey(raw []byte) (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
 // Export converts a jwk.Key into a raw key of type T.
 //
@@ -499,21 +374,7 @@ func importSymmetricKey(raw []byte) (Key, error) {
 //	privkey, err := jwk.Export[*rsa.PrivateKey](key)
 //	ecdhkey, err := jwk.Export[*ecdh.PrivateKey](key)
 //	octets, err := jwk.Export[[]byte](key)
-func Export[T any](key Key) (T, error) {
-	var zero T
-	v, err := doExport(key, any(*new(T)))
-	if err != nil {
-		return zero, err
-	}
-	result, ok := v.(T)
-	if !ok {
-		return zero, fmt.Errorf(`jwk.Export: %w`, KeyTypeMismatchError{
-			Got:  reflect.TypeOf(v),
-			Want: reflect.TypeFor[T](),
-		})
-	}
-	return result, nil
-}
+func Export[T any](key Key) (T, error) { _ = "STUB: not implemented"; return *new(T), nil }
 
 // ExportAll exports every key in the given [Set] to type T, preserving
 // insertion order. It is the plural counterpart to [Export] and fails
@@ -533,53 +394,11 @@ func Export[T any](key Key) (T, error) {
 //	privkeys, err := jwk.ExportAll[*rsa.PrivateKey](set)
 //
 // An empty [Set] returns an empty slice and a nil error.
-func ExportAll[T any](set Set) ([]T, error) {
-	if set == nil {
-		return nil, fmt.Errorf(`jwk.ExportAll: set must not be nil`)
-	}
-	out := make([]T, 0, set.Len())
-	i := 0
-	for _, k := range set.All() {
-		v, err := Export[T](k)
-		if err != nil {
-			return nil, fmt.Errorf(`jwk.ExportAll: key #%d: %w`, i, err)
-		}
-		out = append(out, v)
-		i++
-	}
-	return out, nil
-}
+func ExportAll[T any](set Set) ([]T, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func doExport(key Key, hint any) (any, error) {
-	muKeyExporters.RLock()
-	exporters := findExporters(key)
-	muKeyExporters.RUnlock()
-
-	if len(exporters) == 0 {
-		return nil, fmt.Errorf(`jwk.Export: no exporters registered for key type '%T'`, key)
-	}
-	for _, conv := range exporters {
-		v, err := conv.Export(key, hint)
-		if err != nil {
-			if errors.Is(err, ContinueError()) {
-				continue
-			}
-			return nil, fmt.Errorf(`jwk.Export: failed to export jwk.Key to raw format: %w`, err)
-		}
-		return v, nil
-	}
-	return nil, fmt.Errorf(`jwk.Export: no suitable exporter found for key type '%T'`, key)
-}
+func doExport(key Key, hint any) (any, error) { _ = "STUB: not implemented"; return *new(any), nil }
 
 // findExporters returns exporters for the key, trying the specific
 // KeyKind first, then falling back to the key type. Caller must
 // hold muKeyExporters.RLock.
-func findExporters(key Key) []KeyExporter {
-	if ki, ok := key.(KeyKinder); ok {
-		ident := ki.KeyKind().normalize()
-		if exporters, ok := keyExporters[ident]; ok {
-			return exporters
-		}
-	}
-	return keyExporters[normalizedKeyKindForType(key.KeyType())]
-}
+func findExporters(key Key) []KeyExporter { _ = "STUB: not implemented"; return nil }

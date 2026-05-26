@@ -2,24 +2,15 @@
 
 package jwt
 
-import "strconv"
-
 func _() {
+	_ = "STUB: not implemented"
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
-	var x [1]struct{}
-	_ = x[FlattenAudience-1]
-	_ = x[MaxPerTokenOption-2]
+	return
 }
 
 const _TokenOption_name = "FlattenAudienceMaxPerTokenOption"
 
 var _TokenOption_index = [...]uint8{0, 15, 32}
 
-func (i TokenOption) String() string {
-	idx := int(i) - 1
-	if i < 1 || idx >= len(_TokenOption_index)-1 {
-		return "TokenOption(" + strconv.FormatInt(int64(i), 10) + ")"
-	}
-	return _TokenOption_name[_TokenOption_index[idx]:_TokenOption_index[idx+1]]
-}
+func (i TokenOption) String() string { _ = "STUB: not implemented"; return "" }

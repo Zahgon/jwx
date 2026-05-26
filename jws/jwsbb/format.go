@@ -1,7 +1,6 @@
 package jwsbb
 
 import (
-	"bytes"
 	"errors"
 	"io"
 
@@ -22,20 +21,8 @@ import (
 //
 // Returns the constructed signing input in the format: base64(header).base64(payload) or base64(header).payload
 func SignBuffer(buf, hdr, payload []byte, encoder base64.Encoder, encodePayload bool) []byte {
-	l := encoder.EncodedLen(len(hdr)+len(payload)) + 1
-	if cap(buf) < l {
-		buf = make([]byte, 0, l)
-	}
-	buf = buf[:0]
-	buf = encoder.AppendEncode(buf, hdr)
-	buf = append(buf, tokens.Period)
-	if encodePayload {
-		buf = encoder.AppendEncode(buf, payload)
-	} else {
-		buf = append(buf, payload...)
-	}
-
-	return buf
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // AppendSignature appends a base64-encoded signature to a JWS signing input buffer.
@@ -50,16 +37,8 @@ func SignBuffer(buf, hdr, payload []byte, encoder base64.Encoder, encodePayload 
 //
 // Returns the complete compact JWS in the format: base64(header).base64(payload).base64(signature)
 func AppendSignature(buf, signature []byte, encoder base64.Encoder) []byte {
-	l := len(buf) + encoder.EncodedLen(len(signature)) + 1
-	if cap(buf) < l {
-		newbuf := make([]byte, len(buf), l)
-		copy(newbuf, buf)
-		buf = newbuf
-	}
-	buf = append(buf, tokens.Period)
-	buf = encoder.AppendEncode(buf, signature)
-
-	return buf
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // JoinCompact creates a complete compact JWS serialization from individual components.
@@ -76,26 +55,10 @@ func AppendSignature(buf, signature []byte, encoder base64.Encoder) []byte {
 //
 // Returns the complete compact JWS or an error if the total size exceeds safety limits (1GB).
 func JoinCompact(buf, hdr, payload, signature []byte, encoder base64.Encoder, encodePayload bool) ([]byte, error) {
-	const MaxBufferSize = 1 << 30 // 1 GB
-	totalSize := len(hdr) + len(payload) + len(signature) + 2
-	if totalSize > MaxBufferSize {
-		return nil, errors.New("input sizes exceed maximum allowable buffer size")
-	}
-	if cap(buf) < totalSize {
-		buf = make([]byte, 0, totalSize)
-	}
-	buf = buf[:0]
-	buf = encoder.AppendEncode(buf, hdr)
-	buf = append(buf, tokens.Period)
-	if encodePayload {
-		buf = encoder.AppendEncode(buf, payload)
-	} else {
-		buf = append(buf, payload...)
-	}
-	buf = append(buf, tokens.Period)
-	buf = encoder.AppendEncode(buf, signature)
-
-	return buf, nil
+	_ = "STUB: not implemented"
+	return nil,
+		// 1 GB
+		nil
 }
 
 var compactDelim = []byte{tokens.Period}
@@ -104,9 +67,7 @@ var errInvalidNumberOfSegments = errors.New(`jwsbb: invalid number of segments`)
 
 // InvalidNumberOfSegmentsError returns the standard error for invalid JWS segment count.
 // A valid compact JWS must have exactly 3 segments separated by periods: header.payload.signature
-func InvalidNumberOfSegmentsError() error {
-	return errInvalidNumberOfSegments
-}
+func InvalidNumberOfSegmentsError() error { _ = "STUB: not implemented"; return nil }
 
 // SplitCompact parses a compact JWS serialization into its three components.
 // This function validates that the input has exactly 3 segments separated by periods
@@ -121,23 +82,15 @@ func InvalidNumberOfSegmentsError() error {
 //   - signature: Base64-encoded signature
 //   - err: Error if the format is invalid or segment count is wrong
 func SplitCompact(src []byte) (protected, payload, signature []byte, err error) {
-	var s []byte
-	var ok bool
-
-	protected, s, ok = bytes.Cut(src, compactDelim)
-	if !ok { // no period found
-		return nil, nil, nil, InvalidNumberOfSegmentsError()
-	}
-	payload, s, ok = bytes.Cut(s, compactDelim)
-	if !ok { // only one period found
-		return nil, nil, nil, InvalidNumberOfSegmentsError()
-	}
-	signature, _, ok = bytes.Cut(s, compactDelim)
-	if ok { // three periods found
-		return nil, nil, nil, InvalidNumberOfSegmentsError()
-	}
-	return protected, payload, signature, nil
+	_ = "STUB: not implemented"
+	return nil, nil, nil, nil
 }
+
+// no period found
+
+// only one period found
+
+// three periods found
 
 // SplitCompactString is a convenience wrapper around SplitCompact for string inputs.
 // It converts the string to bytes and parses the compact JWS serialization.
@@ -147,30 +100,30 @@ func SplitCompact(src []byte) (protected, payload, signature []byte, err error) 
 //
 // Returns the same components as SplitCompact: protected header, payload, signature, and error.
 func SplitCompactString(src string) (protected, payload, signature []byte, err error) {
-	return SplitCompact([]byte(src))
+	_ = "STUB: not implemented"
+	return nil, nil, nil,
+
+		// SplitCompactReader parses a compact JWS serialization from an io.Reader.
+		// It reads the entire input from rdr and dispatches to [SplitCompact].
+		//
+		// Bounding the input size is the caller's responsibility: wrap rdr with
+		// [io.LimitReader] or [net/http.MaxBytesReader] before passing it in. See
+		// docs/13-input-size.md for the rationale.
+		//
+		// Parameters:
+		//   - rdr: Reader containing the compact JWS data
+		//
+		// Returns:
+		//   - protected: Base64-encoded protected header
+		//   - payload: Base64-encoded payload (or raw payload if b64=false was used)
+		//   - signature: Base64-encoded signature
+		//   - err: Error if reading fails or the format is invalid
+		//
+		// The function validates that exactly 3 segments are present, separated by periods.
+		nil
 }
 
-// SplitCompactReader parses a compact JWS serialization from an io.Reader.
-// It reads the entire input from rdr and dispatches to [SplitCompact].
-//
-// Bounding the input size is the caller's responsibility: wrap rdr with
-// [io.LimitReader] or [net/http.MaxBytesReader] before passing it in. See
-// docs/13-input-size.md for the rationale.
-//
-// Parameters:
-//   - rdr: Reader containing the compact JWS data
-//
-// Returns:
-//   - protected: Base64-encoded protected header
-//   - payload: Base64-encoded payload (or raw payload if b64=false was used)
-//   - signature: Base64-encoded signature
-//   - err: Error if reading fails or the format is invalid
-//
-// The function validates that exactly 3 segments are present, separated by periods.
 func SplitCompactReader(rdr io.Reader) (protected, payload, signature []byte, err error) {
-	data, err := io.ReadAll(rdr)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	return SplitCompact(data)
+	_ = "STUB: not implemented"
+	return nil, nil, nil, nil
 }

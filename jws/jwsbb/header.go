@@ -1,9 +1,6 @@
 package jwsbb
 
 import (
-	"fmt"
-
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
 	"github.com/valyala/fastjson"
 )
 
@@ -11,26 +8,16 @@ type headerNotFoundError struct {
 	key string
 }
 
-func (e headerNotFoundError) Error() string {
-	return fmt.Sprintf(`jwsbb: header "%s" not found`, e.key)
-}
+func (e headerNotFoundError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e headerNotFoundError) Is(target error) bool {
-	switch target.(type) {
-	case headerNotFoundError, *headerNotFoundError:
-		// If the target is a headerNotFoundError or a pointer to it, we
-		// consider it a match
-		return true
-	default:
-		return false
-	}
-}
+func (e headerNotFoundError) Is(target error) bool { _ = "STUB: not implemented"; return false }
+
+// If the target is a headerNotFoundError or a pointer to it, we
+// consider it a match
 
 // ErrHeaderNotFound returns an error that can be passed to `errors.Is` to check if the error is
 // the result of the field not being found
-func ErrHeaderNotFound() error {
-	return headerNotFoundError{}
-}
+func ErrHeaderNotFound() error { _ = "STUB: not implemented"; return nil }
 
 // Header is an object that allows you to access the JWS header in a quick and
 // dirty way. It does not verify anything, it does not know anything about what
@@ -56,49 +43,32 @@ type header struct {
 	err error
 }
 
-func (h *header) jwsbbHeader() {}
+func (h *header) jwsbbHeader() {
+	_ = "STUB: not implemented"
 
-// HeaderParseCompact parses a JWS header from a compact serialization format.
-// You will need to call HeaderGet* functions to extract the values from the header.
-//
-// This function is experimental and may change or be removed in the future.
-func HeaderParseCompact(buf []byte) Header {
-	decoded, err := base64.Decode(buf)
-	if err != nil {
-		return &header{err: err}
-	}
-	return HeaderParse(decoded)
+	// HeaderParseCompact parses a JWS header from a compact serialization format.
+	// You will need to call HeaderGet* functions to extract the values from the header.
+	//
+	// This function is experimental and may change or be removed in the future.
+	return
 }
+
+func HeaderParseCompact(buf []byte) Header { _ = "STUB: not implemented"; return *new(Header) }
 
 // HeaderParse parses a JWS header from a byte slice containing the decoded JSON.
 // You will need to call HeaderGet* functions to extract the values from the header.
 //
 // Unlike HeaderParseCompact, this function does not perform any base64 decoding.
 // This function is experimental and may change or be removed in the future.
-func HeaderParse(decoded []byte) Header {
-	var p fastjson.Parser
-	v, err := p.ParseBytes(decoded)
-	if err != nil {
-		return &header{err: err}
-	}
-	return &header{
-		v: v,
-	}
-}
+func HeaderParse(decoded []byte) Header { _ = "STUB: not implemented"; return *new(Header) }
 
 func headerGet(h Header, key string) (*fastjson.Value, error) {
+	_ = "STUB: not implemented"
 	//nolint:forcetypeassert
-	hh := h.(*header) // we _know_ this can't be another type
-	if hh.err != nil {
-		return nil, hh.err
-	}
-
-	v := hh.v.Get(key)
-	if v == nil {
-		return nil, headerNotFoundError{key: key}
-	}
-	return v, nil
+	return nil, nil
 }
+
+// we _know_ this can't be another type
 
 // HeaderGetString returns the string value for the given key from the JWS header.
 // An error is returned if the JSON was not valid, if the key does not exist,
@@ -106,17 +76,8 @@ func headerGet(h Header, key string) (*fastjson.Value, error) {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetString(h Header, key string) (string, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return "", err
-	}
-
-	sb, err := v.StringBytes()
-	if err != nil {
-		return "", err
-	}
-
-	return string(sb), nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 // HeaderGetBool returns the boolean value for the given key from the JWS header.
@@ -125,11 +86,8 @@ func HeaderGetString(h Header, key string) (string, error) {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetBool(h Header, key string) (bool, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return false, err
-	}
-	return v.Bool()
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // HeaderGetFloat64 returns the float64 value for the given key from the JWS header.
@@ -138,11 +96,8 @@ func HeaderGetBool(h Header, key string) (bool, error) {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetFloat64(h Header, key string) (float64, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return 0, err
-	}
-	return v.Float64()
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
 // HeaderGetInt returns the int value for the given key from the JWS header.
@@ -150,26 +105,14 @@ func HeaderGetFloat64(h Header, key string) (float64, error) {
 // or if the value is not an int.
 //
 // This function is experimental and may change or be removed in the future.
-func HeaderGetInt(h Header, key string) (int, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return 0, err
-	}
-	return v.Int()
-}
+func HeaderGetInt(h Header, key string) (int, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // HeaderGetInt64 returns the int64 value for the given key from the JWS header.
 // An error is returned if the JSON was not valid, if the key does not exist,
 // or if the value is not an int64.
 //
 // This function is experimental and may change or be removed in the future.
-func HeaderGetInt64(h Header, key string) (int64, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return 0, err
-	}
-	return v.Int64()
-}
+func HeaderGetInt64(h Header, key string) (int64, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // HeaderGetStringBytes returns the JSON string bytes for the given key
 // from the JWS header, without copying. An error is returned if the JSON
@@ -184,21 +127,14 @@ func HeaderGetInt64(h Header, key string) (int64, error) {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetStringBytes(h Header, key string) ([]byte, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return nil, err
-	}
-
-	return v.StringBytes()
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // HeaderHas returns true if the given key exists in the JWS header.
 //
 // This function is experimental and may change or be removed in the future.
-func HeaderHas(h Header, key string) bool {
-	_, err := headerGet(h, key)
-	return err == nil
-}
+func HeaderHas(h Header, key string) bool { _ = "STUB: not implemented"; return false }
 
 // HeaderGetStringArray returns a string array for the given key from the JWS header.
 // An error is returned if the JSON was not valid, if the key does not exist,
@@ -206,25 +142,8 @@ func HeaderHas(h Header, key string) bool {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetStringArray(h Header, key string) ([]string, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return nil, err
-	}
-
-	arr, err := v.Array()
-	if err != nil {
-		return nil, err
-	}
-
-	result := make([]string, len(arr))
-	for i, item := range arr {
-		sb, err := item.StringBytes()
-		if err != nil {
-			return nil, err
-		}
-		result[i] = string(sb)
-	}
-	return result, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // HeaderGetUint returns the uint value for the given key from the JWS header.
@@ -232,13 +151,7 @@ func HeaderGetStringArray(h Header, key string) ([]string, error) {
 // or if the value is not a uint.
 //
 // This function is experimental and may change or be removed in the future.
-func HeaderGetUint(h Header, key string) (uint, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return 0, err
-	}
-	return v.Uint()
-}
+func HeaderGetUint(h Header, key string) (uint, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // HeaderGetUint64 returns the uint64 value for the given key from the JWS header.
 // An error is returned if the JSON was not valid, if the key does not exist,
@@ -246,10 +159,6 @@ func HeaderGetUint(h Header, key string) (uint, error) {
 //
 // This function is experimental and may change or be removed in the future.
 func HeaderGetUint64(h Header, key string) (uint64, error) {
-	v, err := headerGet(h, key)
-	if err != nil {
-		return 0, err
-	}
-
-	return v.Uint64()
+	_ = "STUB: not implemented"
+	return 0, nil
 }

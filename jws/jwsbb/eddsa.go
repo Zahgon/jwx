@@ -2,8 +2,6 @@ package jwsbb
 
 import (
 	"crypto/ed25519"
-
-	"github.com/lestrrat-go/dsig"
 )
 
 // SignEdDSA generates an EdDSA (Ed25519) signature for the given payload.
@@ -13,8 +11,9 @@ import (
 // This function is now a thin wrapper around dsig.SignEdDSA. For new projects, you should
 // consider using dsig instead of this function.
 func SignEdDSA(key ed25519.PrivateKey, payload []byte) ([]byte, error) {
+	_ = "STUB: not implemented"
 	// Use dsig.Sign with EdDSA algorithm constant
-	return dsig.Sign(key, dsig.EdDSA, payload, nil)
+	return nil, nil
 }
 
 // VerifyEdDSA verifies an EdDSA (Ed25519) signature for the given payload.
@@ -25,6 +24,7 @@ func SignEdDSA(key ed25519.PrivateKey, payload []byte) ([]byte, error) {
 // This function is now a thin wrapper around dsig.VerifyEdDSA. For new projects, you should
 // consider using dsig instead of this function.
 func VerifyEdDSA(key ed25519.PublicKey, payload, signature []byte) error {
+	_ = "STUB: not implemented"
 	// Use dsig.Verify with EdDSA algorithm constant
-	return dsig.Verify(key, dsig.EdDSA, payload, signature)
+	return nil
 }

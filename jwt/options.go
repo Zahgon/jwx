@@ -1,16 +1,12 @@
 package jwt
 
 import (
-	"context"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/lestrrat-go/jwx/v4/jwa"
 	"github.com/lestrrat-go/jwx/v4/jwe"
 	"github.com/lestrrat-go/jwx/v4/jwk"
 	"github.com/lestrrat-go/jwx/v4/jws"
-	"github.com/lestrrat-go/option/v3"
 )
 
 type identInsecureNoSignature struct{}
@@ -20,103 +16,18 @@ type identTypedClaim struct{}
 type identVerifyAuto struct{}
 
 func toSignOptions(options ...Option) ([]jws.SignOption, error) {
-	soptions := make([]jws.SignOption, 0, len(options))
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identInsecureNoSignature{}:
-			soptions = append(soptions, jws.WithInsecureNoSignature())
-		case identKey{}:
-			wk := option.MustGet[*withKey](opt)
-			var wksoptions []jws.WithKeySuboption
-			for _, subopt := range wk.options {
-				wksopt, ok := subopt.(jws.WithKeySuboption)
-				if !ok {
-					return nil, fmt.Errorf(`expected optional arguments in jwt.WithKey to be jws.WithKeySuboption, but got %T`, subopt)
-				}
-				wksoptions = append(wksoptions, wksopt)
-			}
-
-			soptions = append(soptions, jws.WithKey(wk.alg, wk.key, wksoptions...))
-		case identSignOption{}:
-			sigOpt := option.MustGet[jws.SignOption](opt)
-			soptions = append(soptions, sigOpt)
-		case identBase64Encoder{}:
-			enc := option.MustGet[jws.Base64Encoder](opt)
-			soptions = append(soptions, jws.WithBase64Encoder(enc))
-		}
-	}
-	return soptions, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func toEncryptOptions(options ...Option) ([]jwe.EncryptOption, error) {
-	soptions := make([]jwe.EncryptOption, 0, len(options))
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identKey{}:
-			wk := option.MustGet[*withKey](opt)
-			var wksoptions []jwe.WithKeySuboption
-			for _, subopt := range wk.options {
-				wksopt, ok := subopt.(jwe.WithKeySuboption)
-				if !ok {
-					return nil, fmt.Errorf(`expected optional arguments in jwt.WithKey to be jwe.WithKeySuboption, but got %T`, subopt)
-				}
-				wksoptions = append(wksoptions, wksopt)
-			}
-
-			soptions = append(soptions, jwe.WithKey(wk.alg, wk.key, wksoptions...))
-		case identEncryptOption{}:
-			encOpt := option.MustGet[jwe.EncryptOption](opt)
-			soptions = append(soptions, encOpt)
-		}
-	}
-	return soptions, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func toVerifyOptions(options ...Option) ([]jws.VerifyOption, error) {
-	voptions := make([]jws.VerifyOption, 0, len(options))
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identKey{}:
-			wk := option.MustGet[*withKey](opt)
-			var wksoptions []jws.WithKeySuboption
-			for _, subopt := range wk.options {
-				wksopt, ok := subopt.(jws.WithKeySuboption)
-				if !ok {
-					return nil, fmt.Errorf(`expected optional arguments in jwt.WithKey to be jws.WithKeySuboption, but got %T`, subopt)
-				}
-				wksoptions = append(wksoptions, wksopt)
-			}
-
-			voptions = append(voptions, jws.WithKey(wk.alg, wk.key, wksoptions...))
-		case identKeySet{}:
-			wks := option.MustGet[*withKeySet](opt)
-			var wkssoptions []jws.WithKeySetSuboption
-			for _, subopt := range wks.options {
-				wkssopt, ok := subopt.(jws.WithKeySetSuboption)
-				if !ok {
-					return nil, fmt.Errorf(`expected optional arguments in jwt.WithKey to be jws.WithKeySetSuboption, but got %T`, subopt)
-				}
-				wkssoptions = append(wkssoptions, wkssopt)
-			}
-
-			voptions = append(voptions, jws.WithKeySet(wks.set, wkssoptions...))
-		case identVerifyAuto{}:
-			vo := option.MustGet[jws.VerifyOption](opt)
-			voptions = append(voptions, vo)
-		case identKeyProvider{}:
-			kp := option.MustGet[jws.KeyProvider](opt)
-			voptions = append(voptions, jws.WithKeyProvider(kp))
-		case identBase64Encoder{}:
-			enc := option.MustGet[jws.Base64Encoder](opt)
-			voptions = append(voptions, jws.WithBase64Encoder(enc))
-		case identContext{}:
-			ctx := option.MustGet[context.Context](opt)
-			voptions = append(voptions, jws.WithContext(ctx))
-		default:
-			return nil, fmt.Errorf(`invalid jws.VerifyOption %q passed`, `With`+strings.TrimPrefix(fmt.Sprintf(`%T`, opt.Ident()), `jws.ident`))
-		}
-	}
-	return voptions, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 type withKey struct {
@@ -140,11 +51,8 @@ type withKey struct {
 // when `jwt.Sign()` is called, the fact that you passed JWE suboptions will be
 // detected, and an error will occur.
 func WithKey(alg jwa.KeyAlgorithm, key any, suboptions ...Option) SignEncryptParseOption {
-	return &signEncryptParseOption{option.New(identKey{}, &withKey{
-		alg:     alg,
-		key:     key,
-		options: suboptions,
-	})}
+	_ = "STUB: not implemented"
+	return *new(SignEncryptParseOption)
 }
 
 type withKeySet struct {
@@ -174,44 +82,35 @@ type withKeySet struct {
 // attempt using multiple times before succeeding to verify. See
 // `jws.InferAlgorithmFromKey` option
 func WithKeySet(set jwk.Set, options ...any) ParseOption {
-	return &parseOption{option.New(identKeySet{}, &withKeySet{
-		set:     set,
-		options: options,
-	})}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }
 
 // WithIssuer specifies that expected issuer value. If not specified,
 // the value of issuer is not verified at all.
-func WithIssuer(s string) ValidateOption {
-	return WithValidator(issuerClaimValueIs(s))
-}
+func WithIssuer(s string) ValidateOption { _ = "STUB: not implemented"; return *new(ValidateOption) }
 
 // WithSubject specifies that expected subject value. If not specified,
 // the value of subject is not verified at all.
-func WithSubject(s string) ValidateOption {
-	return WithValidator(ClaimValueIs(SubjectKey, s))
-}
+func WithSubject(s string) ValidateOption { _ = "STUB: not implemented"; return *new(ValidateOption) }
 
 // WithJwtID specifies that expected jti value. If not specified,
 // the value of jti is not verified at all.
-func WithJwtID(s string) ValidateOption {
-	return WithValidator(ClaimValueIs(JwtIDKey, s))
-}
+func WithJwtID(s string) ValidateOption { _ = "STUB: not implemented"; return *new(ValidateOption) }
 
 // WithAudience specifies that expected audience value.
 // `Validate()` will return true if one of the values in the `aud` element
 // matches this value. If not specified, the value of `aud` is not
 // verified at all.
-func WithAudience(s string) ValidateOption {
-	return WithValidator(audienceClaimContainsString(s))
-}
+func WithAudience(s string) ValidateOption { _ = "STUB: not implemented"; return *new(ValidateOption) }
 
 // WithClaimValue specifies the expected value for a given claim.
 // The stored and expected values are compared with reflect.DeepEqual,
 // so slice-, map-, and struct-valued claims are supported in addition
 // to scalars. See [ClaimValueIs] for edge-case semantics.
 func WithClaimValue(name string, v any) ValidateOption {
-	return WithValidator(ClaimValueIs(name, v))
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithTypedClaim allows a private claim to be parsed into the object type of
@@ -238,14 +137,16 @@ func WithClaimValue(name string, v any) ValidateOption {
 // `openid.New()` will respect this option, if you provide your own custom
 // token type, it will need to implement the TokenWithDecodeCtx interface.
 func WithTypedClaim(name string, object any) ParseOption {
-	return &parseOption{option.New(identTypedClaim{}, claimPair{Name: name, Value: object})}
+	_ = "STUB: not implemented"
+	return *new(ParseOption)
 }
 
 // WithRequiredClaim specifies that the claim identified the given name
 // must exist in the token. Only the existence of the claim is checked:
 // the actual value associated with that field is not checked.
 func WithRequiredClaim(name string) ValidateOption {
-	return WithValidator(IsRequired(name))
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithMaxDelta specifies that given two claims `c1` and `c2` that represent time, the difference in
@@ -269,7 +170,8 @@ func WithRequiredClaim(name string) ValidateOption {
 // If AcceptableSkew of 2 second is specified, the above will return valid for any value of
 // `exp` - `iat`  between 8 (10-2) and 12 (10+2).
 func WithMaxDelta(dur time.Duration, c1, c2 string) ValidateOption {
-	return WithValidator(MaxDeltaIs(c1, c2, dur))
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithMinDelta is almost exactly the same as WithMaxDelta, but force validation to fail if
@@ -281,7 +183,8 @@ func WithMaxDelta(dur time.Duration, c1, c2 string) ValidateOption {
 //
 // The validation would fail if the difference is less than 10 seconds.
 func WithMinDelta(dur time.Duration, c1, c2 string) ValidateOption {
-	return WithValidator(MinDeltaIs(c1, c2, dur))
+	_ = "STUB: not implemented"
+	return *new(ValidateOption)
 }
 
 // WithVerifyAuto specifies that the JWS verification should be attempted
@@ -315,10 +218,6 @@ func WithMinDelta(dur time.Duration, c1, c2 string) ValidateOption {
 // See jws.WithVerifyAuto for the full contract, including the
 // behavior of a nil fetcher (it errors at use time rather than
 // silently falling back to any default).
-func WithVerifyAuto(f jwk.Fetcher) ParseOption {
-	return &parseOption{option.New(identVerifyAuto{}, jws.WithVerifyAuto(f))}
-}
+func WithVerifyAuto(f jwk.Fetcher) ParseOption { _ = "STUB: not implemented"; return *new(ParseOption) }
 
-func WithInsecureNoSignature() SignOption {
-	return &signEncryptParseOption{option.New(identInsecureNoSignature{}, (any)(nil))}
-}
+func WithInsecureNoSignature() SignOption { _ = "STUB: not implemented"; return *new(SignOption) }

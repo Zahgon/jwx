@@ -3,35 +3,19 @@
 package jwk
 
 import (
-	"bytes"
-	"crypto"
-	"crypto/ecdh"
-	"crypto/ecdsa"
-	"crypto/ed25519"
-	"crypto/rsa"
 	"errors"
 	"fmt"
 	"io"
 	"math/big"
 	"reflect"
-	"slices"
 	"sync/atomic"
 
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
 	"github.com/lestrrat-go/jwx/v4/internal/json"
-	"github.com/lestrrat-go/jwx/v4/jwa"
-	"github.com/lestrrat-go/jwx/v4/jwk/jwkbb"
-	"github.com/lestrrat-go/option/v3"
 )
 
 var fieldRegistry = json.NewRegistry()
 
-func bigIntToBytes(n *big.Int) ([]byte, error) {
-	if n == nil {
-		return nil, fmt.Errorf(`invalid *big.Int value`)
-	}
-	return n.Bytes(), nil
-}
+func bigIntToBytes(n *big.Int) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // maxKeys bounds the number of keys accepted by Parse() from a single
 // input. It applies to both the JSON `keys` array and the PEM block
@@ -83,114 +67,19 @@ func init() {
 //
 // Import validates the populated JWK before returning it. Malformed raw
 // keys fail at import time instead of being returned for later validation.
-func Import[T Key](raw any) (T, error) {
-	var zero T
-	key, err := doImport(raw)
-	if err != nil {
-		return zero, err
-	}
-	result, ok := key.(T)
-	if !ok {
-		return zero, importerr(`%w`, KeyTypeMismatchError{
-			Got:  reflect.TypeOf(key),
-			Want: reflect.TypeFor[T](),
-		})
-	}
-	return result, nil
-}
+func Import[T Key](raw any) (T, error) { _ = "STUB: not implemented"; return *new(T), nil }
 
-func validateImportedKey(key Key) error {
-	if key == nil {
-		return nil
-	}
-	if err := key.Validate(); err != nil {
-		return importerr(`key validation failed: %w`, err)
-	}
-	return nil
-}
+func validateImportedKey(key Key) error { _ = "STUB: not implemented"; return nil }
 
 var errNotBuiltinKey = errors.New(`not a builtin key`)
 
-func importBuiltinKey(raw any) (Key, error) {
-	switch v := raw.(type) {
-	case *rsa.PrivateKey:
-		return importRSAPrivateKeyPtr(v)
-	case *rsa.PublicKey:
-		return importRSAPublicKeyPtr(v)
-	case rsa.PrivateKey:
-		return importRSAPrivateKey(v)
-	case rsa.PublicKey:
-		return importRSAPublicKey(v)
-	case *ecdsa.PrivateKey:
-		return importECDSAPrivateKeyPtr(v)
-	case *ecdsa.PublicKey:
-		return importECDSAPublicKeyPtr(v)
-	case ecdsa.PrivateKey:
-		return importECDSAPrivateKey(v)
-	case ecdsa.PublicKey:
-		return importECDSAPublicKey(v)
-	case ed25519.PrivateKey:
-		return importEd25519PrivateKey(v)
-	case ed25519.PublicKey:
-		return importEd25519PublicKey(v)
-	case *ecdh.PrivateKey:
-		return importECDHPrivateKeyPtr(v)
-	case *ecdh.PublicKey:
-		return importECDHPublicKeyPtr(v)
-	case ecdh.PrivateKey:
-		return importECDHPrivateKey(v)
-	case ecdh.PublicKey:
-		return importECDHPublicKey(v)
-	case []byte:
-		return importSymmetricKey(v)
-	default:
-		return nil, errNotBuiltinKey
-	}
-}
+func importBuiltinKey(raw any) (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
-func convertRawKey(raw any) (Key, error) {
-	if raw == nil {
-		return nil, fmt.Errorf(`a non-nil key is required`)
-	}
+func convertRawKey(raw any) (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
-	key, err := importBuiltinKey(raw)
-	if err == nil {
-		return key, nil
-	}
-	if !errors.Is(err, errNotBuiltinKey) {
-		return nil, err
-	}
+func doImport(raw any) (Key, error) { _ = "STUB: not implemented"; return *new(Key), nil }
 
-	muKeyImporters.RLock()
-	conv, ok := keyImporters[reflect.TypeOf(raw)]
-	muKeyImporters.RUnlock()
-	if !ok {
-		return nil, fmt.Errorf(`failed to convert %T to jwk.Key: no converters were able to convert`, raw)
-	}
-
-	return conv(raw)
-}
-
-func doImport(raw any) (Key, error) {
-	key, err := convertRawKey(raw)
-	if err != nil {
-		return nil, importerr(`%w`, err)
-	}
-	if err := validateImportedKey(key); err != nil {
-		return nil, err
-	}
-	return key, nil
-}
-
-func validateReturnedKey(key Key) error {
-	if key == nil {
-		return nil
-	}
-	if err := key.Validate(); err != nil {
-		return err
-	}
-	return nil
-}
+func validateReturnedKey(key Key) error { _ = "STUB: not implemented"; return nil }
 
 // PublicSetOf returns a new jwk.Set consisting of
 // public keys of the keys contained in the set.
@@ -210,36 +99,8 @@ func validateReturnedKey(key Key) error {
 // copied onto the new public key. It is the caller's responsibility
 // to remove any fields, if necessary.
 func PublicSetOf(v Set, options ...PublicSetOption) (Set, error) {
-	var allowSymmetric bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identAllowSymmetric{}:
-			allowSymmetric = option.MustGet[bool](opt)
-		}
-	}
-
-	newSet := NewSet()
-
-	n := v.Len()
-	for i := range n {
-		k, ok := v.Key(i)
-		if !ok {
-			return nil, fmt.Errorf(`key not found`)
-		}
-		if k.KeyType() == jwa.OctetSeq() && !allowSymmetric {
-			kid, _ := k.KeyID()
-			return nil, fmt.Errorf(`jwk.PublicSetOf: input set contains a symmetric key (kid=%q, index=%d); symmetric keys have no public form and would leak secret material if published. Remove symmetric keys from the set before calling PublicSetOf, or pass jwk.WithAllowSymmetric(true) to opt into legacy pass-through behavior`, kid, i)
-		}
-		pubKey, err := PublicKeyOf(k)
-		if err != nil {
-			return nil, fmt.Errorf(`failed to get public key of %T: %w`, k, err)
-		}
-		if err := newSet.AddKey(pubKey); err != nil {
-			return nil, fmt.Errorf(`failed to add key to public key set: %w`, err)
-		}
-	}
-
-	return newSet, nil
+	_ = "STUB: not implemented"
+	return *new(Set), nil
 }
 
 // PublicKeyOf returns the corresponding public version of the jwk.Key.
@@ -261,17 +122,9 @@ func PublicSetOf(v Set, options ...PublicSetOption) (Set, error) {
 // keys by default and requires an explicit `jwk.WithAllowSymmetric(true)`
 // opt-in for the legacy pass-through behavior.
 func PublicKeyOf(v any) (Key, error) {
+	_ = "STUB: not implemented"
 	// This should catch all jwk.Key instances
-	if pk, ok := v.(PublicKeyer); ok {
-		return pk.PublicKey()
-	}
-
-	jk, err := doImport(v)
-	if err != nil {
-		return nil, fmt.Errorf(`jwk.PublicKeyOf: failed to convert key into JWK: %w`, err)
-	}
-
-	return jk.PublicKey()
+	return *new(Key), nil
 }
 
 // PublicRawKeyOf returns the corresponding public key of the given
@@ -284,60 +137,13 @@ func PublicKeyOf(v any) (Key, error) {
 //
 // This function must go through converting the object once to a jwk.Key,
 // then back to a raw key, so it's not exactly efficient.
-func PublicRawKeyOf(v any) (any, error) {
-	pk, ok := v.(PublicKeyer)
-	if !ok {
-		k, err := doImport(v)
-		if err != nil {
-			return nil, fmt.Errorf(`jwk.PublicRawKeyOf: failed to convert key to jwk.Key: %w`, err)
-		}
-
-		pk, ok = k.(PublicKeyer)
-		if !ok {
-			return nil, fmt.Errorf(`jwk.PublicRawKeyOf: failed to convert key to jwk.PublicKeyer: %w`, err)
-		}
-	}
-
-	pubk, err := pk.PublicKey()
-	if err != nil {
-		return nil, fmt.Errorf(`jwk.PublicRawKeyOf: failed to obtain public key from %T: %w`, v, err)
-	}
-
-	raw, err := Export[any](pubk)
-	if err != nil {
-		return nil, fmt.Errorf(`jwk.PublicRawKeyOf: failed to obtain raw key from %T: %w`, pubk, err)
-	}
-	return raw, nil
-}
+func PublicRawKeyOf(v any) (any, error) { _ = "STUB: not implemented"; return *new(any), nil }
 
 // ParseRawKey is a combination of ParseKey and Raw. It parses a single JWK key,
 // and assigns the "raw" key to the given parameter. The key must either be
 // a pointer to an empty interface, or a pointer to the actual raw key type
 // such as *rsa.PrivateKey, *ecdsa.PublicKey, *[]byte, etc.
-func ParseRawKey(data []byte, rawkey any) error {
-	key, err := doParseKey(data)
-	if err != nil {
-		return fmt.Errorf(`failed to parse key: %w`, err)
-	}
-
-	raw, err := Export[any](key)
-	if err != nil {
-		return fmt.Errorf(`failed to export raw key: %w`, err)
-	}
-
-	rv := reflect.ValueOf(rawkey)
-	if rv.Kind() != reflect.Ptr || rv.IsNil() {
-		return fmt.Errorf(`rawkey must be a non-nil pointer`)
-	}
-	elem := rv.Elem()
-	rawVal := reflect.ValueOf(raw)
-	if !rawVal.Type().AssignableTo(elem.Type()) {
-		return fmt.Errorf(`cannot assign %T to %s`, raw, elem.Type())
-	}
-	elem.Set(rawVal)
-
-	return nil
-}
+func ParseRawKey(data []byte, rawkey any) error { _ = "STUB: not implemented"; return nil }
 
 type setDecodeCtx struct {
 	json.DecodeCtx
@@ -345,9 +151,7 @@ type setDecodeCtx struct {
 	ignoreParseError bool
 }
 
-func (ctx *setDecodeCtx) IgnoreParseError() bool {
-	return ctx.ignoreParseError
-}
+func (ctx *setDecodeCtx) IgnoreParseError() bool { _ = "STUB: not implemented"; return false }
 
 // ParseKey parses a single key JWK and returns it as a [Key]. Unlike
 // [Parse] this method reports failure if the input is a JWK set. Only
@@ -364,11 +168,8 @@ func (ctx *setDecodeCtx) IgnoreParseError() bool {
 // Use [ParseKeyAs] when a concrete key subtype (e.g. [RSAPrivateKey],
 // [ECDSAPublicKey]) is required.
 func ParseKey(data []byte, options ...ParseOption) (Key, error) {
-	key, err := doParseKey(data, options...)
-	if err != nil {
-		return nil, kparseerr(`%w`, err)
-	}
-	return key, nil
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
 
 // ParseKeyAs behaves like [ParseKey] but asserts the parsed key to the
@@ -378,93 +179,19 @@ func ParseKey(data []byte, options ...ParseOption) (Key, error) {
 //
 //	ecKey, err := jwk.ParseKeyAs[jwk.ECDSAPublicKey](data)
 func ParseKeyAs[T Key](data []byte, options ...ParseOption) (T, error) {
-	var zero T
-	key, err := doParseKey(data, options...)
-	if err != nil {
-		return zero, kasparseerr(`%w`, err)
-	}
-	result, ok := key.(T)
-	if !ok {
-		return zero, kasparseerr(`%w`, KeyTypeMismatchError{
-			Got:  reflect.TypeOf(key),
-			Want: reflect.TypeFor[T](),
-		})
-	}
-	return result, nil
+	_ = "STUB: not implemented"
+	return *new(T), nil
 }
 
 func doParseKey(data []byte, options ...ParseOption) (Key, error) {
-	var parseX509 bool
-	var localReg *json.Registry
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identX509{}:
-			parseX509 = option.MustGet[bool](opt)
-		case identLocalRegistry{}:
-			localReg = option.MustGet[*json.Registry](opt)
-		case identTypedField{}:
-			pair := option.MustGet[typedFieldPair](opt)
-			if localReg == nil {
-				localReg = json.NewRegistry()
-			}
-			localReg.Register(pair.Name, pair.Value)
-		case identIgnoreParseError{}:
-			return nil, fmt.Errorf(`jwk.WithIgnoreParseError() cannot be used for ParseKey()`)
-		}
-	}
-
-	if parseX509 {
-		raw, _, err := decodeX509(data)
-		if err != nil {
-			return nil, fmt.Errorf(`failed to decode PEM/X.509 encoded key: %w`, err)
-		}
-		key, err := convertRawKey(raw)
-		if err != nil {
-			return nil, fmt.Errorf(`jwk.Parse: failed to create jwk.Key from %T: %w`, raw, err)
-		}
-		if err := validateReturnedKey(key); err != nil {
-			return nil, fmt.Errorf(`jwk.Parse: %w`, err)
-		}
-		return key, nil
-	}
-
-	probe, err := keyProbe.Probe(data)
-	if err != nil {
-		return nil, fmt.Errorf(`jwk.Parse: failed to probe data: %w`, err)
-	}
-
-	unmarshaler := keyUnmarshaler{localReg: localReg}
-
-	muKeyParser.RLock()
-	parsers := make([]KeyParser, len(keyParsers))
-	copy(parsers, keyParsers)
-	muKeyParser.RUnlock()
-
-	for i := len(parsers) - 1; i >= 0; i-- {
-		parser := parsers[i]
-		key, err := parser.ParseKey(probe, &unmarshaler, data)
-		if err == nil {
-			// A buggy custom parser may return (nil, nil); treat
-			// that as if it had returned ContinueError so the next
-			// parser runs instead of handing the caller a nil Key
-			// they will dereference.
-			if key == nil {
-				continue
-			}
-			if err := validateReturnedKey(key); err != nil {
-				return nil, fmt.Errorf(`jwk.Parse: %w`, err)
-			}
-			return key, nil
-		}
-
-		if errors.Is(err, ContinueError()) {
-			continue
-		}
-
-		return nil, err
-	}
-	return nil, fmt.Errorf(`jwk.Parse: no parser was able to parse the key`)
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
+
+// A buggy custom parser may return (nil, nil); treat
+// that as if it had returned ContinueError so the next
+// parser runs instead of handing the caller a nil Key
+// they will dereference.
 
 // Parse parses JWK from the incoming []byte.
 //
@@ -481,158 +208,32 @@ func doParseKey(data []byte, options ...ParseOption) (Key, error) {
 // you know for sure that you have a single key, please see the documentation
 // for `jwk.ParseKey()`.
 func Parse(src []byte, options ...ParseOption) (Set, error) {
-	var parseX509 bool
-	var localReg *json.Registry
-	var ignoreParseError bool
-	maxK := int(maxKeys.Load())
-	rejectDupKid := rejectDuplicateKID.Load()
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identX509{}:
-			parseX509 = option.MustGet[bool](opt)
-		case identIgnoreParseError{}:
-			ignoreParseError = option.MustGet[bool](opt)
-		case identTypedField{}:
-			pair := option.MustGet[typedFieldPair](opt)
-			if localReg == nil {
-				localReg = json.NewRegistry()
-			}
-			localReg.Register(pair.Name, pair.Value)
-		case identMaxKeys{}:
-			v := option.MustGet[int](opt)
-			if v <= 0 {
-				return nil, parseerr(`WithMaxKeys must be greater than zero, got %d`, v)
-			}
-			maxK = v
-		case identRejectDuplicateKID{}:
-			rejectDupKid = option.MustGet[bool](opt)
-		}
-	}
-
-	s := NewSet()
-
-	if parseX509 {
-		src = bytes.TrimSpace(src)
-		var keyCount int
-		for len(src) > 0 {
-			raw, rest, err := decodeX509(src)
-			if err != nil {
-				return nil, parseerr(`failed to parse PEM encoded key: %w`, err)
-			}
-			key, err := convertRawKey(raw)
-			if err != nil {
-				return nil, parseerr(`failed to create jwk.Key from %T: %w`, raw, err)
-			}
-			if err := validateReturnedKey(key); err != nil {
-				return nil, parseerr(`%w`, err)
-			}
-			if err := s.AddKey(key); err != nil {
-				return nil, parseerr(`failed to add jwk.Key to set: %w`, err)
-			}
-			keyCount++
-			if keyCount > maxK {
-				return nil, parseerr(`too many keys in PEM input: max %d`, maxK)
-			}
-			src = bytes.TrimSpace(rest)
-		}
-		if rejectDupKid {
-			if kid, dup := firstDuplicateKID(s); dup {
-				return nil, parseerr(`duplicate "kid" %q in PEM input`, kid)
-			}
-		}
-		return s, nil
-	}
-
-	if localReg != nil || ignoreParseError {
-		dcKs, ok := s.(KeyWithDecodeCtx)
-		if !ok {
-			return nil, parseerr(`typed field was requested, but the key set (%T) does not support DecodeCtx`, s)
-		}
-		dc := &setDecodeCtx{
-			DecodeCtx:        json.NewDecodeCtx(localReg),
-			ignoreParseError: ignoreParseError,
-		}
-		dcKs.SetDecodeCtx(dc)
-		defer func() { dcKs.SetDecodeCtx(nil) }()
-	}
-
-	// Propagate the resolved cap to Set.UnmarshalJSON. A scratch field
-	// rather than a ParseOption thread-through keeps json.Unmarshal happy.
-	if setter, ok := s.(interface{ setMaxKeys(int) }); ok {
-		setter.setMaxKeys(maxK)
-		defer setter.setMaxKeys(0)
-	}
-	if setter, ok := s.(interface{ setRejectDuplicateKID(bool) }); ok && rejectDupKid {
-		setter.setRejectDuplicateKID(true)
-		defer setter.setRejectDuplicateKID(false)
-	}
-
-	// Dispatch JWK-vs-JWKS up front. Set.UnmarshalJSON / UnmarshalJSONFrom
-	// require JWKS shape; the bare-JWK convenience lives here.
-	if jwkbb.HeaderHas(jwkbb.HeaderParse(src), "keys") {
-		if err := json.Unmarshal(src, s); err != nil {
-			return nil, parseerr(`failed to unmarshal JWK set: %w`, err)
-		}
-	} else {
-		key, err := doParseKey(src, options...)
-		if err != nil {
-			return nil, parseerr(`failed to parse sole key: %w`, err)
-		}
-		if err := s.AddKey(key); err != nil {
-			return nil, parseerr(`failed to add jwk.Key to set: %w`, err)
-		}
-	}
-
-	if rejectDupKid {
-		if kid, dup := firstDuplicateKID(s); dup {
-			return nil, parseerr(`duplicate "kid" %q`, kid)
-		}
-	}
-
-	return s, nil
+	_ = "STUB: not implemented"
+	return *new(Set), nil
 }
+
+// Propagate the resolved cap to Set.UnmarshalJSON. A scratch field
+// rather than a ParseOption thread-through keeps json.Unmarshal happy.
+
+// Dispatch JWK-vs-JWKS up front. Set.UnmarshalJSON / UnmarshalJSONFrom
+// require JWKS shape; the bare-JWK convenience lives here.
 
 // firstDuplicateKID returns the first non-empty kid that appears more
 // than once in s, or ("", false) if every non-empty kid is unique.
-func firstDuplicateKID(s Set) (string, bool) {
-	seen := make(map[string]struct{}, s.Len())
-	for i := range s.Len() {
-		key, _ := s.Key(i)
-		kid, ok := key.KeyID()
-		if !ok || kid == "" {
-			continue
-		}
-		if _, dup := seen[kid]; dup {
-			return kid, true
-		}
-		seen[kid] = struct{}{}
-	}
-	return "", false
-}
+func firstDuplicateKID(s Set) (string, bool) { _ = "STUB: not implemented"; return "", false }
 
 // ParseReader parses a JWK set from the incoming byte buffer.
 func ParseReader(src io.Reader, options ...ParseOption) (Set, error) {
+	_ = "STUB: not implemented"
 	// meh, there's no way to tell if a stream has "ended" a single
 	// JWKs except when we encounter an EOF, so just... ReadAll
-	buf, err := io.ReadAll(src)
-	if err != nil {
-		return nil, rparseerr(`failed to read from io.Reader: %w`, err)
-	}
-
-	set, err := Parse(buf, options...)
-	if err != nil {
-		return nil, rparseerr(`failed to parse reader: %w`, err)
-	}
-	return set, nil
+	return *new(Set), nil
 }
 
 // ParseString parses a JWK set from the incoming string.
 func ParseString(s string, options ...ParseOption) (Set, error) {
-	set, err := Parse([]byte(s), options...)
-	if err != nil {
-		return nil, sparseerr(`failed to parse string: %w`, err)
-	}
-	return set, nil
+	_ = "STUB: not implemented"
+	return *new(Set), nil
 }
 
 // AssignKeyID is a convenience function to automatically assign the "kid"
@@ -644,30 +245,7 @@ func ParseString(s string, options ...ParseOption) (Set, error) {
 // recomputation (for example, when upgrading to a stronger thumbprint hash
 // via `jwk.WithThumbprintHash`).
 func AssignKeyID(key Key, options ...AssignKeyIDOption) error {
-	hash := crypto.SHA256
-	var force bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identThumbprintHash{}:
-			hash = option.MustGet[crypto.Hash](opt)
-		case identForceAssign{}:
-			force = option.MustGet[bool](opt)
-		}
-	}
-
-	if !force && key.Has(KeyIDKey) {
-		return nil
-	}
-
-	h, err := key.Thumbprint(hash)
-	if err != nil {
-		return fmt.Errorf(`failed to generate thumbprint: %w`, err)
-	}
-
-	if err := key.Set(KeyIDKey, base64.EncodeToString(h)); err != nil {
-		return fmt.Errorf(`failed to set "kid": %w`, err)
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -699,10 +277,7 @@ type CustomDecodeFunc[T any] = json.CustomDecodeFunc[T]
 // implementation always returns nil, but callers — especially extension
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
-func RegisterCustomField[T any](name string) error {
-	json.RegisterTyped[T](fieldRegistry, name)
-	return nil
-}
+func RegisterCustomField[T any](name string) error { _ = "STUB: not implemented"; return nil }
 
 // RegisterCustomDecoder registers a private field with a custom decoder
 // function. This option has a global effect.
@@ -723,7 +298,7 @@ func RegisterCustomField[T any](name string) error {
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
 func RegisterCustomDecoder[T any](name string, dec CustomDecodeFunc[T]) error {
-	json.RegisterCustomDecoder[T](fieldRegistry, name, dec)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -735,69 +310,40 @@ func RegisterCustomDecoder[T any](name string, dec CustomDecodeFunc[T]) error {
 // cycles from init() — should check the returned value and propagate
 // on failure to stay forward-compatible, matching the convention on
 // [RegisterCustomField] / [RegisterCustomDecoder].
-func UnregisterCustomField(name string) error {
-	fieldRegistry.Unregister(name)
-	return nil
-}
+func UnregisterCustomField(name string) error { _ = "STUB: not implemented"; return nil }
 
 // Equal compares two keys and returns true if they are equal. The comparison
 // is solely done against the thumbprints of k1 and k2. It is possible for keys
 // that have, for example, different key IDs, key usage, etc, to be considered equal.
-func Equal(k1, k2 Key) bool {
-	h := crypto.SHA256
-	tp1, err := k1.Thumbprint(h)
-	if err != nil {
-		return false // can't report error
-	}
-	tp2, err := k2.Thumbprint(h)
-	if err != nil {
-		return false // can't report error
-	}
+func Equal(k1, k2 Key) bool { _ = "STUB: not implemented"; return false }
 
-	return bytes.Equal(tp1, tp2)
-}
+// can't report error
+
+// can't report error
 
 // IsPrivateKey returns true if the supplied key is a private key of an
 // asymmetric key pair. The argument `k` must implement the `AsymmetricKey`
 // interface.
 //
 // An error is returned if the supplied key is not an `AsymmetricKey`.
-func IsPrivateKey(k Key) (bool, error) {
-	asymmetric, ok := k.(AsymmetricKey)
-	if ok {
-		return asymmetric.IsPrivate(), nil
-	}
-	return false, fmt.Errorf("jwk.IsPrivateKey: %T is not an asymmetric key", k)
-}
+func IsPrivateKey(k Key) (bool, error) { _ = "STUB: not implemented"; return false, nil }
 
 type keyValidationError struct {
 	err error
 }
 
-func (e *keyValidationError) Error() string {
-	return fmt.Sprintf(`key validation failed: %s`, e.err)
-}
+func (e *keyValidationError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e *keyValidationError) Unwrap() error {
-	return e.err
-}
+func (e *keyValidationError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (e *keyValidationError) Is(target error) bool {
-	_, ok := target.(*keyValidationError)
-	return ok
-}
+func (e *keyValidationError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 // NewKeyValidationError wraps the given error with an error that denotes
 // `key.Validate()` has failed. This error type should ONLY be used as
 // return value from the `Validate()` method.
-func NewKeyValidationError(err error) error {
-	return &keyValidationError{err: err}
-}
+func NewKeyValidationError(err error) error { _ = "STUB: not implemented"; return nil }
 
-func IsKeyValidationError(err error) bool {
-	var kve keyValidationError
-	return errors.Is(err, &kve)
-}
+func IsKeyValidationError(err error) bool { _ = "STUB: not implemented"; return false }
 
 // Settings is used to configure global behavior of the jwk package.
 //
@@ -805,37 +351,7 @@ func IsKeyValidationError(err error) bool {
 // validation (for example, a non-positive [WithMaxKeys]). Extension
 // modules calling this from init() must check the return value and
 // panic on failure.
-func Settings(options ...GlobalOption) error {
-	var newMaxKeys int64
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identMaxKeys{}:
-			v := option.MustGet[int](opt)
-			if v <= 0 {
-				return fmt.Errorf(`jwk.Settings: WithMaxKeys must be greater than zero, got %d`, v)
-			}
-			newMaxKeys = int64(v)
-		}
-	}
-
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identMinRSAModulusBits{}:
-			rsaMinModulusBits.Store(int64(option.MustGet[int](opt)))
-		case identMinRSAPublicExponent{}:
-			setMinRSAPublicExponent(option.MustGet[int](opt))
-		case identStrictKeyUsage{}:
-			strictKeyUsage.Store(option.MustGet[bool](opt))
-		case identRejectDuplicateKID{}:
-			rejectDuplicateKID.Store(option.MustGet[bool](opt))
-		}
-	}
-
-	if newMaxKeys > 0 {
-		maxKeys.Store(newMaxKeys)
-	}
-	return nil
-}
+func Settings(options ...GlobalOption) error { _ = "STUB: not implemented"; return nil }
 
 // These are used when validating keys.
 type keyWithD interface {
@@ -845,48 +361,17 @@ type keyWithD interface {
 var _ keyWithD = &okpPrivateKey{}
 
 func extractEmbeddedKey(keyif Key, concretTypes []reflect.Type) (Key, error) {
-	rv := reflect.ValueOf(keyif)
-
-	// If the value can be converted to one of the concrete types, then we're done
-	if slices.ContainsFunc(concretTypes, func(t reflect.Type) bool {
-		return rv.Type().ConvertibleTo(t)
-	}) {
-		return keyif, nil
-	}
-
-	// When a struct implements the Key interface via embedding, you unfortunately
-	// cannot use a type switch to determine the concrete type, because
-	if rv.Kind() == reflect.Ptr {
-		if rv.IsNil() {
-			return nil, fmt.Errorf(`invalid key value (0): %w`, ContinueError())
-		}
-		rv = rv.Elem()
-	}
-
-	if rv.Kind() != reflect.Struct {
-		return nil, fmt.Errorf(`invalid key value type %T (1): %w`, keyif, ContinueError())
-	}
-	if rv.NumField() == 0 {
-		return nil, fmt.Errorf(`invalid key value type %T (2): %w`, keyif, ContinueError())
-	}
-	// Iterate through the fields of the struct to find the first field that
-	// implements the Key interface
-	rt := rv.Type()
-	for i := range rv.NumField() {
-		field := rv.Field(i)
-		ft := rt.Field(i)
-		if !ft.Anonymous {
-			// We can only salvage this object if the object implements jwk.Key
-			// via embedding, so we skip fields that are not anonymous
-			continue
-		}
-
-		if field.CanInterface() {
-			if k, ok := field.Interface().(Key); ok {
-				return extractEmbeddedKey(k, concretTypes)
-			}
-		}
-	}
-
-	return nil, fmt.Errorf(`invalid key value type %T (3): %w`, keyif, ContinueError())
+	_ = "STUB: not implemented"
+	return *new(Key), nil
 }
+
+// If the value can be converted to one of the concrete types, then we're done
+
+// When a struct implements the Key interface via embedding, you unfortunately
+// cannot use a type switch to determine the concrete type, because
+
+// Iterate through the fields of the struct to find the first field that
+// implements the Key interface
+
+// We can only salvage this object if the object implements jwk.Key
+// via embedding, so we skip fields that are not anonymous

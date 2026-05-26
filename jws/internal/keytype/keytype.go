@@ -1,13 +1,5 @@
 package keytype
 
-import (
-	"crypto/ecdsa"
-	"crypto/ed25519"
-	"crypto/rsa"
-
-	"github.com/lestrrat-go/jwx/v4/jwk"
-)
-
 // Because the keys defined in github.com/lestrrat-go/jwx/jwk may also implement
 // crypto.Signer, it would be possible for to mix up key types when signing/verifying
 // for example, when we specify jws.WithKey(jwa.RSA256, cryptoSigner), the cryptoSigner
@@ -20,38 +12,14 @@ import (
 //
 // Notes: symmetric keys are obviously not part of this. for v2 OKP keys,
 // x25519 does not implement Sign()
-func IsValidRSAKey(key any) bool {
-	switch key.(type) {
-	case
-		ecdsa.PrivateKey, *ecdsa.PrivateKey,
-		ed25519.PrivateKey,
-		jwk.ECDSAPrivateKey, jwk.OKPPrivateKey:
-		// these are NOT ok
-		return false
-	}
-	return true
-}
+func IsValidRSAKey(key any) bool { _ = "STUB: not implemented"; return false }
 
-func IsValidECDSAKey(key any) bool {
-	switch key.(type) {
-	case
-		ed25519.PrivateKey,
-		rsa.PrivateKey, *rsa.PrivateKey,
-		jwk.RSAPrivateKey, jwk.OKPPrivateKey:
-		// these are NOT ok
-		return false
-	}
-	return true
-}
+// these are NOT ok
 
-func IsValidEDDSAKey(key any) bool {
-	switch key.(type) {
-	case
-		ecdsa.PrivateKey, *ecdsa.PrivateKey,
-		rsa.PrivateKey, *rsa.PrivateKey,
-		jwk.RSAPrivateKey, jwk.ECDSAPrivateKey:
-		// these are NOT ok
-		return false
-	}
-	return true
-}
+func IsValidECDSAKey(key any) bool { _ = "STUB: not implemented"; return false }
+
+// these are NOT ok
+
+func IsValidEDDSAKey(key any) bool { _ = "STUB: not implemented"; return false }
+
+// these are NOT ok

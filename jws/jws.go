@@ -33,30 +33,12 @@
 package jws
 
 import (
-	"bytes"
-	"crypto"
-	"crypto/ecdh"
-	"crypto/ecdsa"
-	"crypto/ed25519"
-	"crypto/rsa"
-	"errors"
-	"fmt"
 	"io"
-	"slices"
 	"sync"
 	"sync/atomic"
-	"unicode"
-	"unicode/utf8"
 
-	"github.com/lestrrat-go/option/v3"
-
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
 	"github.com/lestrrat-go/jwx/v4/internal/json"
-	"github.com/lestrrat-go/jwx/v4/internal/pool"
-	"github.com/lestrrat-go/jwx/v4/internal/tokens"
 	"github.com/lestrrat-go/jwx/v4/jwa"
-	"github.com/lestrrat-go/jwx/v4/jwk"
-	"github.com/lestrrat-go/jwx/v4/jws/jwsbb"
 )
 
 var registry = json.NewRegistry()
@@ -72,7 +54,8 @@ type defaultSigner struct {
 }
 
 func (s defaultSigner) Sign(key any, payload []byte) ([]byte, error) {
-	return jwsbb.Sign(key, s.alg.String(), payload, nil)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 const (
@@ -83,17 +66,7 @@ const (
 	fmtMax
 )
 
-func validateKeyBeforeUse(key any) error {
-	jwkKey, ok := key.(jwk.Key)
-	if !ok {
-		converted, err := jwk.Import[jwk.Key](key)
-		if err != nil {
-			return fmt.Errorf(`could not convert key of type %T to jwk.Key for validation: %w`, key, err)
-		}
-		jwkKey = converted
-	}
-	return jwkKey.Validate()
-}
+func validateKeyBeforeUse(key any) error { _ = "STUB: not implemented"; return nil }
 
 // Sign generates a JWS message for the given payload and returns
 // it in serialized form, which can be in either compact or
@@ -145,83 +118,32 @@ func validateKeyBeforeUse(key any) error {
 //
 // You can use `errors.Is` with `jws.SignError()` to check if an error is from this function.
 func Sign(payload []byte, options ...SignOption) ([]byte, error) {
-	sc := signContextPool.Get()
-	defer signContextPool.Put(sc)
-
-	sc.payload = payload
-
-	if err := sc.ProcessOptions(options); err != nil {
-		return nil, makeSignError(prefixJwsSign, `failed to process options: %w`, err)
-	}
-
-	lsigner := len(sc.sigbuilders)
-	if lsigner == 0 {
-		return nil, makeSignError(prefixJwsSign, `no signers available. Specify an algorithm and a key using jws.WithKey()`)
-	}
-
-	// Design note: while we could have easily set format = fmtJSON when
-	// lsigner > 1, I believe the decision to change serialization formats
-	// must be explicitly stated by the caller. Otherwise, I'm pretty sure
-	// there would be people filing issues saying "I get JSON when I expected
-	// compact serialization".
-	//
-	// Therefore, instead of making implicit format conversions, we force the
-	// user to spell it out as `jws.Sign(..., jws.WithJSON(), jws.WithKey(...), jws.WithKey(...))`
-	if sc.format == fmtCompact && lsigner != 1 {
-		return nil, makeSignError(prefixJwsSign, `cannot have multiple signers (keys) specified for compact serialization. Use only one jws.WithKey()`)
-	}
-
-	if sc.payloadReader != nil {
-		return sc.signStreaming()
-	}
-
-	// For compact single-signature (the overwhelmingly common case),
-	// bypass Message construction and Compact() entirely.
-	// Build() returns the signing input buffer (base64(hdr).base64(payload))
-	// so we can append the signature directly without re-encoding.
-	if sc.format == fmtCompact {
-		sb := sc.sigbuilders[0]
-		if sc.validateKey {
-			if err := validateKeyBeforeUse(sb.key); err != nil {
-				return nil, makeSignError(prefixJwsSign, `failed to validate key for signature: %w`, err)
-			}
-		}
-
-		br, err := sb.Build(sc, sc.payload)
-		if err != nil {
-			return nil, makeSignError(prefixJwsSign, `failed to build signature: %w`, err)
-		}
-
-		if sc.detached {
-			// Detached: output is base64(hdr)..base64(sig) (empty payload segment).
-			// The combined buffer is base64(hdr).base64(payload), so slice
-			// up to and including the period to get base64(hdr). and append
-			// the signature after that.
-			idx := bytes.IndexByte(br.combined, '.')
-			result := jwsbb.AppendSignature(br.combined[:idx+1], br.sig.signature, sc.encoder)
-			return result, nil
-		}
-
-		// Non-detached: append .base64(sig) to the existing signing buffer.
-		result := jwsbb.AppendSignature(br.combined, br.sig.signature, sc.encoder)
-		return result, nil
-	}
-
-	// JSON serialization path - needs full Message construction
-	var result Message
-
-	if err := sc.PopulateMessage(&result); err != nil {
-		return nil, makeSignError(prefixJwsSign, `failed to populate message: %w`, err)
-	}
-	switch sc.format {
-	case fmtJSON:
-		return json.Marshal(result)
-	case fmtJSONPretty:
-		return json.MarshalIndent(result, "", "  ")
-	default:
-		return nil, makeSignError(prefixJwsSign, `invalid serialization format`)
-	}
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Design note: while we could have easily set format = fmtJSON when
+// lsigner > 1, I believe the decision to change serialization formats
+// must be explicitly stated by the caller. Otherwise, I'm pretty sure
+// there would be people filing issues saying "I get JSON when I expected
+// compact serialization".
+//
+// Therefore, instead of making implicit format conversions, we force the
+// user to spell it out as `jws.Sign(..., jws.WithJSON(), jws.WithKey(...), jws.WithKey(...))`
+
+// For compact single-signature (the overwhelmingly common case),
+// bypass Message construction and Compact() entirely.
+// Build() returns the signing input buffer (base64(hdr).base64(payload))
+// so we can append the signature directly without re-encoding.
+
+// Detached: output is base64(hdr)..base64(sig) (empty payload segment).
+// The combined buffer is base64(hdr).base64(payload), so slice
+// up to and including the period to get base64(hdr). and append
+// the signature after that.
+
+// Non-detached: append .base64(sig) to the existing signing buffer.
+
+// JSON serialization path - needs full Message construction
 
 // Verify checks if the given JWS message is verifiable using `alg` and `key`.
 // `key` may be a "raw" key (e.g. rsa.PublicKey) or a jwk.Key
@@ -261,14 +183,8 @@ func Sign(payload []byte, options ...SignOption) ([]byte, error) {
 // FetchKeys themselves (their backing data is already in memory) — see
 // the [WithContext] godoc for the full per-layer breakdown.
 func Verify(buf []byte, options ...VerifyOption) ([]byte, error) {
-	vc := verifyContextPool.Get()
-	defer verifyContextPool.Put(vc)
-
-	if err := vc.ProcessOptions(options); err != nil {
-		return nil, makeVerifyError(`failed to process options: %w`, err)
-	}
-
-	return vc.VerifyMessage(buf)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // getB64Value reads the typed "b64" header field and returns its value,
@@ -276,35 +192,15 @@ func Verify(buf []byte, options ...VerifyOption) ([]byte, error) {
 // declared in jws/objects.yml as a typed bool, so Set rejects non-bool
 // values at the API boundary; this helper exists so callers do not have
 // to write the same nil-default check at every read site.
-func getB64Value(hdr Headers) bool {
-	v, ok := hdr.B64()
-	if !ok {
-		return true // RFC 7797 default
-	}
-	return v
-}
+func getB64Value(hdr Headers) bool { _ = "STUB: not implemented"; return false }
+
+// RFC 7797 default
 
 // detectParseFormat inspects the first non-whitespace rune in src to
 // classify the input as compact or JSON serialization. Returns 0 on
 // empty or whitespace-only input so callers can distinguish "no usable
 // bytes" from a successful classification.
-func detectParseFormat(src []byte) int {
-	for i := 0; i < len(src); {
-		r := rune(src[i])
-		width := 1
-		if r >= utf8.RuneSelf {
-			r, width = utf8.DecodeRune(src[i:])
-		}
-		if !unicode.IsSpace(r) {
-			if r == tokens.OpenCurlyBracket {
-				return fmtJSON
-			}
-			return fmtCompact
-		}
-		i += width
-	}
-	return 0
-}
+func detectParseFormat(src []byte) int { _ = "STUB: not implemented"; return 0 }
 
 // Parse parses contents from the given source and creates a jws.Message
 // struct. By default the input can be in either compact or full JSON serialization.
@@ -319,59 +215,19 @@ func detectParseFormat(src []byte) int {
 //
 // On error, returns a jws.ParseError.
 func Parse(src []byte, options ...ParseOption) (*Message, error) {
-	maxSigs := int(maxSignatures.Load())
-
-	var formats int
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identSerialization{}:
-			v := option.MustGet[int](opt)
-			switch v {
-			case fmtJSON:
-				formats |= fmtJSON
-			case fmtCompact:
-				formats |= fmtCompact
-			}
-		case identMaxSignatures{}:
-			maxSigs = option.MustGet[int](opt)
-			if maxSigs <= 0 {
-				return nil, makeParseError(`jws.Parse`, `WithMaxSignatures must be greater than zero`)
-			}
-		}
-	}
-
-	// if format is 0 or both JSON/Compact, auto detect
-	if v := formats & (fmtJSON | fmtCompact); v == 0 || v == fmtJSON|fmtCompact {
-		formats = detectParseFormat(src)
-	}
-
-	if formats&fmtCompact == fmtCompact {
-		msg, err := parseCompact(src)
-		if err != nil {
-			return nil, makeParseError(`jws.Parse`, `failed to parse compact format: %w`, err)
-		}
-		return msg, nil
-	} else if formats&fmtJSON == fmtJSON {
-		msg, err := parseJSON(src, maxSigs)
-		if err != nil {
-			return nil, makeParseError(`jws.Parse`, `failed to parse JSON format: %w`, err)
-		}
-		return msg, nil
-	}
-
-	return nil, makeParseError(`jws.Parse`, `invalid byte sequence`)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// if format is 0 or both JSON/Compact, auto detect
 
 // ParseString parses contents from the given source and creates a jws.Message
 // struct. The input can be in either compact or full JSON serialization.
 //
 // On error, returns a jws.ParseError.
 func ParseString(src string, options ...ParseOption) (*Message, error) {
-	msg, err := Parse([]byte(src), options...)
-	if err != nil {
-		return nil, makeParseError(`jws.ParseString`, `failed to parse string: %w`, err)
-	}
-	return msg, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ParseReader parses contents from the given source and creates a jws.Message
@@ -383,72 +239,20 @@ func ParseString(src string, options ...ParseOption) (*Message, error) {
 //
 // On error, returns a jws.ParseError.
 func ParseReader(src io.Reader, options ...ParseOption) (*Message, error) {
-	buf, err := io.ReadAll(src)
-	if err != nil {
-		return nil, makeParseError(`jws.ParseReader`, `failed to read from io.Reader: %w`, err)
-	}
-	return Parse(buf, options...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func parseJSON(data []byte, maxSigs int) (result *Message, err error) {
-	var m Message
-	m.maxSignatures = maxSigs
-	if err := json.Unmarshal(data, &m); err != nil {
-		return nil, fmt.Errorf(`failed to unmarshal jws message: %w`, err)
-	}
-	return &m, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func parseCompact(data []byte) (m *Message, err error) {
-	protected, payload, signature, err := jwsbb.SplitCompact(data)
-	if err != nil {
-		return nil, makeParseError(`jws.Parse`, `invalid compact serialization format: %w`, err)
-	}
-	return parse(protected, payload, signature)
-}
+func parseCompact(data []byte) (m *Message, err error) { _ = "STUB: not implemented"; return nil, nil }
 
 func parse(protected, payload, signature []byte) (*Message, error) {
-	decodedHeader, err := base64.Decode(protected)
-	if err != nil {
-		return nil, fmt.Errorf(`failed to decode protected headers: %w`, err)
-	}
-
-	hdr := NewHeaders()
-	if err := json.Unmarshal(decodedHeader, hdr); err != nil {
-		return nil, fmt.Errorf(`failed to parse JOSE headers: %w`, err)
-	}
-
-	var decodedPayload []byte
-	b64 := getB64Value(hdr)
-	if !b64 {
-		decodedPayload = payload
-	} else {
-		v, err := base64.Decode(payload)
-		if err != nil {
-			return nil, fmt.Errorf(`failed to decode payload: %w`, err)
-		}
-		decodedPayload = v
-	}
-
-	decodedSignature, err := base64.Decode(signature)
-	if err != nil {
-		return nil, fmt.Errorf(`failed to decode signature: %w`, err)
-	}
-	if len(decodedSignature) == 0 {
-		alg, ok := hdr.Algorithm()
-		if !ok || alg != jwa.NoSignature() {
-			return nil, fmt.Errorf(`empty compact signature requires protected header "alg" to be "none"`)
-		}
-	}
-
-	var msg Message
-	msg.payload = decodedPayload
-	msg.signatures = append(msg.signatures, &Signature{
-		protected: hdr,
-		signature: decodedSignature,
-	})
-	msg.b64 = b64
-	return &msg, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CustomDecoder is a generic interface for custom field decoders.
@@ -469,10 +273,7 @@ type CustomDecodeFunc[T any] = json.CustomDecodeFunc[T]
 // implementation always returns nil, but callers — especially extension
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
-func RegisterCustomField[T any](name string) error {
-	json.RegisterTyped[T](registry, name)
-	return nil
-}
+func RegisterCustomField[T any](name string) error { _ = "STUB: not implemented"; return nil }
 
 // RegisterCustomDecoder registers a private field with a custom decoder
 // function. This option has a global effect.
@@ -490,7 +291,7 @@ func RegisterCustomField[T any](name string) error {
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
 func RegisterCustomDecoder[T any](name string, dec CustomDecodeFunc[T]) error {
-	json.RegisterCustomDecoder[T](registry, name, dec)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -502,10 +303,7 @@ func RegisterCustomDecoder[T any](name string, dec CustomDecodeFunc[T]) error {
 // cycles from init() — should check the returned value and propagate
 // on failure to stay forward-compatible, matching the convention on
 // [RegisterCustomField] / [RegisterCustomDecoder].
-func UnregisterCustomField(name string) error {
-	registry.Unregister(name)
-	return nil
-}
+func UnregisterCustomField(name string) error { _ = "STUB: not implemented"; return nil }
 
 // Helpers for signature verification
 var muAlgorithmMaps sync.RWMutex
@@ -528,15 +326,13 @@ func init() {
 }
 
 func mustRegisterAlgorithmForKeyType(kty jwa.KeyType, alg jwa.SignatureAlgorithm) {
-	if err := RegisterAlgorithmForKeyType(kty, alg); err != nil {
-		panic(fmt.Sprintf("jws: failed to register builtin algorithm for key type: %s", err))
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func mustRegisterAlgorithmForCurve(crv jwa.EllipticCurveAlgorithm, alg jwa.SignatureAlgorithm) {
-	if err := RegisterAlgorithmForCurve(crv, alg); err != nil {
-		panic(fmt.Sprintf("jws: failed to register builtin algorithm for curve: %s", err))
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // RegisterAlgorithmForKeyType registers an additional algorithm as valid for
@@ -548,12 +344,7 @@ func mustRegisterAlgorithmForCurve(crv jwa.EllipticCurveAlgorithm, alg jwa.Signa
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
 func RegisterAlgorithmForKeyType(kty jwa.KeyType, alg jwa.SignatureAlgorithm) error {
-	muAlgorithmMaps.Lock()
-	defer muAlgorithmMaps.Unlock()
-	keyTypeToAlgorithms[kty] = append(keyTypeToAlgorithms[kty], alg)
-	if !slices.Contains(algorithmToKeyTypes[alg], kty) {
-		algorithmToKeyTypes[alg] = append(algorithmToKeyTypes[alg], kty)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -570,12 +361,7 @@ func RegisterAlgorithmForKeyType(kty jwa.KeyType, alg jwa.SignatureAlgorithm) er
 // modules calling this from init() — must check the return value and panic
 // on failure to stay forward-compatible.
 func RegisterAlgorithmForCurve(crv jwa.EllipticCurveAlgorithm, alg jwa.SignatureAlgorithm) error {
-	muAlgorithmMaps.Lock()
-	defer muAlgorithmMaps.Unlock()
-	if slices.Contains(curveToAlgorithms[crv], alg) {
-		return nil
-	}
-	curveToAlgorithms[crv] = append(curveToAlgorithms[crv], alg)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -614,117 +400,46 @@ func RegisterAlgorithmForCurve(crv jwa.EllipticCurveAlgorithm, alg jwa.Signature
 // strings. The wrapping error keeps the concrete %T or %q diagnostic in
 // its message for human readers.
 func AlgorithmsForKey(key any) ([]jwa.SignatureAlgorithm, error) {
-	var kty jwa.KeyType
-	var crv jwa.EllipticCurveAlgorithm
-	var hasCrv bool
-
-	switch key := key.(type) {
-	case jwk.Key:
-		kty = key.KeyType()
-		type curver interface {
-			Crv() (jwa.EllipticCurveAlgorithm, bool)
-		}
-		if ck, ok := key.(curver); ok {
-			crv, hasCrv = ck.Crv()
-		}
-	case rsa.PublicKey, *rsa.PublicKey, rsa.PrivateKey, *rsa.PrivateKey:
-		kty = jwa.RSA()
-	case ecdsa.PublicKey, *ecdsa.PublicKey, ecdsa.PrivateKey, *ecdsa.PrivateKey:
-		kty = jwa.EC()
-	case ed25519.PublicKey, ed25519.PrivateKey:
-		kty = jwa.OKP()
-		crv = jwa.Ed25519()
-		hasCrv = true
-	case *ecdh.PublicKey, ecdh.PublicKey, *ecdh.PrivateKey, ecdh.PrivateKey:
-		// ecdh keys are for key agreement (X25519/X448), not signing.
-		// Reject at the API boundary instead of returning a misleading
-		// algorithm list that would fail deeper in the signing stack.
-		return nil, fmt.Errorf(`%w: key type %T cannot be used for signing (ecdh keys are key-agreement only)`, errUnclassifiableKey, key)
-	case []byte:
-		kty = jwa.OctetSeq()
-	default:
-		// For crypto.Signer from external packages (e.g. KMS-backed signers),
-		// extract the underlying public key type via .Public().
-		// Standard library types (*rsa.PrivateKey, etc.) are already handled
-		// by the concrete cases above.
-		var signerPubErr error
-		if signer, ok := key.(crypto.Signer); ok {
-			pub := signer.Public()
-			// Guard: only recurse if the public key is not itself a crypto.Signer,
-			// to prevent infinite recursion from pathological implementations.
-			if _, isSigner := pub.(crypto.Signer); !isSigner {
-				algs, err := AlgorithmsForKey(pub)
-				if err == nil {
-					return algs, nil
-				}
-				// Save the inner classification error so a
-				// downstream Import-fallback failure can surface
-				// both diagnostics. A successful Import discards
-				// signerPubErr — only the eventual failure path
-				// joins them.
-				signerPubErr = err
-			}
-		}
-		imported, err := jwk.Import[jwk.Key](key)
-		if err != nil {
-			outer := fmt.Errorf(`%w: unknown key type %T`, errUnclassifiableKey, key)
-			if signerPubErr != nil {
-				return nil, errors.Join(outer, signerPubErr)
-			}
-			return nil, outer
-		}
-		kty = imported.KeyType()
-		type curver interface {
-			Crv() (jwa.EllipticCurveAlgorithm, bool)
-		}
-		if ck, ok := imported.(curver); ok {
-			crv, hasCrv = ck.Crv()
-		}
-	}
-
-	muAlgorithmMaps.RLock()
-	defer muAlgorithmMaps.RUnlock()
-
-	ktyAlgs, ok := keyTypeToAlgorithms[kty]
-	if !ok {
-		return nil, fmt.Errorf(`%w: unregistered key type %q`, errUnclassifiableKey, kty)
-	}
-
-	// If we know the curve and there are curve-specific registrations,
-	// return only key-type-level algorithms (those not registered under
-	// any curve) plus curve-specific algorithms for this curve.
-	if hasCrv {
-		crvAlgs := curveToAlgorithms[crv]
-		return filterAlgorithmsForCurve(ktyAlgs, crvAlgs), nil
-	}
-
-	return ktyAlgs, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// ecdh keys are for key agreement (X25519/X448), not signing.
+// Reject at the API boundary instead of returning a misleading
+// algorithm list that would fail deeper in the signing stack.
+
+// For crypto.Signer from external packages (e.g. KMS-backed signers),
+// extract the underlying public key type via .Public().
+// Standard library types (*rsa.PrivateKey, etc.) are already handled
+// by the concrete cases above.
+
+// Guard: only recurse if the public key is not itself a crypto.Signer,
+// to prevent infinite recursion from pathological implementations.
+
+// Save the inner classification error so a
+// downstream Import-fallback failure can surface
+// both diagnostics. A successful Import discards
+// signerPubErr — only the eventual failure path
+// joins them.
+
+// If we know the curve and there are curve-specific registrations,
+// return only key-type-level algorithms (those not registered under
+// any curve) plus curve-specific algorithms for this curve.
 
 // filterAlgorithmsForCurve returns the subset of ktyAlgs that are not
 // registered under any curve (i.e., generic for the key type) plus the
 // curve-specific algorithms from crvAlgs.
 func filterAlgorithmsForCurve(ktyAlgs, crvAlgs []jwa.SignatureAlgorithm) []jwa.SignatureAlgorithm {
-	var result []jwa.SignatureAlgorithm
-
-	// Add key-type-level algorithms that are not claimed by any curve
-	for _, alg := range ktyAlgs {
-		if !isRegisteredUnderAnyCurve(alg) {
-			result = append(result, alg)
-		}
-	}
-
-	// Add curve-specific algorithms
-	result = append(result, crvAlgs...)
-	return result
+	_ = "STUB: not implemented"
+	return nil
 }
 
+// Add key-type-level algorithms that are not claimed by any curve
+
+// Add curve-specific algorithms
+
 func isRegisteredUnderAnyCurve(alg jwa.SignatureAlgorithm) bool {
-	for _, algs := range curveToAlgorithms {
-		if slices.Contains(algs, alg) {
-			return true
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
@@ -751,27 +466,7 @@ func isRegisteredUnderAnyCurve(alg jwa.SignatureAlgorithm) bool {
 // validateAlgorithmForKey verdict can only produce a deeper-stack
 // type-mismatch error, never a forged signature.
 func validateAlgorithmForKey(alg jwa.SignatureAlgorithm, key any) error {
-	if key == nil {
-		return nil
-	}
-	algs, err := AlgorithmsForKey(key)
-	if err != nil {
-		if hasCustomSigVerifier(alg) {
-			return nil
-		}
-		if signer, ok := key.(crypto.Signer); ok {
-			if _, isSigner := signer.Public().(crypto.Signer); isSigner {
-				return nil
-			}
-		}
-		return fmt.Errorf(`jws.WithKey: %w`, err)
-	}
-	if !slices.Contains(algs, alg) {
-		if hasCustomSigVerifier(alg) {
-			return nil
-		}
-		return fmt.Errorf(`jws.WithKey: algorithm %q is not compatible with key type %T`, alg, key)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -779,41 +474,13 @@ func validateAlgorithmForKey(alg jwa.SignatureAlgorithm, key any) error {
 // Verifier has been registered for alg. When this is true, key-type
 // validation must be skipped: the custom implementation decides what
 // key types it accepts.
-func hasCustomSigVerifier(alg jwa.SignatureAlgorithm) bool {
-	if s, ok := signerDB.Load(alg); ok {
-		if _, isDefault := s.(defaultSigner); !isDefault {
-			return true
-		}
-	}
-	if v, ok := verifierDB.Load(alg); ok {
-		if _, isDefault := v.(defaultVerifier); !isDefault {
-			return true
-		}
-	}
-	return false
-}
+func hasCustomSigVerifier(alg jwa.SignatureAlgorithm) bool { _ = "STUB: not implemented"; return false }
 
 // Settings allows you to set global settings for JWS operations.
 //
 // Returns a non-nil error and applies no changes if any option fails
 // validation (for example, a non-positive [WithMaxSignatures]).
-func Settings(options ...GlobalOption) error {
-	var newMaxSignatures int64
-	for _, opt := range options {
-		if opt.Ident() == (identMaxSignatures{}) {
-			v := option.MustGet[int](opt)
-			if v <= 0 {
-				return fmt.Errorf(`jws.Settings: WithMaxSignatures must be greater than zero, got %d`, v)
-			}
-			newMaxSignatures = int64(v)
-		}
-	}
-
-	if newMaxSignatures > 0 {
-		maxSignatures.Store(newMaxSignatures)
-	}
-	return nil
-}
+func Settings(options ...GlobalOption) error { _ = "STUB: not implemented"; return nil }
 
 // VerifyCompactFast is a fast path verification function for JWS messages
 // in compact serialization format.
@@ -869,95 +536,42 @@ func Settings(options ...GlobalOption) error {
 // regardless, since VerifyCompactFast has no way to accept a detached
 // payload.
 func VerifyCompactFast(key any, compact []byte, alg jwa.SignatureAlgorithm) ([]byte, error) {
-	if err := validateAlgorithmForKey(alg, key); err != nil {
-		return nil, makeVerifyError(`%w`, err)
-	}
-
-	algstr := alg.String()
-
-	// Split the serialized JWS into its components
-	hdr, payload, encodedSig, err := jwsbb.SplitCompact(compact)
-	if err != nil {
-		return nil, makeVerifyError("failed to split compact: %w", err)
-	}
-
-	parsedHdr := jwsbb.HeaderParseCompact(hdr)
-
-	// Refuse crit-bearing messages: the fast path has no WithCritExtension
-	// allowlist, so accepting them would silently violate RFC 7515 §4.1.11.
-	// Callers that wrap VerifyCompactFast can detect this via
-	// errors.Is(err, jws.ErrCritPresent()) and fall through to jws.Verify.
-	// The sentinel is wrapped in verifyError so the same error also matches
-	// errors.Is(err, jws.VerifyError()) — fast-path refusals are a verify
-	// error, just one with a more specific classification available.
-	if jwsbb.HeaderHas(parsedHdr, CriticalKey) {
-		return nil, verifyError{errCritPresent}
-	}
-
-	// Refuse "b64"-bearing messages, regardless of whether "crit" also
-	// lists it. The signing-input reconstruction and the post-verify
-	// base64 decode both assume the default b64=true encoding; a
-	// b64=false JWS that the fast path "verified" would either fail the
-	// post-verify base64 decode with a misleading error, or — worse —
-	// return base64-decoded garbage as the payload while the producer's
-	// raw bytes silently disagree. jws.Verify has the WithDetachedPayload
-	// / WithCritExtension machinery to handle b64=false correctly. As with
-	// the crit refusal above, the sentinel is wrapped in verifyError so the
-	// same error matches both jws.ErrB64Present() and jws.VerifyError().
-	if jwsbb.HeaderHas(parsedHdr, "b64") {
-		return nil, verifyError{errB64Present}
-	}
-
-	// Cross-check the protected header "alg" against the caller-supplied
-	// alg. RFC 7515 §4.1.1 makes "alg" mandatory in the protected header
-	// for compact serialization, and a mismatch between what the message
-	// advertises and the discipline under which we verify is the sort of
-	// silent divergence that downstream code (e.g. JWT consumers) should
-	// not be asked to re-discover on its own.
-	hdrAlg, err := jwsbb.HeaderGetString(parsedHdr, AlgorithmKey)
-	if err != nil {
-		return nil, verifyError{verificationError{fmt.Errorf(`jws.Verify: failed to extract %q from protected header: %w`, AlgorithmKey, err)}}
-	}
-	if hdrAlg != algstr {
-		return nil, verifyError{verificationError{fmt.Errorf(`jws.Verify: protected header %q %q does not match caller-supplied algorithm %q`, AlgorithmKey, hdrAlg, algstr)}}
-	}
-
-	// Decode signature into pooled buffer (strict base64url, no padding per RFC 7515)
-	sigLen := base64.DecodedStrictLen(len(encodedSig))
-	sigBuf := pool.ByteSlice().GetCapacity(sigLen)
-	sigBuf = sigBuf[:sigLen]
-	sigN, err := base64.DecodeStrict(sigBuf, encodedSig)
-	if err != nil {
-		pool.ByteSlice().Put(sigBuf)
-		return nil, makeVerifyError("failed to decode signature: %w", err)
-	}
-	sigBuf = sigBuf[:sigN]
-	defer pool.ByteSlice().Put(sigBuf)
-
-	// Instead of appending, copy the data from hdr/payload
-	lvb := len(hdr) + 1 + len(payload)
-	verifyBuf := pool.ByteSlice().GetCapacity(lvb)
-	verifyBuf = verifyBuf[:lvb]
-	copy(verifyBuf, hdr)
-	verifyBuf[len(hdr)] = tokens.Period
-	copy(verifyBuf[len(hdr)+1:], payload)
-	defer pool.ByteSlice().Put(verifyBuf)
-
-	// Verify the signature
-	verifier, err := VerifierFor(alg)
-	if err != nil {
-		return nil, makeVerifyError("failed to create verifier for %s: %w", algstr, err)
-	}
-	if err := verifier.Verify(key, verifyBuf, sigBuf); err != nil {
-		return nil, verifyError{verificationError{fmt.Errorf("signature verification failed for %s: %w", algstr, err)}}
-	}
-
-	// Decode payload (strict base64url, no padding per RFC 7515)
-	payloadLen := base64.DecodedStrictLen(len(payload))
-	decodedPayload := make([]byte, payloadLen)
-	payloadN, err := base64.DecodeStrict(decodedPayload, payload)
-	if err != nil {
-		return nil, makeVerifyError("failed to decode payload: %w", err)
-	}
-	return decodedPayload[:payloadN], nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Split the serialized JWS into its components
+
+// Refuse crit-bearing messages: the fast path has no WithCritExtension
+// allowlist, so accepting them would silently violate RFC 7515 §4.1.11.
+// Callers that wrap VerifyCompactFast can detect this via
+// errors.Is(err, jws.ErrCritPresent()) and fall through to jws.Verify.
+// The sentinel is wrapped in verifyError so the same error also matches
+// errors.Is(err, jws.VerifyError()) — fast-path refusals are a verify
+// error, just one with a more specific classification available.
+
+// Refuse "b64"-bearing messages, regardless of whether "crit" also
+// lists it. The signing-input reconstruction and the post-verify
+// base64 decode both assume the default b64=true encoding; a
+// b64=false JWS that the fast path "verified" would either fail the
+// post-verify base64 decode with a misleading error, or — worse —
+// return base64-decoded garbage as the payload while the producer's
+// raw bytes silently disagree. jws.Verify has the WithDetachedPayload
+// / WithCritExtension machinery to handle b64=false correctly. As with
+// the crit refusal above, the sentinel is wrapped in verifyError so the
+// same error matches both jws.ErrB64Present() and jws.VerifyError().
+
+// Cross-check the protected header "alg" against the caller-supplied
+// alg. RFC 7515 §4.1.1 makes "alg" mandatory in the protected header
+// for compact serialization, and a mismatch between what the message
+// advertises and the discipline under which we verify is the sort of
+// silent divergence that downstream code (e.g. JWT consumers) should
+// not be asked to re-discover on its own.
+
+// Decode signature into pooled buffer (strict base64url, no padding per RFC 7515)
+
+// Instead of appending, copy the data from hdr/payload
+
+// Verify the signature
+
+// Decode payload (strict base64url, no padding per RFC 7515)

@@ -2,8 +2,6 @@ package jwe
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/lestrrat-go/jwx/v4/jwa"
@@ -87,9 +85,8 @@ type algKeySink struct {
 }
 
 func (s *algKeySink) Key(alg jwa.KeyEncryptionAlgorithm, key any) {
-	s.mu.Lock()
-	s.list = append(s.list, algKeyPair{alg, key})
-	s.mu.Unlock()
+	_ = "STUB: not implemented"
+	return
 }
 
 type staticKeyProvider struct {
@@ -98,7 +95,7 @@ type staticKeyProvider struct {
 }
 
 func (kp *staticKeyProvider) FetchKeys(_ context.Context, sink KeySink, _ Recipient, _ *Message) error {
-	sink.Key(kp.alg, kp.key)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -108,88 +105,29 @@ type keySetProvider struct {
 }
 
 func (kp *keySetProvider) selectKey(sink KeySink, key jwk.Key, r Recipient, msg *Message) error {
-	if usage, ok := key.KeyUsage(); ok {
-		if usage != "" && usage != jwk.ForEncryption.String() {
-			kid, _ := key.KeyID()
-			return fmt.Errorf(`key %q has key_use=%q (expected %q for encryption)`, kid, usage, jwk.ForEncryption.String())
-		}
-	}
-
-	if v, ok := key.Algorithm(); ok {
-		kalg, ok := jwa.LookupKeyEncryptionAlgorithm(v.String())
-		if !ok {
-			return fmt.Errorf(`invalid key encryption algorithm %s`, v)
-		}
-
-		sink.Key(kalg, key)
-		return nil
-	}
-
-	// The JWK has no "alg" — common for IdP-published encryption keys.
-	// Fall back to the recipient's declared "alg" (per-recipient header,
-	// then protected header), matching the preference order used when
-	// jwe.Decrypt verifies the chosen key's algorithm against the message.
-	// jwe.Decrypt re-checks agreement before use, so trusting the header
-	// alg here does not widen the attack surface.
-	for _, hdr := range []Headers{r.Headers(), msg.ProtectedHeaders()} {
-		if hdr == nil {
-			continue
-		}
-		v, ok := hdr.Algorithm()
-		if !ok {
-			continue
-		}
-		kalg, ok := jwa.LookupKeyEncryptionAlgorithm(v.String())
-		if !ok {
-			continue
-		}
-		sink.Key(kalg, key)
-		return nil
-	}
-
-	kid, _ := key.KeyID()
-	return fmt.Errorf(`key %q in set has no "alg" field and the JWE message has no recoverable "alg" header; declare "alg" on the JWK or use jwe.WithKey(alg, key) directly`, kid)
-}
-
-func (kp *keySetProvider) FetchKeys(_ context.Context, sink KeySink, r Recipient, msg *Message) error {
-	if kp.requireKid {
-		var key jwk.Key
-
-		wantedKid, ok := r.Headers().KeyID()
-		if !ok || wantedKid == "" {
-			return fmt.Errorf(`failed to find matching key: no key ID ("kid") specified in token but multiple keys available in key set`)
-		}
-		// Otherwise we better be able to look up the key, baby.
-		v, ok := kp.set.LookupKeyID(wantedKid)
-		if !ok {
-			return fmt.Errorf(`failed to find key with key ID %q in key set`, wantedKid)
-		}
-		key = v
-
-		return kp.selectKey(sink, key, r, msg)
-	}
-
-	// Collect per-key errors and surface them via errors.Join when
-	// nothing produced a usable (alg, key) pair. Without this, a
-	// caller debugging "why didn't my keyset match" got no signal —
-	// the descriptive error in selectKey ("key %q in set has no
-	// 'alg' field...") was constructed but silently swallowed.
-	var perKeyErrs []error
-	var emitted bool
-	for i := range kp.set.Len() {
-		key, _ := kp.set.Key(i)
-		err := kp.selectKey(sink, key, r, msg)
-		if err != nil {
-			perKeyErrs = append(perKeyErrs, err)
-			continue
-		}
-		emitted = true
-	}
-	if !emitted && len(perKeyErrs) > 0 {
-		return fmt.Errorf(`failed to select any usable key from set of %d (no key produced a usable (alg, key) pair): %w`, kp.set.Len(), errors.Join(perKeyErrs...))
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// The JWK has no "alg" — common for IdP-published encryption keys.
+// Fall back to the recipient's declared "alg" (per-recipient header,
+// then protected header), matching the preference order used when
+// jwe.Decrypt verifies the chosen key's algorithm against the message.
+// jwe.Decrypt re-checks agreement before use, so trusting the header
+// alg here does not widen the attack surface.
+
+func (kp *keySetProvider) FetchKeys(_ context.Context, sink KeySink, r Recipient, msg *Message) error {
+	_ = "STUB: not implemented"
+	return nil
+}
+
+// Otherwise we better be able to look up the key, baby.
+
+// Collect per-key errors and surface them via errors.Join when
+// nothing produced a usable (alg, key) pair. Without this, a
+// caller debugging "why didn't my keyset match" got no signal —
+// the descriptive error in selectKey ("key %q in set has no
+// 'alg' field...") was constructed but silently swallowed.
 
 // KeyProviderFunc is a type of KeyProvider that is implemented by
 // a single function. You can use this to create ad-hoc `KeyProvider`
@@ -197,5 +135,6 @@ func (kp *keySetProvider) FetchKeys(_ context.Context, sink KeySink, r Recipient
 type KeyProviderFunc func(context.Context, KeySink, Recipient, *Message) error
 
 func (kp KeyProviderFunc) FetchKeys(ctx context.Context, sink KeySink, r Recipient, msg *Message) error {
-	return kp(ctx, sink, r, msg)
+	_ = "STUB: not implemented"
+	return nil
 }

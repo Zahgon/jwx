@@ -2,15 +2,12 @@ package pool
 
 var errorSlicePool = New[[]error](allocErrorSlice, freeErrorSlice)
 
-func allocErrorSlice() []error {
-	return make([]error, 0, 1)
-}
+func allocErrorSlice() []error { _ = "STUB: not implemented"; return nil }
 
 func freeErrorSlice(s []error) []error {
+	_ = "STUB: not implemented"
 	// Reset the slice to its zero value
-	return s[:0]
+	return nil
 }
 
-func ErrorSlice() *Pool[[]error] {
-	return errorSlicePool
-}
+func ErrorSlice() *Pool[[]error] { _ = "STUB: not implemented"; return nil }

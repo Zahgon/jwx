@@ -2,19 +2,10 @@ package jws
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"io"
-	"slices"
-	"strings"
 
-	"github.com/lestrrat-go/option/v3"
-
-	"github.com/lestrrat-go/jwx/v4/internal/base64"
-	"github.com/lestrrat-go/jwx/v4/internal/json"
 	"github.com/lestrrat-go/jwx/v4/internal/pool"
 	"github.com/lestrrat-go/jwx/v4/jwa"
-	"github.com/lestrrat-go/jwx/v4/jws/jwsbb"
 )
 
 // verifyContext holds the state during JWS verification
@@ -35,279 +26,79 @@ type verifyContext struct {
 
 var verifyContextPool = pool.New[*verifyContext](allocVerifyContext, freeVerifyContext)
 
-func allocVerifyContext() *verifyContext {
-	return &verifyContext{
-		critValidation: true,
-		encoder:        base64.DefaultEncoder(),
-		ctx:            context.Background(),
-	}
-}
+func allocVerifyContext() *verifyContext { _ = "STUB: not implemented"; return nil }
 
-func freeVerifyContext(vc *verifyContext) *verifyContext {
-	vc.parseOptions = vc.parseOptions[:0]
-	vc.dst = nil
-	vc.detachedPayload = nil
-	vc.payloadReader = nil
-	vc.keyProviders = vc.keyProviders[:0]
-	vc.keyUsed = nil
-	vc.validateKey = false
-	vc.critValidation = true
-	vc.criticalExtensions = vc.criticalExtensions[:0]
-	vc.encoder = base64.DefaultEncoder()
-	vc.ctx = context.Background()
-	return vc
-}
+func freeVerifyContext(vc *verifyContext) *verifyContext { _ = "STUB: not implemented"; return nil }
 
 func (vc *verifyContext) ProcessOptions(options []VerifyOption) error {
-	var ctxOpt context.Context
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identMessage{}:
-			vc.dst = option.MustGet[*Message](opt)
-		case identDetachedPayload{}:
-			if vc.payloadReader != nil {
-				return makeVerifyError(`jws.WithDetachedPayload() and jws.WithDetachedPayloadReader() are mutually exclusive`)
-			}
-			vc.detachedPayload = option.MustGet[[]byte](opt)
-			// RFC 7797 "b64" auto-declaration. Detached-payload
-			// verification is the canonical use case for b64=false,
-			// and the jws package implements b64=false handling
-			// natively, so requiring callers to also pass
-			// jws.WithCritExtension("b64") is busywork. We declare
-			// it implicitly here so application code stays focused
-			// on its own crit extensions. This does not relax any
-			// other validateCritical check — the b64 header still
-			// has to appear in the protected header, the crit list
-			// still has to be non-empty / no duplicates / no
-			// standard names, etc. Only the "is in the caller's
-			// allowlist" check is short-circuited for "b64", and
-			// only when WithDetachedPayload was passed.
-			vc.criticalExtensions = append(vc.criticalExtensions, "b64")
-		case identDetachedPayloadReader{}:
-			if vc.detachedPayload != nil {
-				return makeVerifyError(`jws.WithDetachedPayload() and jws.WithDetachedPayloadReader() are mutually exclusive`)
-			}
-			vc.payloadReader = option.MustGet[io.Reader](opt)
-			// Same RFC 7797 "b64" auto-declaration as for
-			// identDetachedPayload; the streaming path is the other
-			// canonical use case for b64=false.
-			vc.criticalExtensions = append(vc.criticalExtensions, "b64")
-		case identKey{}:
-			pair := option.MustGet[*withKey](opt)
-
-			alg, ok := pair.alg.(jwa.SignatureAlgorithm)
-			if !ok {
-				return makeVerifyError(`expected algorithm to be of type jwa.SignatureAlgorithm but got (%[1]q, %[1]T)`, pair.alg)
-			}
-
-			if err := validateAlgorithmForKey(alg, pair.key); err != nil {
-				return makeVerifyError(`%w`, err)
-			}
-
-			vc.keyProviders = append(vc.keyProviders, &staticKeyProvider{
-				alg: alg,
-				key: pair.key,
-			})
-		case identKeyProvider{}:
-			vc.keyProviders = append(vc.keyProviders, option.MustGet[KeyProvider](opt))
-		case identKeyUsed{}:
-			vc.keyUsed = option.MustGet[*any](opt)
-		case identContext{}:
-			ctxOpt = option.MustGet[context.Context](opt) //nolint:fatcontext // not nesting; selecting from options
-		case identValidateKey{}:
-			vc.validateKey = option.MustGet[bool](opt)
-		case identCritValidation{}:
-			vc.critValidation = option.MustGet[bool](opt)
-		case identCritExtension{}:
-			vc.criticalExtensions = append(vc.criticalExtensions, option.MustGet[[]string](opt)...)
-		case identSerialization{}:
-			po, ok := opt.(ParseOption)
-			if !ok {
-				return makeVerifyError(`invalid jws.VerifyOption: expected ParseOption`)
-			}
-			vc.parseOptions = append(vc.parseOptions, po)
-		case identBase64Encoder{}:
-			vc.encoder = option.MustGet[Base64Encoder](opt)
-		default:
-			return makeVerifyError(`invalid jws.VerifyOption %q passed`, `With`+strings.TrimPrefix(fmt.Sprintf(`%T`, opt.Ident()), `jws.ident`))
-		}
-	}
-	if ctxOpt != nil {
-		vc.ctx = ctxOpt
-	}
-
-	if len(vc.keyProviders) < 1 {
-		return makeVerifyError(`no verifiers available. Specify an algorithm and a key using jws.WithKey() (or jws.WithKeySet(), jws.WithKeyProvider(), or jws.WithVerifyAuto())`)
-	}
-
-	// Streaming verify has a narrower option surface than the full
-	// jws.Verify. The check used to fire deep inside verifyStreaming
-	// after Parse; hoist it here so a malformed option combination
-	// rejects before the caller's payload Reader is touched and
-	// before any parse work is done.
-	if vc.payloadReader != nil {
-		if len(vc.keyProviders) != 1 {
-			return makeVerifyError(`jws.WithDetachedPayloadReader() requires exactly one jws.WithKey(); jws.WithKeySet(), jws.WithKeyProvider() and jws.WithVerifyAuto() are not supported on the streaming path`)
-		}
-		if _, ok := vc.keyProviders[0].(*staticKeyProvider); !ok {
-			return makeVerifyError(`jws.WithDetachedPayloadReader() requires exactly one jws.WithKey(); jws.WithKeySet(), jws.WithKeyProvider() and jws.WithVerifyAuto() are not supported on the streaming path`)
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// RFC 7797 "b64" auto-declaration. Detached-payload
+// verification is the canonical use case for b64=false,
+// and the jws package implements b64=false handling
+// natively, so requiring callers to also pass
+// jws.WithCritExtension("b64") is busywork. We declare
+// it implicitly here so application code stays focused
+// on its own crit extensions. This does not relax any
+// other validateCritical check — the b64 header still
+// has to appear in the protected header, the crit list
+// still has to be non-empty / no duplicates / no
+// standard names, etc. Only the "is in the caller's
+// allowlist" check is short-circuited for "b64", and
+// only when WithDetachedPayload was passed.
+
+// Same RFC 7797 "b64" auto-declaration as for
+// identDetachedPayload; the streaming path is the other
+// canonical use case for b64=false.
+
+//nolint:fatcontext // not nesting; selecting from options
+
+// Streaming verify has a narrower option surface than the full
+// jws.Verify. The check used to fire deep inside verifyStreaming
+// after Parse; hoist it here so a malformed option combination
+// rejects before the caller's payload Reader is touched and
+// before any parse work is done.
 
 func (vc *verifyContext) VerifyMessage(buf []byte) ([]byte, error) {
-	if vc.payloadReader != nil {
-		return vc.verifyStreaming(buf)
-	}
-
-	msg, err := Parse(buf, vc.parseOptions...)
-	if err != nil {
-		return nil, makeVerifyError(`failed to parse jws: %w`, err)
-	}
-	defer msg.clearRaw()
-
-	if vc.detachedPayload != nil {
-		if len(msg.payload) != 0 {
-			return nil, makeVerifyError(`can't specify detached payload for JWS with payload`)
-		}
-
-		msg.payload = vc.detachedPayload
-	}
-
-	verifyBuf := pool.ByteSlice().Get()
-
-	// Because deferred functions bind to the current value of the variable,
-	// we can't just use `defer pool.ByteSlice().Put(verifyBuf)` here.
-	// Instead, we use a closure to reference the _variable_.
-	// it would be better if we could call it directly, but there are
-	// too many place we may return from this function
-	defer func() {
-		pool.ByteSlice().Put(verifyBuf)
-	}()
-
-	errs := pool.ErrorSlice().Get()
-	defer func() {
-		pool.ErrorSlice().Put(errs)
-	}()
-	for idx, sig := range msg.signatures {
-		// Honor caller's deadline between signatures. Without this
-		// check, a hostile JWS with many signatures keeps the loop
-		// running long after the deadline; only kp.FetchKeys had
-		// visibility into vc.ctx, and not every key provider observes
-		// it. Cheap (~1ns) on the success path.
-		if err := vc.ctx.Err(); err != nil {
-			return nil, makeVerifyError(`%w`, err)
-		}
-
-		var rawHeaders []byte
-		if rbp, ok := sig.protected.(interface{ rawBuffer() []byte }); ok {
-			if raw := rbp.rawBuffer(); raw != nil {
-				rawHeaders = raw
-			}
-		}
-
-		if rawHeaders == nil {
-			protected, err := json.Marshal(sig.protected)
-			if err != nil {
-				return nil, makeVerifyError(`failed to marshal "protected" for signature #%d: %w`, idx+1, err)
-			}
-			rawHeaders = protected
-		}
-
-		if vc.critValidation {
-			if err := validateB64InCritIfFalse(sig.protected); err != nil {
-				errs = append(errs, makeVerifyError(`signature #%d: %w`, idx+1, err))
-				continue
-			}
-			if err := validateCritical(sig.protected, vc.criticalExtensions); err != nil {
-				errs = append(errs, makeVerifyError(`signature #%d has invalid "crit" header: %w`, idx+1, err))
-				continue
-			}
-		}
-
-		verifyBuf = verifyBuf[:0]
-		verifyBuf = jwsbb.SignBuffer(verifyBuf, rawHeaders, msg.payload, vc.encoder, msg.b64)
-		var attempts int
-		for i, kp := range vc.keyProviders {
-			// Honor caller's deadline between key providers.
-			if err := vc.ctx.Err(); err != nil {
-				return nil, makeVerifyError(`%w`, err)
-			}
-
-			var sink algKeySink
-			if err := kp.FetchKeys(vc.ctx, &sink, sig, msg); err != nil {
-				errs = append(errs, makeVerifyError(`signature #%d: key provider %d failed: %w`, idx+1, i, err))
-				continue
-			}
-
-			for _, pair := range sink.list {
-				// Honor caller's deadline between (alg,key) pairs.
-				// Under WithRequireKid(false) + WithInferAlgorithmFromKey(true)
-				// + a large JWKS, this inner loop is the dominant
-				// cost — checking ctx between attempts caps the
-				// post-deadline crypto work at one operation.
-				if err := vc.ctx.Err(); err != nil {
-					return nil, makeVerifyError(`%w`, err)
-				}
-
-				attempts++
-				alg := pair.alg
-				key := pair.key
-
-				if err := vc.tryKey(verifyBuf, alg, key, msg, sig); err != nil {
-					errs = append(errs, makeVerifyError(`failed to verify signature #%d with key %T: %w`, idx+1, key, err))
-					continue
-				}
-
-				return msg.payload, nil
-			}
-		}
-		// When loose keySet options widened the candidate set above the
-		// usual "kid + alg pin" of 1, name them so the operator can see
-		// why a single Verify call paid N× the cost. An option-blind
-		// "could not be verified with any of the keys" is the kind of
-		// thing operators mis-diagnose by adding more keys instead of
-		// fixing the JWS or tightening the config.
-		if looseOpts := vc.namedLooseKeySetOptions(); len(looseOpts) > 0 && attempts > 1 {
-			errs = append(errs, makeVerifyError(
-				`signature #%d could not be verified with any of %d (alg,key) pair(s); %s widened the candidate set`,
-				idx+1, attempts, strings.Join(looseOpts, " and ")))
-		} else {
-			errs = append(errs, makeVerifyError(`signature #%d could not be verified with any of the keys`, idx+1))
-		}
-	}
-	return nil, makeVerifyError(`could not verify message using any of the signatures or keys: %w`, errors.Join(errs...))
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Because deferred functions bind to the current value of the variable,
+// we can't just use `defer pool.ByteSlice().Put(verifyBuf)` here.
+// Instead, we use a closure to reference the _variable_.
+// it would be better if we could call it directly, but there are
+// too many place we may return from this function
+
+// Honor caller's deadline between signatures. Without this
+// check, a hostile JWS with many signatures keeps the loop
+// running long after the deadline; only kp.FetchKeys had
+// visibility into vc.ctx, and not every key provider observes
+// it. Cheap (~1ns) on the success path.
+
+// Honor caller's deadline between key providers.
+
+// Honor caller's deadline between (alg,key) pairs.
+// Under WithRequireKid(false) + WithInferAlgorithmFromKey(true)
+// + a large JWKS, this inner loop is the dominant
+// cost — checking ctx between attempts caps the
+// post-deadline crypto work at one operation.
+
+// When loose keySet options widened the candidate set above the
+// usual "kid + alg pin" of 1, name them so the operator can see
+// why a single Verify call paid N× the cost. An option-blind
+// "could not be verified with any of the keys" is the kind of
+// thing operators mis-diagnose by adding more keys instead of
+// fixing the JWS or tightening the config.
 
 func (vc *verifyContext) tryKey(verifyBuf []byte, alg jwa.SignatureAlgorithm, key any, msg *Message, sig *Signature) error {
-	if vc.validateKey {
-		if err := validateKeyBeforeUse(key); err != nil {
-			return fmt.Errorf(`failed to validate key before verification: %w`, err)
-		}
-	}
-
-	verifier, err := VerifierFor(alg)
-	if err != nil {
-		return fmt.Errorf(`failed to get verifier for algorithm %q: %w`, alg, err)
-	}
-
-	if err := verifier.Verify(key, verifyBuf, sig.signature); err != nil {
-		return verificationError{err}
-	}
-
-	// Verification succeeded
-	if vc.keyUsed != nil {
-		*vc.keyUsed = key
-	}
-
-	if vc.dst != nil {
-		*(vc.dst) = *msg
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// Verification succeeded
 
 // validateB64InCritIfFalse enforces RFC 7797 §3: producers that set
 // b64=false in the protected header MUST also list "b64" in the protected
@@ -321,19 +112,7 @@ func (vc *verifyContext) tryKey(verifyBuf []byte, alg jwa.SignatureAlgorithm, ke
 // rejects any b64-bearing message outright via jws.ErrB64Present(); this
 // helper is the slow-path mirror that targets only the non-conformant
 // shape rather than blanket-refusing b64=false.
-func validateB64InCritIfFalse(protected Headers) error {
-	if getB64Value(protected) {
-		return nil
-	}
-	if !protected.Has(CriticalKey) {
-		return makeVerifyError(`protected header has "b64":false but no "crit"; RFC 7797 §3 requires producers that set "b64":false to list "b64" in "crit"`)
-	}
-	crit, _ := protected.Critical()
-	if !slices.Contains(crit, "b64") {
-		return makeVerifyError(`protected header has "b64":false but "crit" does not list "b64"; RFC 7797 §3 requires producers that set "b64":false to list "b64" in "crit"`)
-	}
-	return nil
-}
+func validateB64InCritIfFalse(protected Headers) error { _ = "STUB: not implemented"; return nil }
 
 // validateCritical checks the "crit" header per RFC 7515 Section 4.1.11.
 // It enforces:
@@ -355,54 +134,24 @@ func validateB64InCritIfFalse(protected Headers) error {
 // declaration only short-circuits the allowlist check; every other
 // rule above still applies to the "b64" entry.
 func validateCritical(protected Headers, allowedExtensions []string) error {
-	if !protected.Has(CriticalKey) {
-		return nil
-	}
-
-	crit, _ := protected.Critical()
-	if len(crit) == 0 {
-		return makeVerifyError(`"crit" header must not be empty`)
-	}
-
-	seen := make(map[string]struct{}, len(crit))
-	for _, name := range crit {
-		if name == "" {
-			return makeVerifyError(`"crit" header must not contain an empty extension name`)
-		}
-		if _, dup := seen[name]; dup {
-			return makeVerifyError(`"crit" header must not contain duplicate extension %q`, name)
-		}
-		seen[name] = struct{}{}
-
-		// RFC 7515 Section 4.1.11: "crit" MUST NOT include names defined
-		// by the JOSE Header specification itself. The "b64" parameter
-		// is RFC 7797, not RFC 7515 — listing it in "crit" is the
-		// canonical use of the field per RFC 7797 §3 — so exclude it
-		// from this check even though it is a typed field on stdHeaders.
-		if name != B64Key && slices.Contains(stdHeaderNames, name) {
-			return makeVerifyError(`"crit" header must not contain standard header parameter %q`, name)
-		}
-
-		// The extension must be present in the protected header.
-		if !protected.Has(name) {
-			return makeVerifyError(`"crit" header references extension %q, but it is not present in the protected header`, name)
-		}
-
-		// The recipient must have declared support for the extension.
-		if !slices.Contains(allowedExtensions, name) {
-			if name == B64Key {
-				// b64=false is the canonical RFC 7797 case. The
-				// auto-declare only fires for WithDetachedPayload /
-				// WithDetachedPayloadReader; in-band b64=false still
-				// requires the caller to opt in explicitly.
-				return makeVerifyError(`"crit" header references extension "b64", but the recipient has not declared support for it; pass jws.WithCritExtension("b64") to accept in-band b64=false (auto-declare only fires for jws.WithDetachedPayload / jws.WithDetachedPayloadReader)`)
-			}
-			return makeVerifyError(`"crit" header references extension %q, but the recipient has not declared support for it (use jws.WithCritExtension(%q))`, name, name)
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// RFC 7515 Section 4.1.11: "crit" MUST NOT include names defined
+// by the JOSE Header specification itself. The "b64" parameter
+// is RFC 7797, not RFC 7515 — listing it in "crit" is the
+// canonical use of the field per RFC 7797 §3 — so exclude it
+// from this check even though it is a typed field on stdHeaders.
+
+// The extension must be present in the protected header.
+
+// The recipient must have declared support for the extension.
+
+// b64=false is the canonical RFC 7797 case. The
+// auto-declare only fires for WithDetachedPayload /
+// WithDetachedPayloadReader; in-band b64=false still
+// requires the caller to opt in explicitly.
 
 // namedLooseKeySetOptions inspects the registered key providers and
 // returns the human-readable names of the loose-config keySet options
@@ -412,26 +161,4 @@ func validateCritical(protected Headers, allowedExtensions []string) error {
 // the default "kid + alg pin" of one. The names are used in the final
 // "could not be verified" error so an operator sees which options
 // produced the fan-out without grep'ing the source.
-func (vc *verifyContext) namedLooseKeySetOptions() []string {
-	var requireKidFalse, inferAlgorithm bool
-	for _, kp := range vc.keyProviders {
-		ksp, ok := kp.(*keySetProvider)
-		if !ok {
-			continue
-		}
-		if !ksp.requireKid {
-			requireKidFalse = true
-		}
-		if ksp.inferAlgorithm {
-			inferAlgorithm = true
-		}
-	}
-	var names []string
-	if requireKidFalse {
-		names = append(names, "jws.WithRequireKid(false)")
-	}
-	if inferAlgorithm {
-		names = append(names, "jws.WithInferAlgorithmFromKey(true)")
-	}
-	return names
-}
+func (vc *verifyContext) namedLooseKeySetOptions() []string { _ = "STUB: not implemented"; return nil }

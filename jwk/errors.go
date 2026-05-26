@@ -2,7 +2,6 @@ package jwk
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -11,81 +10,49 @@ var cpe = &continueError{}
 // ContinueError returns an opaque error that can be returned
 // when a `KeyParser`, `KeyImporter`, or `KeyExporter` cannot handle the given payload,
 // but would like the process to continue with the next handler.
-func ContinueError() error {
-	return cpe
-}
+func ContinueError() error { _ = "STUB: not implemented"; return nil }
 
 type continueError struct{}
 
-func (e *continueError) Error() string {
-	return "continue parsing"
-}
+func (e *continueError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type importError struct {
 	error
 }
 
-func (e importError) Unwrap() error {
-	return e.error
-}
+func (e importError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (importError) Is(err error) bool {
-	_, ok := err.(importError)
-	return ok
-}
+func (importError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
-func importerr(f string, args ...any) error {
-	return importError{fmt.Errorf(`jwk.Import: `+f, args...)}
-}
+func importerr(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 var errDefaultImportError = importError{errors.New(`import error`)}
 
-func ImportError() error {
-	return errDefaultImportError
-}
+func ImportError() error { _ = "STUB: not implemented"; return nil }
 
 type parseError struct {
 	error
 }
 
-func (e parseError) Unwrap() error {
-	return e.error
-}
+func (e parseError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (parseError) Is(err error) bool {
-	_, ok := err.(parseError)
-	return ok
-}
+func (parseError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
-func bparseerr(prefix string, f string, args ...any) error {
-	return parseError{fmt.Errorf(prefix+`: `+f, args...)}
-}
+func bparseerr(prefix string, f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
-func parseerr(f string, args ...any) error {
-	return bparseerr(`jwk.Parse`, f, args...)
-}
+func parseerr(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
-func rparseerr(f string, args ...any) error {
-	return bparseerr(`jwk.ParseReader`, f, args...)
-}
+func rparseerr(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
-func sparseerr(f string, args ...any) error {
-	return bparseerr(`jwk.ParseString`, f, args...)
-}
+func sparseerr(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
-func kparseerr(f string, args ...any) error {
-	return bparseerr(`jwk.ParseKey`, f, args...)
-}
+func kparseerr(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
-func kasparseerr(f string, args ...any) error {
-	return bparseerr(`jwk.ParseKeyAs`, f, args...)
-}
+func kasparseerr(f string, args ...any) error { _ = "STUB: not implemented"; return nil }
 
 var errDefaultParseError = parseError{errors.New(`parse error`)}
 
-func ParseError() error {
-	return errDefaultParseError
-}
+func ParseError() error { _ = "STUB: not implemented"; return nil }
 
 //-------------------------------------------------------------------
 // KeyTypeMismatchError
@@ -107,24 +74,14 @@ type KeyTypeMismatchError struct {
 	Want reflect.Type
 }
 
-func (e KeyTypeMismatchError) Error() string {
-	return fmt.Sprintf(`key type mismatch: got %s, want %s`, typeName(e.Got), typeName(e.Want))
-}
+func (e KeyTypeMismatchError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e KeyTypeMismatchError) Is(target error) bool {
-	_, ok := target.(KeyTypeMismatchError)
-	return ok
-}
+func (e KeyTypeMismatchError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 // typeName renders a reflect.Type similarly to the %T verb so that
 // KeyTypeMismatchError's message remains recognizable when either
 // field is nil.
-func typeName(t reflect.Type) string {
-	if t == nil {
-		return "<nil>"
-	}
-	return t.String()
-}
+func typeName(t reflect.Type) string { _ = "STUB: not implemented"; return "" }
 
 //-------------------------------------------------------------------
 // UnknownKeyTypeError
@@ -149,17 +106,9 @@ type UnknownKeyTypeError struct {
 	KeyType string
 }
 
-func (e UnknownKeyTypeError) Error() string {
-	if e.KeyType == "" {
-		return `failed to get "kty" hint`
-	}
-	return fmt.Sprintf(`invalid key type from JSON (%s)`, e.KeyType)
-}
+func (e UnknownKeyTypeError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (UnknownKeyTypeError) Is(target error) bool {
-	_, ok := target.(UnknownKeyTypeError)
-	return ok
-}
+func (UnknownKeyTypeError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // FieldNotFoundError
@@ -172,14 +121,9 @@ type FieldNotFoundError struct {
 	Name string
 }
 
-func (e FieldNotFoundError) Error() string {
-	return fmt.Sprintf(`field %q not found`, e.Name)
-}
+func (e FieldNotFoundError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e FieldNotFoundError) Is(target error) bool {
-	_, ok := target.(FieldNotFoundError)
-	return ok
-}
+func (e FieldNotFoundError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 //-------------------------------------------------------------------
 // FieldTypeMismatchError
@@ -204,11 +148,6 @@ type FieldTypeMismatchError struct {
 	Want any
 }
 
-func (e FieldTypeMismatchError) Error() string {
-	return fmt.Sprintf(`field %q is %T, not %T`, e.Name, e.Got, e.Want)
-}
+func (e FieldTypeMismatchError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e FieldTypeMismatchError) Is(target error) bool {
-	_, ok := target.(FieldTypeMismatchError)
-	return ok
-}
+func (e FieldTypeMismatchError) Is(target error) bool { _ = "STUB: not implemented"; return false }

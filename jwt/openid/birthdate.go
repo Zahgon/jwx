@@ -1,14 +1,9 @@
 package openid
 
 import (
-	"bytes"
-	"fmt"
 	"io"
 	"math"
 	"regexp"
-	"strconv"
-
-	"github.com/lestrrat-go/jwx/v4/internal/json"
 )
 
 // https://openid.net/specs/openid-connect-core-1_0.html
@@ -25,38 +20,13 @@ type BirthdateClaim struct {
 	day   *int
 }
 
-func (b BirthdateClaim) Year() int {
-	if b.year == nil {
-		return 0
-	}
-	return *(b.year)
-}
+func (b BirthdateClaim) Year() int { _ = "STUB: not implemented"; return 0 }
 
-func (b BirthdateClaim) Month() int {
-	if b.month == nil {
-		return 0
-	}
-	return *(b.month)
-}
+func (b BirthdateClaim) Month() int { _ = "STUB: not implemented"; return 0 }
 
-func (b BirthdateClaim) Day() int {
-	if b.day == nil {
-		return 0
-	}
-	return *(b.day)
-}
+func (b BirthdateClaim) Day() int { _ = "STUB: not implemented"; return 0 }
 
-func (b *BirthdateClaim) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf(`failed to unmarshal JSON string for birthdate claim: %w`, err)
-	}
-
-	if err := b.Accept(s); err != nil {
-		return fmt.Errorf(`failed to accept JSON value for birthdate claim: %w`, err)
-	}
-	return nil
-}
+func (b *BirthdateClaim) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 var intSize int
 
@@ -67,92 +37,28 @@ func init() {
 	}
 }
 
-func parseBirthdayInt(s string) int {
-	i, err := strconv.ParseInt(s, 10, intSize)
-	if err != nil {
-		return 0
-	}
-	return int(i)
-}
+func parseBirthdayInt(s string) int { _ = "STUB: not implemented"; return 0 }
 
 var birthdateRx = regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
 
 // Accept accepts a value read from JSON, and converts it to a BirthdateClaim.
 // This method DOES NOT verify the correctness of a date.
 // Consumers should check for validity of dates such as Apr 31 et al
-func (b *BirthdateClaim) Accept(v any) error {
-	b.year = nil
-	b.month = nil
-	b.day = nil
-	switch v := v.(type) {
-	case *BirthdateClaim:
-		if ptr := v.year; ptr != nil {
-			year := *ptr
-			b.year = &year
-		}
-		if ptr := v.month; ptr != nil {
-			month := *ptr
-			b.month = &month
-		}
-		if ptr := v.day; ptr != nil {
-			day := *ptr
-			b.day = &day
-		}
-		return nil
-	case string:
-		// yeah, regexp is slow. PR's welcome
-		indices := birthdateRx.FindStringSubmatchIndex(v)
-		if indices == nil {
-			return fmt.Errorf(`invalid pattern for birthdate`)
-		}
-		var tmp BirthdateClaim
+func (b *BirthdateClaim) Accept(v any) error { _ = "STUB: not implemented"; return nil }
 
-		// Okay, this really isn't kosher, but we're doing this for
-		// the coverage game... Because birthdateRx already checked that
-		// the string contains 3 strings with consecutive decimal values
-		// we can assume that strconv.ParseInt always succeeds.
-		// strconv.ParseInt (and strconv.ParseUint that it uses internally)
-		// only returns range errors, so we should be safe.
-		year := parseBirthdayInt(v[indices[2]:indices[3]])
-		if year < 0 {
-			return fmt.Errorf(`failed to parse birthdate year`)
-		}
-		if year > 0 {
-			tmp.year = &year
-		}
-		// year == 0 (i.e. "0000") means omitted per OIDC spec; leave tmp.year as nil
+// yeah, regexp is slow. PR's welcome
 
-		month := parseBirthdayInt(v[indices[4]:indices[5]])
-		if month <= 0 {
-			return fmt.Errorf(`failed to parse birthdate month`)
-		}
-		tmp.month = &month
+// Okay, this really isn't kosher, but we're doing this for
+// the coverage game... Because birthdateRx already checked that
+// the string contains 3 strings with consecutive decimal values
+// we can assume that strconv.ParseInt always succeeds.
+// strconv.ParseInt (and strconv.ParseUint that it uses internally)
+// only returns range errors, so we should be safe.
 
-		day := parseBirthdayInt(v[indices[6]:indices[7]])
-		if day <= 0 {
-			return fmt.Errorf(`failed to parse birthdate day`)
-		}
-		tmp.day = &day
+// year == 0 (i.e. "0000") means omitted per OIDC spec; leave tmp.year as nil
 
-		*b = tmp
-		return nil
-	default:
-		return fmt.Errorf(`invalid type for birthdate: %T`, v)
-	}
-}
+func (b BirthdateClaim) encode(dst io.Writer) { _ = "STUB: not implemented"; return }
 
-func (b BirthdateClaim) encode(dst io.Writer) {
-	fmt.Fprintf(dst, "%04d-%02d-%02d", b.Year(), b.Month(), b.Day())
-}
+func (b BirthdateClaim) String() string { _ = "STUB: not implemented"; return "" }
 
-func (b BirthdateClaim) String() string {
-	var buf bytes.Buffer
-	b.encode(&buf)
-	return buf.String()
-}
-
-func (b BirthdateClaim) MarshalText() ([]byte, error) {
-	var buf bytes.Buffer
-	b.encode(&buf)
-	return buf.Bytes(), nil
-}
+func (b BirthdateClaim) MarshalText() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }

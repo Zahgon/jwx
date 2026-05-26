@@ -1,7 +1,6 @@
 package jwebb
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/lestrrat-go/jwx/v4/jwe/internal/keygen"
@@ -41,24 +40,14 @@ type MLKEMKeyDecrypter interface {
 
 // KeyEncryptMLKEMCustom encrypts using a custom ML-KEM key encrypter.
 func KeyEncryptMLKEMCustom(cek []byte, alg, calg string, enc MLKEMKeyEncrypter) (keygen.ByteSource, error) {
-	sealedCEK, encKey, err := enc.EncryptMLKEM(cek, alg, calg)
-	if err != nil {
-		return nil, fmt.Errorf(`ML-KEM key encrypt (custom): %w`, err)
-	}
-
-	return keygen.ByteWithEncapsulatedKey{
-		ByteKey:    keygen.ByteKey(sealedCEK),
-		Ciphertext: encKey,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(keygen.ByteSource), nil
 }
 
 // KeyDecryptMLKEMCustom decrypts using a custom ML-KEM key decrypter.
 func KeyDecryptMLKEMCustom(sealedCEK []byte, alg, calg string, dec MLKEMKeyDecrypter, enc []byte) ([]byte, error) {
-	cek, err := dec.DecryptMLKEM(sealedCEK, alg, calg, enc)
-	if err != nil {
-		return nil, fmt.Errorf(`ML-KEM key decrypt (custom): %w`, err)
-	}
-	return cek, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 var (
@@ -78,12 +67,7 @@ var (
 // design, callers must audit their import graph, and companion modules
 // calling this from init() must check the returned error and panic on
 // failure to stay forward-compatible.
-func RegisterMLKEMAlgorithm(alg string) error {
-	muMLKEMAlgs.Lock()
-	defer muMLKEMAlgs.Unlock()
-	mlkemAlgSet[alg] = struct{}{}
-	return nil
-}
+func RegisterMLKEMAlgorithm(alg string) error { _ = "STUB: not implemented"; return nil }
 
 // RegisterMLKEMDirectAlgorithm registers an algorithm identifier as a
 // direct (non-key-wrapping) ML-KEM algorithm. Direct algorithms use the
@@ -94,23 +78,8 @@ func RegisterMLKEMAlgorithm(alg string) error {
 // for override semantics. Companion modules calling this from init()
 // must check the returned error and panic on failure to stay forward-
 // compatible.
-func RegisterMLKEMDirectAlgorithm(alg string) error {
-	muMLKEMAlgs.Lock()
-	defer muMLKEMAlgs.Unlock()
-	mlkemDirectAlgSet[alg] = struct{}{}
-	return nil
-}
+func RegisterMLKEMDirectAlgorithm(alg string) error { _ = "STUB: not implemented"; return nil }
 
-func isRegisteredMLKEM(alg string) bool {
-	muMLKEMAlgs.RLock()
-	defer muMLKEMAlgs.RUnlock()
-	_, ok := mlkemAlgSet[alg]
-	return ok
-}
+func isRegisteredMLKEM(alg string) bool { _ = "STUB: not implemented"; return false }
 
-func isRegisteredMLKEMDirect(alg string) bool {
-	muMLKEMAlgs.RLock()
-	defer muMLKEMAlgs.RUnlock()
-	_, ok := mlkemDirectAlgSet[alg]
-	return ok
-}
+func isRegisteredMLKEMDirect(alg string) bool { _ = "STUB: not implemented"; return false }

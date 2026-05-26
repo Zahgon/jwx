@@ -3,7 +3,6 @@
 package openid
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -21,9 +20,7 @@ type Builder struct {
 	claims map[string]any
 }
 
-func NewBuilder() *Builder {
-	return &Builder{}
-}
+func NewBuilder() *Builder { _ = "STUB: not implemented"; return nil }
 
 func (b *Builder) init() {
 	if b.claims == nil {
@@ -31,117 +28,59 @@ func (b *Builder) init() {
 	}
 }
 
-func (b *Builder) Claim(name string, value any) *Builder {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	b.init()
-	b.claims[name] = value
-	return b
-}
+func (b *Builder) Claim(name string, value any) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Address(v *AddressClaim) *Builder {
-	return b.Claim(AddressKey, v)
-}
+func (b *Builder) Address(v *AddressClaim) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Audience(v []string) *Builder {
-	return b.Claim(AudienceKey, v)
-}
+func (b *Builder) Audience(v []string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Birthdate(v *BirthdateClaim) *Builder {
-	return b.Claim(BirthdateKey, v)
-}
+func (b *Builder) Birthdate(v *BirthdateClaim) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Email(v string) *Builder {
-	return b.Claim(EmailKey, v)
-}
+func (b *Builder) Email(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) EmailVerified(v bool) *Builder {
-	return b.Claim(EmailVerifiedKey, v)
-}
+func (b *Builder) EmailVerified(v bool) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Expiration(v time.Time) *Builder {
-	return b.Claim(ExpirationKey, v)
-}
+func (b *Builder) Expiration(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) FamilyName(v string) *Builder {
-	return b.Claim(FamilyNameKey, v)
-}
+func (b *Builder) FamilyName(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Gender(v string) *Builder {
-	return b.Claim(GenderKey, v)
-}
+func (b *Builder) Gender(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) GivenName(v string) *Builder {
-	return b.Claim(GivenNameKey, v)
-}
+func (b *Builder) GivenName(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) IssuedAt(v time.Time) *Builder {
-	return b.Claim(IssuedAtKey, v)
-}
+func (b *Builder) IssuedAt(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Issuer(v string) *Builder {
-	return b.Claim(IssuerKey, v)
-}
+func (b *Builder) Issuer(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) JwtID(v string) *Builder {
-	return b.Claim(JwtIDKey, v)
-}
+func (b *Builder) JwtID(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Locale(v string) *Builder {
-	return b.Claim(LocaleKey, v)
-}
+func (b *Builder) Locale(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) MiddleName(v string) *Builder {
-	return b.Claim(MiddleNameKey, v)
-}
+func (b *Builder) MiddleName(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Name(v string) *Builder {
-	return b.Claim(NameKey, v)
-}
+func (b *Builder) Name(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Nickname(v string) *Builder {
-	return b.Claim(NicknameKey, v)
-}
+func (b *Builder) Nickname(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) NotBefore(v time.Time) *Builder {
-	return b.Claim(NotBeforeKey, v)
-}
+func (b *Builder) NotBefore(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) PhoneNumber(v string) *Builder {
-	return b.Claim(PhoneNumberKey, v)
-}
+func (b *Builder) PhoneNumber(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) PhoneNumberVerified(v bool) *Builder {
-	return b.Claim(PhoneNumberVerifiedKey, v)
-}
+func (b *Builder) PhoneNumberVerified(v bool) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Picture(v string) *Builder {
-	return b.Claim(PictureKey, v)
-}
+func (b *Builder) Picture(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) PreferredUsername(v string) *Builder {
-	return b.Claim(PreferredUsernameKey, v)
-}
+func (b *Builder) PreferredUsername(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Profile(v string) *Builder {
-	return b.Claim(ProfileKey, v)
-}
+func (b *Builder) Profile(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Subject(v string) *Builder {
-	return b.Claim(SubjectKey, v)
-}
+func (b *Builder) Subject(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) UpdatedAt(v time.Time) *Builder {
-	return b.Claim(UpdatedAtKey, v)
-}
+func (b *Builder) UpdatedAt(v time.Time) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Website(v string) *Builder {
-	return b.Claim(WebsiteKey, v)
-}
+func (b *Builder) Website(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
-func (b *Builder) Zoneinfo(v string) *Builder {
-	return b.Claim(ZoneinfoKey, v)
-}
+func (b *Builder) Zoneinfo(v string) *Builder { _ = "STUB: not implemented"; return nil }
 
 // Build creates a new token based on the claims that the builder has received
 // so far. If a claim cannot be set, then the method returns a nil Token with
@@ -149,16 +88,4 @@ func (b *Builder) Zoneinfo(v string) *Builder {
 //
 // Once `Build()` is called, all claims are cleared from the Builder, and the
 // Builder can be reused to build another token
-func (b *Builder) Build() (Token, error) {
-	b.mu.Lock()
-	claims := b.claims
-	b.claims = nil
-	b.mu.Unlock()
-	tok := New()
-	for k, v := range claims {
-		if err := tok.Set(k, v); err != nil {
-			return nil, fmt.Errorf(`failed to set claim %q: %w`, k, err)
-		}
-	}
-	return tok, nil
-}
+func (b *Builder) Build() (Token, error) { _ = "STUB: not implemented"; return *new(Token), nil }

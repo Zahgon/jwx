@@ -4,10 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/rsa"
-	"crypto/x509"
 	"encoding/pem"
-	"errors"
-	"fmt"
 	"reflect"
 	"sync"
 )
@@ -30,17 +27,19 @@ type X509DecodeFunc[T any] func(block *pem.Block) (T, error)
 
 // DecodeX509 calls the underlying function.
 func (f X509DecodeFunc[T]) DecodeX509(block *pem.Block) (T, error) {
-	return f(block)
+	_ = "STUB: not implemented"
+
+	// X509Encoder encodes a value of type T into a PEM block type and its
+	// DER bytes. Register a custom implementation via [RegisterX509Encoder]
+	// to extend [EncodePEM] to additional key families such as PQC keys.
+	//
+	// The type parameter is the key under which the encoder is registered:
+	// [EncodePEM] dispatches by the runtime type of each input value, so a
+	// caller that registers `X509Encoder[*mypkg.Key]` will receive
+	// `*mypkg.Key` values and nothing else.
+	return *new(T), nil
 }
 
-// X509Encoder encodes a value of type T into a PEM block type and its
-// DER bytes. Register a custom implementation via [RegisterX509Encoder]
-// to extend [EncodePEM] to additional key families such as PQC keys.
-//
-// The type parameter is the key under which the encoder is registered:
-// [EncodePEM] dispatches by the runtime type of each input value, so a
-// caller that registers `X509Encoder[*mypkg.Key]` will receive
-// `*mypkg.Key` values and nothing else.
 type X509Encoder[T any] interface {
 	EncodeX509(v T) (blockType string, der []byte, err error)
 }
@@ -50,13 +49,14 @@ type X509EncodeFunc[T any] func(v T) (blockType string, der []byte, err error)
 
 // EncodeX509 calls the underlying function.
 func (f X509EncodeFunc[T]) EncodeX509(v T) (string, []byte, error) {
-	return f(v)
-}
+	_ = "STUB: not implemented"
 
-// Registry-internal erased shapes. Each Register call boxes the typed
-// decoder/encoder into one of these adapters, so the heterogeneous
-// map can hold entries for arbitrary T without chain-iteration
-// ceremony.
+	// Registry-internal erased shapes. Each Register call boxes the typed
+	// decoder/encoder into one of these adapters, so the heterogeneous
+	// map can hold entries for arbitrary T without chain-iteration
+	// ceremony.
+	return "", nil, nil
+}
 
 type x509Decoder interface {
 	decode(block *pem.Block) (any, error)
@@ -67,7 +67,8 @@ type x509DecoderAdapter[T any] struct {
 }
 
 func (a *x509DecoderAdapter[T]) decode(block *pem.Block) (any, error) {
-	return a.dec.DecodeX509(block)
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 type x509Encoder interface {
@@ -79,11 +80,8 @@ type x509EncoderAdapter[T any] struct {
 }
 
 func (a *x509EncoderAdapter[T]) encode(v any) (string, []byte, error) {
-	typed, ok := v.(T)
-	if !ok {
-		return "", nil, fmt.Errorf(`jwkbb: encoder registered for %T cannot encode %T`, *new(T), v)
-	}
-	return a.enc.EncodeX509(typed)
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 // muX509 protects both registries. Readers take an RLock, look up
@@ -118,104 +116,80 @@ func init() {
 	panicIfRegisterDefaultEncoderFailed(RegisterX509Encoder[ed25519.PublicKey](X509EncodeFunc[ed25519.PublicKey](ed25519PublicKeyEncoder)))
 }
 
-func panicIfRegisterDefaultDecoderFailed(err error) {
-	if err != nil {
-		panic(fmt.Sprintf("jwkbb: failed to register default X509 decoder: %s", err))
-	}
-}
+func panicIfRegisterDefaultDecoderFailed(err error) { _ = "STUB: not implemented"; return }
 
-func panicIfRegisterDefaultEncoderFailed(err error) {
-	if err != nil {
-		panic(fmt.Sprintf("jwkbb: failed to register default X509 encoder: %s", err))
-	}
-}
+func panicIfRegisterDefaultEncoderFailed(err error) { _ = "STUB: not implemented"; return }
 
 // Default decoder implementations. Each handles exactly one PEM block
 // type and returns the concrete Go value stdlib produces for that
 // format.
 
 func decodeRSAPrivateKey(block *pem.Block) (*rsa.PrivateKey, error) {
-	return x509.ParsePKCS1PrivateKey(block.Bytes)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func decodeRSAPublicKey(block *pem.Block) (*rsa.PublicKey, error) {
-	return x509.ParsePKCS1PublicKey(block.Bytes)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func decodeECPrivateKey(block *pem.Block) (*ecdsa.PrivateKey, error) {
-	return x509.ParseECPrivateKey(block.Bytes)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // PKCS#8 wraps any of RSA/ECDSA/Ed25519 private keys; stdlib sniffs
 // the OID internally, so the return type here is legitimately `any`.
 func decodePKCS8PrivateKey(block *pem.Block) (any, error) {
-	return x509.ParsePKCS8PrivateKey(block.Bytes)
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 // PKIX/SPKI similarly wraps any public key type; return shape is `any`.
 func decodePKIXPublicKey(block *pem.Block) (any, error) {
-	return x509.ParsePKIXPublicKey(block.Bytes)
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 // decodeCertificate extracts the embedded public key. Chain validation,
 // expiration, CN/SAN, EKU, etc. are intentionally not performed here —
 // they are an application-level concern.
 func decodeCertificate(block *pem.Block) (any, error) {
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, fmt.Errorf(`failed to parse certificate: %w`, err)
-	}
-	return cert.PublicKey, nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }
 
 // Default encoder implementations — one per stdlib crypto type.
 
 func rsaPrivateKeyEncoder(v *rsa.PrivateKey) (string, []byte, error) {
-	der, err := x509.MarshalPKCS8PrivateKey(v)
-	if err != nil {
-		return "", nil, err
-	}
-	return PrivateKeyBlockType, der, nil
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 func ecdsaPrivateKeyEncoder(v *ecdsa.PrivateKey) (string, []byte, error) {
-	der, err := x509.MarshalECPrivateKey(v)
-	if err != nil {
-		return "", nil, err
-	}
-	return ECPrivateKeyBlockType, der, nil
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 func ed25519PrivateKeyEncoder(v ed25519.PrivateKey) (string, []byte, error) {
-	der, err := x509.MarshalPKCS8PrivateKey(v)
-	if err != nil {
-		return "", nil, err
-	}
-	return PrivateKeyBlockType, der, nil
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 func rsaPublicKeyEncoder(v *rsa.PublicKey) (string, []byte, error) {
-	der, err := x509.MarshalPKIXPublicKey(v)
-	if err != nil {
-		return "", nil, err
-	}
-	return PublicKeyBlockType, der, nil
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 func ecdsaPublicKeyEncoder(v *ecdsa.PublicKey) (string, []byte, error) {
-	der, err := x509.MarshalPKIXPublicKey(v)
-	if err != nil {
-		return "", nil, err
-	}
-	return PublicKeyBlockType, der, nil
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 func ed25519PublicKeyEncoder(v ed25519.PublicKey) (string, []byte, error) {
-	der, err := x509.MarshalPKIXPublicKey(v)
-	if err != nil {
-		return "", nil, err
-	}
-	return PublicKeyBlockType, der, nil
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
 // RegisterX509Decoder installs decoder as the handler for PEM blocks
@@ -254,15 +228,7 @@ func ed25519PublicKeyEncoder(v ed25519.PublicKey) (string, []byte, error) {
 // which DOES refuse to re-register built-ins because no legitimate
 // extension wants to swap a built-in NIST curve.)
 func RegisterX509Decoder[T any](blockType string, decoder X509Decoder[T]) error {
-	if blockType == "" {
-		return errors.New(`jwkbb.RegisterX509Decoder: blockType must not be empty`)
-	}
-	if decoder == nil {
-		return errors.New(`jwkbb.RegisterX509Decoder: decoder must not be nil`)
-	}
-	muX509.Lock()
-	defer muX509.Unlock()
-	x509Decoders[blockType] = &x509DecoderAdapter[T]{dec: decoder}
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -274,26 +240,13 @@ func RegisterX509Decoder[T any](blockType string, decoder X509Decoder[T]) error 
 // today. Callers scripting Register/Unregister cycles should check
 // the returned value and propagate on failure to stay forward-
 // compatible, matching the convention on [RegisterX509Decoder].
-func UnregisterX509Decoder(blockType string) error {
-	muX509.Lock()
-	defer muX509.Unlock()
-	delete(x509Decoders, blockType)
-	return nil
-}
+func UnregisterX509Decoder(blockType string) error { _ = "STUB: not implemented"; return nil }
 
 // DecodeX509 dispatches block to the decoder registered for
 // block.Type and returns its raw key (the type produced by the
 // decoder, erased to `any`). Returns an error if no decoder is
 // registered for block.Type.
-func DecodeX509(block *pem.Block) (any, error) {
-	muX509.RLock()
-	dec, ok := x509Decoders[block.Type]
-	muX509.RUnlock()
-	if !ok {
-		return nil, fmt.Errorf(`jwkbb.DecodeX509: no decoder registered for block type %q`, block.Type)
-	}
-	return dec.decode(block)
-}
+func DecodeX509(block *pem.Block) (any, error) { _ = "STUB: not implemented"; return *new(any), nil }
 
 // RegisterX509Encoder installs encoder as the handler for values of
 // type T. [EncodePEM] dispatches by the runtime type of each input, so
@@ -315,12 +268,7 @@ func DecodeX509(block *pem.Block) (any, error) {
 // function is the caller's responsibility; see the
 // [RegisterX509Decoder] godoc for the full statement.
 func RegisterX509Encoder[T any](encoder X509Encoder[T]) error {
-	if encoder == nil {
-		return errors.New(`jwkbb.RegisterX509Encoder: encoder must not be nil`)
-	}
-	muX509.Lock()
-	defer muX509.Unlock()
-	x509Encoders[reflect.TypeFor[T]()] = &x509EncoderAdapter[T]{enc: encoder}
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -332,12 +280,7 @@ func RegisterX509Encoder[T any](encoder X509Encoder[T]) error {
 // Callers scripting Register/Unregister cycles should check the
 // returned value and propagate on failure to stay forward-
 // compatible, matching the convention on [RegisterX509Encoder].
-func UnregisterX509Encoder[T any]() error {
-	muX509.Lock()
-	defer muX509.Unlock()
-	delete(x509Encoders, reflect.TypeFor[T]())
-	return nil
-}
+func UnregisterX509Encoder[T any]() error { _ = "STUB: not implemented"; return nil }
 
 // EncodePEM encodes each key into a PEM block and returns the
 // concatenated PEM-encoded bytes in the order given.
@@ -358,25 +301,4 @@ func UnregisterX509Encoder[T any]() error {
 // `ed25519.PublicKey` even though the underlying types are equal.
 // Callers that round-trip through `jwk.Export[any]` get the named
 // type back and do not need to worry about this.
-func EncodePEM(keys ...any) ([]byte, error) {
-	if len(keys) == 0 {
-		return nil, errors.New(`jwkbb.EncodePEM: at least one key is required`)
-	}
-
-	var out []byte
-	for i, v := range keys {
-		t := reflect.TypeOf(v)
-		muX509.RLock()
-		enc, ok := x509Encoders[t]
-		muX509.RUnlock()
-		if !ok {
-			return nil, fmt.Errorf(`jwkbb.EncodePEM: key #%d (%T): no encoder registered; EncodePEM requires raw Go crypto keys (e.g. *rsa.PrivateKey, *ecdsa.PublicKey, ed25519.PrivateKey). Convert a jwk.Key via jwk.Export[any] or a jwk.Set via jwk.ExportAll[any] first, or register a custom encoder with jwkbb.RegisterX509Encoder`, i, v)
-		}
-		blockType, der, err := enc.encode(v)
-		if err != nil {
-			return nil, fmt.Errorf(`jwkbb.EncodePEM: key #%d (%T): %w`, i, v, err)
-		}
-		out = append(out, pem.EncodeToMemory(&pem.Block{Type: blockType, Bytes: der})...)
-	}
-	return out, nil
-}
+func EncodePEM(keys ...any) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }

@@ -2,29 +2,15 @@
 
 package jwx
 
-import "strconv"
-
 func _() {
+	_ = "STUB: not implemented"
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
-	var x [1]struct{}
-	_ = x[InvalidFormat-0]
-	_ = x[UnknownFormat-1]
-	_ = x[JWE-2]
-	_ = x[JWS-3]
-	_ = x[JWK-4]
-	_ = x[JWKS-5]
-	_ = x[JWT-6]
+	return
 }
 
 const _FormatKind_name = "InvalidFormatUnknownFormatJWEJWSJWKJWKSJWT"
 
 var _FormatKind_index = [...]uint8{0, 13, 26, 29, 32, 35, 39, 42}
 
-func (i FormatKind) String() string {
-	idx := int(i) - 0
-	if i < 0 || idx >= len(_FormatKind_index)-1 {
-		return "FormatKind(" + strconv.FormatInt(int64(i), 10) + ")"
-	}
-	return _FormatKind_name[_FormatKind_index[idx]:_FormatKind_index[idx+1]]
-}
+func (i FormatKind) String() string { _ = "STUB: not implemented"; return "" }

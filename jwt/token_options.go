@@ -32,46 +32,42 @@ const (
 
 // Value returns the uint64 value of a single option
 func (o TokenOption) Value() uint64 {
-	return uint64(o)
+	_ = "STUB: not implemented"
+
+	// Value returns the uint64 bit flag value of an option set
+	return 0
 }
 
-// Value returns the uint64 bit flag value of an option set
 func (o TokenOptionSet) Value() uint64 {
-	return uint64(o)
+	_ = "STUB: not implemented"
+
+	// DefaultOptionSet creates a new TokenOptionSet using the default
+	// option set. This may differ depending on if/when functions that
+	// change the global state has been called, such as `jwt.Settings`
+	return 0
 }
 
-// DefaultOptionSet creates a new TokenOptionSet using the default
-// option set. This may differ depending on if/when functions that
-// change the global state has been called, such as `jwt.Settings`
-func DefaultOptionSet() TokenOptionSet {
-	return TokenOptionSet(defaultOptions.Load())
-}
+func DefaultOptionSet() TokenOptionSet { _ = "STUB: not implemented"; return *new(TokenOptionSet) }
 
 // Clear sets all bits to zero, effectively disabling all options
-func (o *TokenOptionSet) Clear() {
-	*o = TokenOptionSet(uint64(0))
-}
+func (o *TokenOptionSet) Clear() { _ = "STUB: not implemented"; return }
 
 // Set sets the value of this option set, effectively *replacing*
 // the entire option set with the new value. This is NOT the same
 // as Enable/Disable.
 func (o *TokenOptionSet) Set(s TokenOptionSet) {
-	*o = s
+	_ = "STUB: not implemented"
+
+	// Enable sets the appropriate value to enable the option in the
+	// option set
+	return
 }
 
-// Enable sets the appropriate value to enable the option in the
-// option set
-func (o *TokenOptionSet) Enable(flag TokenOption) {
-	*o = TokenOptionSet(o.Value() | uint64(flag))
-}
+func (o *TokenOptionSet) Enable(flag TokenOption) { _ = "STUB: not implemented"; return }
 
 // Disable sets the appropriate value to disable the option in the
 // option set
-func (o *TokenOptionSet) Disable(flag TokenOption) {
-	*o = TokenOptionSet(o.Value() & ^uint64(flag))
-}
+func (o *TokenOptionSet) Disable(flag TokenOption) { _ = "STUB: not implemented"; return }
 
 // IsEnabled returns true if the given bit on the option set is enabled.
-func (o TokenOptionSet) IsEnabled(flag TokenOption) bool {
-	return (uint64(o)&uint64(flag) == uint64(flag))
-}
+func (o TokenOptionSet) IsEnabled(flag TokenOption) bool { _ = "STUB: not implemented"; return false }

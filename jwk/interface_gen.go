@@ -3,7 +3,6 @@
 package jwk
 
 import (
-	"cmp"
 	"crypto"
 	"sync"
 
@@ -117,15 +116,13 @@ var fieldPairPool = sync.Pool{
 }
 
 func getFieldPairList() []fieldPair {
+	_ = "STUB: not implemented"
 	//nolint:forcetypeassert
-	return fieldPairPool.Get().([]fieldPair)
+	return nil
 }
 
-func putFieldPairList(list []fieldPair) {
-	clear(list)
-	fieldPairPool.Put(list[:0]) //nolint:staticcheck
-}
+func putFieldPairList(list []fieldPair) { _ = "STUB: not implemented"; return }
 
-func fieldPairLess(a, b fieldPair) int {
-	return cmp.Compare(a.Name, b.Name)
-}
+//nolint:staticcheck
+
+func fieldPairLess(a, b fieldPair) int { _ = "STUB: not implemented"; return 0 }

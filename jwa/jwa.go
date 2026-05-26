@@ -5,8 +5,6 @@ package jwa
 
 import (
 	"errors"
-	"fmt"
-	"sort"
 	"sync"
 )
 
@@ -30,18 +28,9 @@ type KeyAlgorithm interface {
 
 var errInvalidKeyAlgorithm = errors.New(`invalid key algorithm`)
 
-func ErrInvalidKeyAlgorithm() error {
-	return errInvalidKeyAlgorithm
-}
+func ErrInvalidKeyAlgorithm() error { _ = "STUB: not implemented"; return nil }
 
-func formatInvalidKeyAlgorithmValue(v string) string {
-	runes := []rune(v)
-	if len(runes) <= maxKeyAlgorithmErrorPreview {
-		return fmt.Sprintf("%q", v)
-	}
-
-	return fmt.Sprintf("%q", string(runes[:maxKeyAlgorithmErrorPreview])+`...`)
-}
+func formatInvalidKeyAlgorithmValue(v string) string { _ = "STUB: not implemented"; return "" }
 
 // algorithmKind tags entries in the shared algRegistry so the
 // per-kind public Register/Lookup/Unregister/<Kind>s functions can
@@ -56,18 +45,7 @@ const (
 	algKindContentEncryption
 )
 
-func (k algorithmKind) String() string {
-	switch k {
-	case algKindSignature:
-		return "SignatureAlgorithm"
-	case algKindKeyEncryption:
-		return "KeyEncryptionAlgorithm"
-	case algKindContentEncryption:
-		return "ContentEncryptionAlgorithm"
-	default:
-		return "unknown algorithm kind"
-	}
-}
+func (k algorithmKind) String() string { _ = "STUB: not implemented"; return "" }
 
 type algRegistryEntry struct {
 	kind    algorithmKind
@@ -105,58 +83,27 @@ var (
 //     behavior of the per-kind Register* functions; tightening this
 //     is a separate UX concern.
 func registerAlgorithm(kind algorithmKind, alg KeyAlgorithm) error {
-	name := alg.String()
-	muAlgRegistry.Lock()
-	defer muAlgRegistry.Unlock()
-	if existing, ok := algRegistry[name]; ok {
-		if existing.kind == kind && existing.alg == alg {
-			return nil
-		}
-		if existing.kind != kind {
-			return fmt.Errorf(`jwa: %q is already registered as %s; cannot register as %s`, name, existing.kind, kind)
-		}
-		if existing.builtin {
-			return fmt.Errorf(`jwa: %s %q is reserved for a built-in value`, kind, name)
-		}
-	}
-	algRegistry[name] = algRegistryEntry{kind: kind, alg: alg}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // markBuiltin flips the builtin flag on an already-registered name.
 // Called by the per-kind generated init() after the bulk Register*
 // pass, preserving the existing two-phase init pattern.
-func markBuiltin(name string) {
-	muAlgRegistry.Lock()
-	defer muAlgRegistry.Unlock()
-	if entry, ok := algRegistry[name]; ok {
-		entry.builtin = true
-		algRegistry[name] = entry
-	}
-}
+func markBuiltin(name string) { _ = "STUB: not implemented"; return }
 
 // unregisterAlgorithm is the shared backend for the three public
 // Unregister*Algorithm functions. No-op for built-ins, no-op for a
 // kind mismatch, no-op for unknown names — same surface contract as
 // the pre-unification per-kind Unregister*.
-func unregisterAlgorithm(kind algorithmKind, name string) {
-	muAlgRegistry.Lock()
-	defer muAlgRegistry.Unlock()
-	if entry, ok := algRegistry[name]; ok && entry.kind == kind && !entry.builtin {
-		delete(algRegistry, name)
-	}
-}
+func unregisterAlgorithm(kind algorithmKind, name string) { _ = "STUB: not implemented"; return }
 
 // lookupAlgorithm returns the registered KeyAlgorithm for name iff it
 // is registered as the requested kind. Used by the per-kind
 // generated Lookup* wrappers.
 func lookupAlgorithm(kind algorithmKind, name string) (KeyAlgorithm, bool) {
-	muAlgRegistry.RLock()
-	defer muAlgRegistry.RUnlock()
-	if entry, ok := algRegistry[name]; ok && entry.kind == kind {
-		return entry.alg, true
-	}
-	return nil, false
+	_ = "STUB: not implemented"
+	return *new(KeyAlgorithm), false
 }
 
 // listAlgorithmsByKind returns every registered algorithm of the
@@ -165,18 +112,7 @@ func lookupAlgorithm(kind algorithmKind, name string) (KeyAlgorithm, bool) {
 // dedicated cached slice rebuilt on each Register/Unregister; here
 // we just iterate the shared map and sort, which is cheap for the
 // <50-entry registries jwa exposes.
-func listAlgorithmsByKind(kind algorithmKind) []KeyAlgorithm {
-	muAlgRegistry.RLock()
-	defer muAlgRegistry.RUnlock()
-	out := make([]KeyAlgorithm, 0, len(algRegistry))
-	for _, entry := range algRegistry {
-		if entry.kind == kind {
-			out = append(out, entry.alg)
-		}
-	}
-	sort.Slice(out, func(i, j int) bool { return out[i].String() < out[j].String() })
-	return out
-}
+func listAlgorithmsByKind(kind algorithmKind) []KeyAlgorithm { _ = "STUB: not implemented"; return nil }
 
 // KeyAlgorithmFrom takes either a string, `jwa.SignatureAlgorithm`,
 // `jwa.KeyEncryptionAlgorithm`, or `jwa.ContentEncryptionAlgorithm`,
@@ -195,31 +131,6 @@ func listAlgorithmsByKind(kind algorithmKind) []KeyAlgorithm {
 // names that would never resolve through any registry, surfacing as
 // confusing failures far from the call site.
 func KeyAlgorithmFrom(v any) (KeyAlgorithm, error) {
-	switch v := v.(type) {
-	case SignatureAlgorithm:
-		if v.String() == "" {
-			return nil, fmt.Errorf(`invalid key value: zero-value %T: %w`, v, errInvalidKeyAlgorithm)
-		}
-		return v, nil
-	case KeyEncryptionAlgorithm:
-		if v.String() == "" {
-			return nil, fmt.Errorf(`invalid key value: zero-value %T: %w`, v, errInvalidKeyAlgorithm)
-		}
-		return v, nil
-	case ContentEncryptionAlgorithm:
-		if v.String() == "" {
-			return nil, fmt.Errorf(`invalid key value: zero-value %T: %w`, v, errInvalidKeyAlgorithm)
-		}
-		return v, nil
-	case string:
-		muAlgRegistry.RLock()
-		entry, ok := algRegistry[v]
-		muAlgRegistry.RUnlock()
-		if !ok {
-			return nil, fmt.Errorf(`invalid key value: %s: %w`, formatInvalidKeyAlgorithmValue(v), errInvalidKeyAlgorithm)
-		}
-		return entry.alg, nil
-	default:
-		return nil, fmt.Errorf(`invalid key type: %T: %w`, v, errInvalidKeyAlgorithm)
-	}
+	_ = "STUB: not implemented"
+	return *new(KeyAlgorithm), nil
 }

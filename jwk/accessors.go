@@ -13,15 +13,4 @@ package jwk
 // but wrong type" should use [errors.Is] with [FieldNotFoundError]{} /
 // [FieldTypeMismatchError]{}, or [errors.AsType] to recover the Name,
 // Got, and Want fields.
-func Get[T any](key Key, name string) (T, error) {
-	var zero T
-	v, ok := key.Field(name)
-	if !ok {
-		return zero, FieldNotFoundError{Name: name}
-	}
-	result, ok := v.(T)
-	if !ok {
-		return zero, FieldTypeMismatchError{Name: name, Got: v, Want: zero}
-	}
-	return result, nil
-}
+func Get[T any](key Key, name string) (T, error) { _ = "STUB: not implemented"; return *new(T), nil }

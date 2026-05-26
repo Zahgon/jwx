@@ -3,11 +3,9 @@
 package jwa
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/lestrrat-go/jwx/v4/internal/tokens"
-	"github.com/lestrrat-go/option/v3"
 )
 
 func init() {
@@ -30,40 +28,43 @@ func init() {
 
 // A128CBC_HS256 returns an object representing A128CBC-HS256. Using this value specifies that the content should be encrypted using AES-CBC + HMAC-SHA256 (128).
 func A128CBC_HS256() ContentEncryptionAlgorithm {
-	return lookupBuiltinContentEncryptionAlgorithm(tokens.A128CBC_HS256)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // A128GCM returns an object representing A128GCM. Using this value specifies that the content should be encrypted using AES-GCM (128).
 func A128GCM() ContentEncryptionAlgorithm {
-	return lookupBuiltinContentEncryptionAlgorithm(tokens.A128GCM)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // A192CBC_HS384 returns an object representing A192CBC-HS384. Using this value specifies that the content should be encrypted using AES-CBC + HMAC-SHA384 (192).
 func A192CBC_HS384() ContentEncryptionAlgorithm {
-	return lookupBuiltinContentEncryptionAlgorithm(tokens.A192CBC_HS384)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // A192GCM returns an object representing A192GCM. Using this value specifies that the content should be encrypted using AES-GCM (192).
 func A192GCM() ContentEncryptionAlgorithm {
-	return lookupBuiltinContentEncryptionAlgorithm(tokens.A192GCM)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // A256CBC_HS512 returns an object representing A256CBC-HS512. Using this value specifies that the content should be encrypted using AES-CBC + HMAC-SHA512 (256).
 func A256CBC_HS512() ContentEncryptionAlgorithm {
-	return lookupBuiltinContentEncryptionAlgorithm(tokens.A256CBC_HS512)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // A256GCM returns an object representing A256GCM. Using this value specifies that the content should be encrypted using AES-GCM (256).
 func A256GCM() ContentEncryptionAlgorithm {
-	return lookupBuiltinContentEncryptionAlgorithm(tokens.A256GCM)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 func lookupBuiltinContentEncryptionAlgorithm(name string) ContentEncryptionAlgorithm {
-	v, ok := lookupAlgorithm(algKindContentEncryption, name)
-	if !ok {
-		panic(fmt.Sprintf(`jwa: ContentEncryptionAlgorithm %q not registered`, name))
-	}
-	return v.(ContentEncryptionAlgorithm)
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // ContentEncryptionAlgorithm represents the various encryption algorithms as described in https://tools.ietf.org/html/rfc7518#section-5
@@ -73,38 +74,30 @@ type ContentEncryptionAlgorithm struct {
 }
 
 func (s ContentEncryptionAlgorithm) String() string {
-	return s.name
+	_ = "STUB: not implemented"
+
+	// IsDeprecated returns true if the ContentEncryptionAlgorithm object is deprecated.
+	return ""
 }
 
-// IsDeprecated returns true if the ContentEncryptionAlgorithm object is deprecated.
-func (s ContentEncryptionAlgorithm) IsDeprecated() bool {
-	return s.deprecated
-}
+func (s ContentEncryptionAlgorithm) IsDeprecated() bool { _ = "STUB: not implemented"; return false }
 
 // EmptyContentEncryptionAlgorithm returns an empty ContentEncryptionAlgorithm object, used as a zero value.
 func EmptyContentEncryptionAlgorithm() ContentEncryptionAlgorithm {
-	return ContentEncryptionAlgorithm{}
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // NewContentEncryptionAlgorithm creates a new ContentEncryptionAlgorithm object with the given name.
 func NewContentEncryptionAlgorithm(name string, options ...NewAlgorithmOption) ContentEncryptionAlgorithm {
-	var deprecated bool
-	for _, opt := range options {
-		switch opt.Ident() {
-		case identDeprecated{}:
-			deprecated = option.MustGet[bool](opt)
-		}
-	}
-	return ContentEncryptionAlgorithm{name: name, deprecated: deprecated}
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm)
 }
 
 // LookupContentEncryptionAlgorithm returns the ContentEncryptionAlgorithm object for the given name.
 func LookupContentEncryptionAlgorithm(name string) (ContentEncryptionAlgorithm, bool) {
-	if v, ok := lookupAlgorithm(algKindContentEncryption, name); ok {
-		return v.(ContentEncryptionAlgorithm), true
-	}
-	var zero ContentEncryptionAlgorithm
-	return zero, false
+	_ = "STUB: not implemented"
+	return *new(ContentEncryptionAlgorithm), false
 }
 
 // RegisterContentEncryptionAlgorithm registers a new ContentEncryptionAlgorithm. The signature value must be immutable
@@ -120,47 +113,31 @@ func LookupContentEncryptionAlgorithm(name string) (ContentEncryptionAlgorithm, 
 // different kind returns an error naming both the existing and the requested
 // kind.
 func RegisterContentEncryptionAlgorithm(algorithms ...ContentEncryptionAlgorithm) error {
-	for _, alg := range algorithms {
-		if err := registerAlgorithm(algKindContentEncryption, alg); err != nil {
-			return err
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // UnregisterContentEncryptionAlgorithm unregisters a ContentEncryptionAlgorithm from its known database.
 // Non-existent entries, as well as built-in algorithms will silently be ignored.
 func UnregisterContentEncryptionAlgorithm(algorithms ...ContentEncryptionAlgorithm) {
-	for _, alg := range algorithms {
-		unregisterAlgorithm(algKindContentEncryption, alg.String())
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // ContentEncryptionAlgorithms returns a list of all available values for ContentEncryptionAlgorithm.
 func ContentEncryptionAlgorithms() []ContentEncryptionAlgorithm {
-	raw := listAlgorithmsByKind(algKindContentEncryption)
-	out := make([]ContentEncryptionAlgorithm, len(raw))
-	for i, alg := range raw {
-		out[i] = alg.(ContentEncryptionAlgorithm)
-	}
-	return out
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // MarshalJSON serializes the ContentEncryptionAlgorithm object to a JSON string.
 func (s ContentEncryptionAlgorithm) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // UnmarshalJSON deserializes the JSON string to a ContentEncryptionAlgorithm object.
 func (s *ContentEncryptionAlgorithm) UnmarshalJSON(data []byte) error {
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		return fmt.Errorf(`failed to unmarshal ContentEncryptionAlgorithm: %w`, err)
-	}
-	v, ok := LookupContentEncryptionAlgorithm(name)
-	if !ok {
-		return fmt.Errorf(`unknown ContentEncryptionAlgorithm: %q`, name)
-	}
-	*s = v
+	_ = "STUB: not implemented"
 	return nil
 }
